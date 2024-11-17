@@ -1,0 +1,115 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: twip-demo-prom
+    release: prometheus
+  name: twip-demo-prom
+  namespace: twip-dev
+spec:
+  selector:
+    matchLabels:
+      app: twip-demo-prom
+      release: prometheus
+  endpoints:
+  - port: api-80
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: twip-demo-prom
+    release: prometheus
+  name: twip-demo-prom
+spec:
+  groups:
+  - name: "twip-demo-prom"
+    rules:
+    - alert: twip-demo-prom
+      expr: count(kube_pod_status_phase{pod=~"twip-demo-prom.*", phase="Failed"}) by (namespace) == 0
+      for: 1m
+#      annotations:
+#        message: |
+#          `{{ $labels.namespace }}/twip-demo` 서비스가 다운되었습니다!!!!!
+      annotations:
+        description: |
+          `{{ $labels.namespace }}/twip-demo` 서비스가 다운되었습니다!!!!!
+        runbook_url: https://prometheus.default.eks-main-t.shoptoolstest.co.kr/alerts?search=twip-demo
+        summary: twip-demo 서비스 다운
+      labels:
+        severity: critical
+        project: twip-demo
+        staging: dev
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twip-demo-prom
+  namespace: twip-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twip-demo-prom
+  template:
+    metadata:
+      labels:
+        team: devops
+        project: demo
+        environment: dev
+        app: twip-demo-prom
+        release: prometheus
+      annotations:
+        prometheus.io/port: '9102'
+        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+        - name: twip-demo-prom
+          image: >-
+            215559030652.dkr.ecr.ap-northeast-2.amazonaws.com/devops-demo:1dcd1-8
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twip-demo-prom
+  namespace: twip-dev
+  labels:
+    app: twip-demo-prom
+    release: prometheus
+spec:
+  ports:
+    - name: api-80
+      port: 80
+      targetPort: 8080
+  selector:
+    app: twip-demo-prom
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: twip-demo-prom
+  namespace: twip-dev
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: prom.twip-dev.eks-main-t.shoptoolstest.co.kr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: twip-demo-prom
+                port:
+                  number: 80
+

@@ -1,0 +1,24 @@
+{
+  "general": {
+    "debug": true,
+    "verify_ssl": true,
+    "backup_dir": "_OUTPUT_",
+    "backup_file_format": "%Y%m%d%H%M",
+    "pretty_print": false
+  },
+  "grafana": {
+    "url": "http://grafana.default.eks_project.eks_domain",
+    "token": "grafana_token_var",
+    "search_api_limit": 5000,
+    "default_password": "00000000",
+    "admin_account": "admin",
+    "admin_password": "admin_password_var"
+  },
+  "aws": {
+    "s3_bucket_name": "s3_bucket_name_var",
+    "s3_bucket_key": "slcorp",
+    "default_region": "aws_region",
+    "access_key_id": "aws_access_key_id",
+    "secret_access_key": "aws_secret_access_key"
+  }
+}

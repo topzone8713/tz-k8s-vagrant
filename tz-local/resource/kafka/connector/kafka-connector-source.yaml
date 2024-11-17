@@ -1,0 +1,109 @@
+####################################################################
+## kafka-connector-source
+####################################################################
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: postgres-pv-0
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-0
+spec:
+  capacity:
+    storage: 200Mi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: postgres-pv-0
+  local:
+#    path: /ubuntu/data/postgres     # can't use shared folder
+    path: /home/vagrant/data/postgres
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values: ["kube-master", "kube-node-1", "kube-node-2"]
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-postgres-source-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: postgres-pv-0
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-source-config
+  labels:
+    app: postgres
+data:
+  postgres_DB: postgres
+  postgres_USER: postgres
+  postgres_PASSWORD: admin1234!
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-source
+  labels:
+    app: postgres-source
+spec:
+  selector:
+    matchLabels:
+      app: postgres-source
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-source
+    spec:
+      containers:
+        - name: postgres-source
+          image: postgres:10.4
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+          - configMapRef:
+              name: postgres-source-config
+          volumeMounts:
+            - name: postgres-source-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-source-storage
+        persistentVolumeClaim:
+          claimName: data-postgres-source-pvc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-source
+  labels:
+    app: postgres-source
+spec:
+  selector:
+    app: postgres-source
+  ports:
+  - port: 5432
+

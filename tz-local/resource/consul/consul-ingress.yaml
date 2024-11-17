@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-consul
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: 'false'
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: consul-server.default.k8s_project.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: consul-server
+            port:
+              number: 8500
+  - host: consul.default.k8s_project.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: consul-ui
+            port:
+              number: 8500
+  tls:
+    - hosts:
+        - consul-server.default.k8s_project.k8s_domain
+        - consul.default.k8s_project.k8s_domain
+      secretName: ingress-consul-tls

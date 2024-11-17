@@ -1,0 +1,100 @@
+#apiVersion: external-secrets.io/v1beta1
+#kind: SecretStore
+#metadata:
+#  name: devops-secretstore
+#spec:
+#  provider:
+#    aws:
+#      service: SecretsManager
+#      region: ap-northeast-2
+#      auth:
+#        secretRef:
+#          accessKeyIDSecretRef:
+#            name: awssm-secret
+#            key: access-key
+#          secretAccessKeySecretRef:
+#            name: awssm-secret
+#            key: secret-access-key
+#
+#---
+#
+#apiVersion: external-secrets.io/v1beta1
+#kind: ExternalSecret
+#metadata:
+#  name: devops-externalsecret
+#spec:
+#  refreshInterval: 1h
+#  secretStoreRef:
+#    name: devops-secretstore
+#    kind: SecretStore
+#  target:
+#    name: secret-to-be-created
+#    creationPolicy: Owner
+#  data:
+#  - secretKey: secret-key-to-be-managed
+#    remoteRef:
+#      key: provider-key
+#      version: provider-key-version
+#      property: provider-key-property
+#  dataFrom:
+#  - extract:
+#      key: remote-key-in-the-provider
+
+---
+
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: devops-dev
+  namespace: devops-dev
+spec:
+  provider:
+    vault:
+      server: "http://vault.vault.svc.cluster.local:8200"
+      path: "secret"
+      version: "v2"
+      auth:
+        kubernetes:
+          mountPath: "kubernetes"
+          role: "devops-dev"
+          serviceAccountRef:
+            name: "devops-dev-svcaccount"
+
+---
+
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: devops-prod
+  namespace: devops
+spec:
+  provider:
+    vault:
+      server: "http://vault.vault.svc.cluster.local:8200"
+      path: "secret"
+      version: "v2"
+      auth:
+        kubernetes:
+          mountPath: "kubernetes"
+          role: "devops-prod"
+          serviceAccountRef:
+            name: "devops-prod-svcaccount"
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: devops-externalsecret
+  namespace: devops
+spec:
+  refreshInterval: "15s"
+  secretStoreRef:
+    name: devops-prod
+    kind: SecretStore
+  target:
+    name: devops-demo-externalsecret
+  data:
+  - secretKey: passwod
+    remoteRef:
+      key: secret/devops-prod/dbinfo
+      property: passwod

@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-tz-demo-app
+  namespace: devops
+spec:
+  destination:
+    namespace: devops
+    server: https://kubernetes.default.svc
+  project: devops
+  source:
+    directory:
+      jsonnet: {}
+      recurse: true
+    path: devops-tz-demo-app/prod
+    repoURL: https://github.com/doohee323/tz-argocd-repo.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+      allowEmpty: true
+
+
+#argocd login argocd.default.k8s-main-t.shoptoolstest.co.kr:443 --username admin --password T1zone\!323 --insecure
+#
+#argocd app create devops-tz-gpt3 \
+#  --project devops \
+#  --repo https://github.com/doohee323/tz-argocd-repo.git \
+#  --path devops-tz-gpt3 \
+#  --dest-namespace devops \
+#  --dest-server https://kubernetes.default.svc --directory-recurse --upsert --grpc-web

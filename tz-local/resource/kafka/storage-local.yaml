@@ -1,0 +1,226 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-zookeeper-0
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: nfs-csi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-zookeeper-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: nfs-csi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-kafka-0
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: nfs-csi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-kafka-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: nfs-csi
+
+
+### kafka-pv-0
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: kafka-pv-0
+#provisioner: kubernetes.io/no-provisioner
+#volumeBindingMode: WaitForFirstConsumer
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: kafka-pv-0
+#spec:
+#  capacity:
+#    storage: 200Mi
+#  accessModes:
+#  - ReadWriteOnce
+#  persistentVolumeReclaimPolicy: Retain
+#  storageClassName: kafka-pv-0
+#  local:
+#    path: /vagrant/kafka/index0
+#  nodeAffinity:
+#    required:
+#      nodeSelectorTerms:
+#      - matchExpressions:
+#        - key: kubernetes.io/hostname
+#          operator: In
+#          values: ["kube-master", "kube-node-1", "kube-node-2"]
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: data-kafka-0
+#spec:
+#  accessModes:
+#  - ReadWriteOnce
+#  storageClassName: kafka-pv-0
+#  resources:
+#    requests:
+#      storage: 100Mi
+#
+#---
+### kafka-pv-1
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: kafka-pv-1
+#provisioner: kubernetes.io/no-provisioner
+#volumeBindingMode: WaitForFirstConsumer
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: kafka-pv-1
+#spec:
+#  capacity:
+#    storage: 200Mi
+#  accessModes:
+#  - ReadWriteOnce
+#  persistentVolumeReclaimPolicy: Retain
+#  storageClassName: kafka-pv-1
+#  local:
+#    path: /vagrant/kafka/index0
+#  nodeAffinity:
+#    required:
+#      nodeSelectorTerms:
+#      - matchExpressions:
+#        - key: kubernetes.io/hostname
+#          operator: In
+#          values: ["kube-master", "kube-node-1", "kube-node-2"]
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: data-kafka-1
+#spec:
+#  accessModes:
+#  - ReadWriteOnce
+#  storageClassName: kafka-pv-1
+#  resources:
+#    requests:
+#      storage: 100Mi
+#
+#---
+### zookeeper-0
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: zookeeper-pv-0
+#provisioner: kubernetes.io/no-provisioner
+#volumeBindingMode: WaitForFirstConsumer
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: zookeeper-pv-0
+#spec:
+#  capacity:
+#    storage: 200Mi
+#  accessModes:
+#  - ReadWriteOnce
+#  persistentVolumeReclaimPolicy: Retain
+#  storageClassName: zookeeper-pv-0
+#  local:
+#    path: /vagrant/kafka/index1
+#  nodeAffinity:
+#    required:
+#      nodeSelectorTerms:
+#      - matchExpressions:
+#        - key: kubernetes.io/hostname
+#          operator: In
+#          values: ["kube-master", "kube-node-1", "kube-node-2"]
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: data-zookeeper-0
+#spec:
+#  accessModes:
+#  - ReadWriteOnce
+#  storageClassName: zookeeper-pv-0
+#  resources:
+#    requests:
+#      storage: 100Mi
+#
+#---
+### zookeeper-1
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: zookeeper-pv-1
+#provisioner: kubernetes.io/no-provisioner
+#volumeBindingMode: WaitForFirstConsumer
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: zookeeper-pv-1
+#spec:
+#  capacity:
+#    storage: 200Mi
+#  accessModes:
+#  - ReadWriteOnce
+#  persistentVolumeReclaimPolicy: Retain
+#  storageClassName: zookeeper-pv-1
+#  local:
+#    path: /vagrant/kafka/index1
+#  nodeAffinity:
+#    required:
+#      nodeSelectorTerms:
+#      - matchExpressions:
+#        - key: kubernetes.io/hostname
+#          operator: In
+#          values: ["kube-master", "kube-node-1", "kube-node-2"]
+#
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: data-zookeeper-1
+#spec:
+#  accessModes:
+#  - ReadWriteOnce
+#  storageClassName: zookeeper-pv-1
+#  resources:
+#    requests:
+#      storage: 100Mi

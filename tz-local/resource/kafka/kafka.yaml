@@ -1,0 +1,538 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    meta.helm.sh/release-name: kafka
+    meta.helm.sh/release-namespace: kafka
+  creationTimestamp: "2021-01-03T01:24:58Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/component: kafka
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    helm.sh/chart: kafka-12.5.0
+  managedFields:
+  - apiVersion: apps/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:meta.helm.sh/release-name: {}
+          f:meta.helm.sh/release-namespace: {}
+        f:labels:
+          .: {}
+          f:app.kubernetes.io/component: {}
+          f:app.kubernetes.io/instance: {}
+          f:app.kubernetes.io/managed-by: {}
+          f:app.kubernetes.io/name: {}
+          f:helm.sh/chart: {}
+      f:spec:
+        f:podManagementPolicy: {}
+        f:replicas: {}
+        f:revisionHistoryLimit: {}
+        f:selector: {}
+        f:serviceName: {}
+        f:template:
+          f:metadata:
+            f:labels:
+              .: {}
+              f:app.kubernetes.io/component: {}
+              f:app.kubernetes.io/instance: {}
+              f:app.kubernetes.io/managed-by: {}
+              f:app.kubernetes.io/name: {}
+              f:helm.sh/chart: {}
+          f:spec:
+            f:affinity:
+              .: {}
+              f:podAntiAffinity:
+                .: {}
+                f:preferredDuringSchedulingIgnoredDuringExecution: {}
+            f:containers:
+              k:{"name":"kafka"}:
+                .: {}
+                f:command: {}
+                f:env:
+                  .: {}
+                  k:{"name":"ALLOW_PLAINTEXT_LISTENER"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"BITNAMI_DEBUG"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_ADVERTISED_LISTENERS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_DEFAULT_REPLICATION_FACTOR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_DELETE_TOPIC_ENABLE"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LISTENERS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_DIRS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_FLUSH_INTERVAL_MESSAGES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_FLUSH_INTERVAL_MS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_RETENTION_BYTES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_RETENTION_CHECK_INTERVALS_MS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_RETENTION_HOURS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_LOG_SEGMENT_BYTES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_MESSAGE_MAX_BYTES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_NUM_IO_THREADS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_NUM_NETWORK_THREADS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_NUM_PARTITIONS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_NUM_RECOVERY_THREADS_PER_DATA_DIR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_SOCKET_RECEIVE_BUFFER_BYTES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_SOCKET_REQUEST_MAX_BYTES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_SOCKET_SEND_BUFFER_BYTES"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_ZOOKEEPER_CONNECT"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_CFG_ZOOKEEPER_CONNECTION_TIMEOUT_MS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_HEAP_OPTS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_INTER_BROKER_LISTENER_NAME"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_LOG_DIR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"KAFKA_VOLUME_DIR"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"MY_POD_IP"}:
+                    .: {}
+                    f:name: {}
+                    f:valueFrom:
+                      .: {}
+                      f:fieldRef:
+                        .: {}
+                        f:apiVersion: {}
+                        f:fieldPath: {}
+                  k:{"name":"MY_POD_NAME"}:
+                    .: {}
+                    f:name: {}
+                    f:valueFrom:
+                      .: {}
+                      f:fieldRef:
+                        .: {}
+                        f:apiVersion: {}
+                        f:fieldPath: {}
+                f:image: {}
+                f:imagePullPolicy: {}
+                f:livenessProbe:
+                  .: {}
+                  f:failureThreshold: {}
+                  f:initialDelaySeconds: {}
+                  f:periodSeconds: {}
+                  f:successThreshold: {}
+                  f:tcpSocket:
+                    .: {}
+                    f:port: {}
+                  f:timeoutSeconds: {}
+                f:name: {}
+                f:ports:
+                  .: {}
+                  k:{"containerPort":9092,"protocol":"TCP"}:
+                    .: {}
+                    f:containerPort: {}
+                    f:name: {}
+                    f:protocol: {}
+                  k:{"containerPort":9093,"protocol":"TCP"}:
+                    .: {}
+                    f:containerPort: {}
+                    f:name: {}
+                    f:protocol: {}
+                f:readinessProbe:
+                  .: {}
+                  f:failureThreshold: {}
+                  f:initialDelaySeconds: {}
+                  f:periodSeconds: {}
+                  f:successThreshold: {}
+                  f:tcpSocket:
+                    .: {}
+                    f:port: {}
+                  f:timeoutSeconds: {}
+                f:resources: {}
+                f:terminationMessagePath: {}
+                f:terminationMessagePolicy: {}
+                f:volumeMounts:
+                  .: {}
+                  k:{"mountPath":"/bitnami/kafka"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+                  k:{"mountPath":"/opt/bitnami/kafka/logs"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+                  k:{"mountPath":"/scripts/setup.sh"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+                    f:subPath: {}
+            f:dnsPolicy: {}
+            f:initContainers:
+              .: {}
+              k:{"name":"volume-permissions"}:
+                .: {}
+                f:args: {}
+                f:command: {}
+                f:image: {}
+                f:imagePullPolicy: {}
+                f:name: {}
+                f:resources: {}
+                f:securityContext:
+                  .: {}
+                  f:runAsUser: {}
+                f:terminationMessagePath: {}
+                f:terminationMessagePolicy: {}
+                f:volumeMounts:
+                  .: {}
+                  k:{"mountPath":"/bitnami/kafka"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+                  k:{"mountPath":"/opt/bitnami/kafka/logs"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+            f:restartPolicy: {}
+            f:schedulerName: {}
+            f:securityContext:
+              .: {}
+              f:fsGroup: {}
+              f:runAsUser: {}
+            f:serviceAccount: {}
+            f:serviceAccountName: {}
+            f:terminationGracePeriodSeconds: {}
+            f:volumes:
+              .: {}
+              k:{"name":"logs"}:
+                .: {}
+                f:emptyDir: {}
+                f:name: {}
+              k:{"name":"scripts"}:
+                .: {}
+                f:configMap:
+                  .: {}
+                  f:defaultMode: {}
+                  f:name: {}
+                f:name: {}
+        f:updateStrategy:
+          f:type: {}
+        f:volumeClaimTemplates: {}
+    manager: Go-http-client
+    operation: Update
+    time: "2021-01-03T01:24:58Z"
+  - apiVersion: apps/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        f:collisionCount: {}
+        f:currentReplicas: {}
+        f:currentRevision: {}
+        f:observedGeneration: {}
+        f:replicas: {}
+        f:updateRevision: {}
+        f:updatedReplicas: {}
+    manager: kube-controller-manager
+    operation: Update
+    time: "2021-01-03T01:24:58Z"
+  name: kafka
+  namespace: kafka
+  resourceVersion: "243052"
+  uid: 34bbce90-8a27-49a1-80c9-0811c5403961
+spec:
+  podManagementPolicy: Parallel
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: kafka
+      app.kubernetes.io/instance: kafka
+      app.kubernetes.io/name: kafka
+  serviceName: kafka-headless
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/component: kafka
+        app.kubernetes.io/instance: kafka
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kafka
+        helm.sh/chart: kafka-12.5.0
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: kafka
+                  app.kubernetes.io/name: kafka
+              namespaces:
+              - kafka
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - command:
+        - /scripts/setup.sh
+        env:
+        - name: BITNAMI_DEBUG
+          value: "false"
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+          value: zookeeper
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: INTERNAL
+        - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+          value: INTERNAL:PLAINTEXT,CLIENT:PLAINTEXT
+        - name: KAFKA_CFG_LISTENERS
+          value: INTERNAL://:9093,CLIENT://:9092
+        - name: KAFKA_CFG_ADVERTISED_LISTENERS
+          value: INTERNAL://$(MY_POD_NAME).kafka-headless.kafka.svc.cluster.local:9093,CLIENT://$(MY_POD_NAME).kafka-headless.kafka.svc.cluster.local:9092
+        - name: ALLOW_PLAINTEXT_LISTENER
+          value: "yes"
+        - name: KAFKA_VOLUME_DIR
+          value: /bitnami/kafka
+        - name: KAFKA_LOG_DIR
+          value: /opt/bitnami/kafka/logs
+        - name: KAFKA_CFG_DELETE_TOPIC_ENABLE
+          value: "false"
+        - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+          value: "true"
+        - name: KAFKA_HEAP_OPTS
+          value: -Xmx1024m -Xms1024m
+        - name: KAFKA_CFG_LOG_FLUSH_INTERVAL_MESSAGES
+          value: "10000"
+        - name: KAFKA_CFG_LOG_FLUSH_INTERVAL_MS
+          value: "1000"
+        - name: KAFKA_CFG_LOG_RETENTION_BYTES
+          value: "1073741824"
+        - name: KAFKA_CFG_LOG_RETENTION_CHECK_INTERVALS_MS
+          value: "300000"
+        - name: KAFKA_CFG_LOG_RETENTION_HOURS
+          value: "168"
+        - name: KAFKA_CFG_MESSAGE_MAX_BYTES
+          value: "1000012"
+        - name: KAFKA_CFG_LOG_SEGMENT_BYTES
+          value: "1073741824"
+        - name: KAFKA_CFG_LOG_DIRS
+          value: /bitnami/kafka/data
+        - name: KAFKA_CFG_DEFAULT_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR
+          value: "1"
+        - name: KAFKA_CFG_NUM_IO_THREADS
+          value: "8"
+        - name: KAFKA_CFG_NUM_NETWORK_THREADS
+          value: "3"
+        - name: KAFKA_CFG_NUM_PARTITIONS
+          value: "1"
+        - name: KAFKA_CFG_NUM_RECOVERY_THREADS_PER_DATA_DIR
+          value: "1"
+        - name: KAFKA_CFG_SOCKET_RECEIVE_BUFFER_BYTES
+          value: "102400"
+        - name: KAFKA_CFG_SOCKET_REQUEST_MAX_BYTES
+          value: "104857600"
+        - name: KAFKA_CFG_SOCKET_SEND_BUFFER_BYTES
+          value: "102400"
+        - name: KAFKA_CFG_ZOOKEEPER_CONNECTION_TIMEOUT_MS
+          value: "6000"
+        image: docker.io/bitnami/kafka:2.7.0-debian-10-r1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 1
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: kafka-client
+          timeoutSeconds: 5
+        name: kafka
+        ports:
+        - containerPort: 9092
+          name: kafka-client
+          protocol: TCP
+        - containerPort: 9093
+          name: kafka-internal
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 6
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: kafka-client
+          timeoutSeconds: 5
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /bitnami/kafka
+          name: data
+        - mountPath: /opt/bitnami/kafka/logs
+          name: logs
+        - mountPath: /scripts/setup.sh
+          name: scripts
+          subPath: setup.sh
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - -ec
+        - |
+          chown -R "1001:1001" "/bitnami/kafka"
+          chown -R "1001:1001" "/opt/bitnami/kafka/logs"
+        command:
+        - /bin/bash
+        image: docker.io/bitnami/minideb:buster
+        imagePullPolicy: Always
+        name: volume-permissions
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /bitnami/kafka
+          name: data
+        - mountPath: /opt/bitnami/kafka/logs
+          name: logs
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+      serviceAccount: kafka
+      serviceAccountName: kafka
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: kafka-scripts
+        name: scripts
+      - emptyDir: {}
+        name: logs
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+      storageClassName: nfs-csi
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+status:
+  collisionCount: 0
+  currentReplicas: 1
+  currentRevision: kafka-5c6c7fd988
+  observedGeneration: 1
+  replicas: 1
+  updateRevision: kafka-5c6c7fd988
+  updatedReplicas: 1

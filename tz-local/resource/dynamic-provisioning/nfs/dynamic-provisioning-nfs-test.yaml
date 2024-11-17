@@ -1,0 +1,62 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nfs-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: nfs-test #
+        persistentVolumeClaim:
+          claimName: pvc-nfs-dynamic
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: nfs-test # name of volume should match claimName volume
+          mountPath: /mydata # mount inside of contianer
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nfs-nginx2
+spec:
+  serviceName: "nfs-nginx2"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        role: nginx
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          volumeMounts:
+            - name: nfs-test-storage
+              mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: nfs-test-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "nfs-client"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 100Mi

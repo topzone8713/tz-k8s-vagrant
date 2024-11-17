@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-vault
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+#  - host: vault.k8s_domain
+#    http:
+#      paths:
+#      - path: /
+#        backend:
+#          serviceName: vault
+#          servicePort: 8200
+  - host: vault.default.k8s_project.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: vault
+            port:
+              number: 8200
+  tls:
+    - hosts:
+#        - vault.k8s_domain
+        - vault.default.k8s_project.k8s_domain
+      secretName: ingress-vault-tls

@@ -1,0 +1,26 @@
+def secrets = [
+  [path: 'secret/devops-dev/dbinfo', engineVersion: 2, secretValues: [
+    [envVar: 'VAR_NAME', vaultKey: 'name'],
+    [envVar: 'VAR_PASSWORD', vaultKey: 'passwod'],
+    [envVar: 'VAR_TTL', vaultKey: 'ttl']]],
+]
+def configuration = [vaultUrl: 'http://vault.vault.svc.cluster.local:8200',  vaultCredentialId: 'vault-approle', engineVersion: 2]
+                      
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+    }
+    stages{   
+      stage('Vault') {
+        steps {
+          withVault([configuration: configuration, vaultSecrets: secrets]) {
+            sh "echo ${env.VAR_NAME}"
+            sh "echo ${env.VAR_PASSWORD}"
+            sh "echo ${env.VAR_TTL}"
+          }
+        }  
+      }
+    }
+}

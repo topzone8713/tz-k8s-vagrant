@@ -1,0 +1,435 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    meta.helm.sh/release-name: zookeeper
+    meta.helm.sh/release-namespace: kafka
+  creationTimestamp: "2021-01-03T01:24:52Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/component: zookeeper
+    app.kubernetes.io/instance: zookeeper
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: zookeeper
+    helm.sh/chart: zookeeper-6.3.0
+    role: zookeeper
+  managedFields:
+  - apiVersion: apps/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:meta.helm.sh/release-name: {}
+          f:meta.helm.sh/release-namespace: {}
+        f:labels:
+          .: {}
+          f:app.kubernetes.io/component: {}
+          f:app.kubernetes.io/instance: {}
+          f:app.kubernetes.io/managed-by: {}
+          f:app.kubernetes.io/name: {}
+          f:helm.sh/chart: {}
+          f:role: {}
+      f:spec:
+        f:podManagementPolicy: {}
+        f:replicas: {}
+        f:revisionHistoryLimit: {}
+        f:selector: {}
+        f:serviceName: {}
+        f:template:
+          f:metadata:
+            f:labels:
+              .: {}
+              f:app.kubernetes.io/component: {}
+              f:app.kubernetes.io/instance: {}
+              f:app.kubernetes.io/managed-by: {}
+              f:app.kubernetes.io/name: {}
+              f:helm.sh/chart: {}
+            f:name: {}
+          f:spec:
+            f:affinity:
+              .: {}
+              f:podAntiAffinity:
+                .: {}
+                f:preferredDuringSchedulingIgnoredDuringExecution: {}
+            f:containers:
+              k:{"name":"zookeeper"}:
+                .: {}
+                f:command: {}
+                f:env:
+                  .: {}
+                  k:{"name":"ALLOW_ANONYMOUS_LOGIN"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"POD_NAME"}:
+                    .: {}
+                    f:name: {}
+                    f:valueFrom:
+                      .: {}
+                      f:fieldRef:
+                        .: {}
+                        f:apiVersion: {}
+                        f:fieldPath: {}
+                  k:{"name":"ZOO_4LW_COMMANDS_WHITELIST"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_AUTOPURGE_INTERVAL"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_AUTOPURGE_RETAIN_COUNT"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_DATA_LOG_DIR"}:
+                    .: {}
+                    f:name: {}
+                  k:{"name":"ZOO_ENABLE_AUTH"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_HEAP_SIZE"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_INIT_LIMIT"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_LISTEN_ALLIPS_ENABLED"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_LOG_LEVEL"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_MAX_CLIENT_CNXNS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_MAX_SESSION_TIMEOUT"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_PORT_NUMBER"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_SERVERS"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_SYNC_LIMIT"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                  k:{"name":"ZOO_TICK_TIME"}:
+                    .: {}
+                    f:name: {}
+                    f:value: {}
+                f:image: {}
+                f:imagePullPolicy: {}
+                f:livenessProbe:
+                  .: {}
+                  f:exec:
+                    .: {}
+                    f:command: {}
+                  f:failureThreshold: {}
+                  f:initialDelaySeconds: {}
+                  f:periodSeconds: {}
+                  f:successThreshold: {}
+                  f:timeoutSeconds: {}
+                f:name: {}
+                f:ports:
+                  .: {}
+                  k:{"containerPort":2181,"protocol":"TCP"}:
+                    .: {}
+                    f:containerPort: {}
+                    f:name: {}
+                    f:protocol: {}
+                  k:{"containerPort":2888,"protocol":"TCP"}:
+                    .: {}
+                    f:containerPort: {}
+                    f:name: {}
+                    f:protocol: {}
+                  k:{"containerPort":3888,"protocol":"TCP"}:
+                    .: {}
+                    f:containerPort: {}
+                    f:name: {}
+                    f:protocol: {}
+                f:readinessProbe:
+                  .: {}
+                  f:exec:
+                    .: {}
+                    f:command: {}
+                  f:failureThreshold: {}
+                  f:initialDelaySeconds: {}
+                  f:periodSeconds: {}
+                  f:successThreshold: {}
+                  f:timeoutSeconds: {}
+                f:resources:
+                  .: {}
+                  f:requests:
+                    .: {}
+                    f:cpu: {}
+                    f:memory: {}
+                f:securityContext:
+                  .: {}
+                  f:runAsUser: {}
+                f:terminationMessagePath: {}
+                f:terminationMessagePolicy: {}
+                f:volumeMounts:
+                  .: {}
+                  k:{"mountPath":"/bitnami/zookeeper"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+            f:dnsPolicy: {}
+            f:initContainers:
+              .: {}
+              k:{"name":"volume-permissions"}:
+                .: {}
+                f:args: {}
+                f:command: {}
+                f:image: {}
+                f:imagePullPolicy: {}
+                f:name: {}
+                f:resources: {}
+                f:securityContext:
+                  .: {}
+                  f:runAsUser: {}
+                f:terminationMessagePath: {}
+                f:terminationMessagePolicy: {}
+                f:volumeMounts:
+                  .: {}
+                  k:{"mountPath":"/bitnami/zookeeper"}:
+                    .: {}
+                    f:mountPath: {}
+                    f:name: {}
+            f:restartPolicy: {}
+            f:schedulerName: {}
+            f:securityContext:
+              .: {}
+              f:fsGroup: {}
+            f:serviceAccount: {}
+            f:serviceAccountName: {}
+            f:terminationGracePeriodSeconds: {}
+        f:updateStrategy:
+          f:type: {}
+        f:volumeClaimTemplates: {}
+    manager: Go-http-client
+    operation: Update
+    time: "2021-01-03T01:24:52Z"
+  - apiVersion: apps/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        f:collisionCount: {}
+        f:currentReplicas: {}
+        f:currentRevision: {}
+        f:observedGeneration: {}
+        f:readyReplicas: {}
+        f:replicas: {}
+        f:updateRevision: {}
+        f:updatedReplicas: {}
+    manager: kube-controller-manager
+    operation: Update
+    time: "2021-01-03T01:25:02Z"
+  name: zookeeper
+  namespace: kafka
+  resourceVersion: "243080"
+  uid: 922da116-654a-4d3a-9cab-f925e118d47c
+spec:
+  podManagementPolicy: Parallel
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: zookeeper
+      app.kubernetes.io/instance: zookeeper
+      app.kubernetes.io/name: zookeeper
+  serviceName: zookeeper-headless
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/component: zookeeper
+        app.kubernetes.io/instance: zookeeper
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: zookeeper
+        helm.sh/chart: zookeeper-6.3.0
+      name: zookeeper
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: zookeeper
+                  app.kubernetes.io/instance: zookeeper
+                  app.kubernetes.io/name: zookeeper
+              namespaces:
+              - kafka
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - command:
+        - bash
+        - -ec
+        - |
+          # Execute entrypoint as usual after obtaining ZOO_SERVER_ID
+          # check ZOO_SERVER_ID in persistent volume via myid
+          # if not present, set based on POD hostname
+          if [[ -f "/bitnami/zookeeper/data/myid" ]]; then
+            export ZOO_SERVER_ID="$(cat /bitnami/zookeeper/data/myid)"
+          else
+            HOSTNAME=`hostname -s`
+            if [[ $HOSTNAME =~ (.*)-([0-9]+)$ ]]; then
+              ORD=${BASH_REMATCH[2]}
+              export ZOO_SERVER_ID=$((ORD + 1 ))
+            else
+              echo "Failed to get index from hostname $HOST"
+              exit 1
+            fi
+          fi
+          exec /entrypoint.sh /bootstrap.sh
+        env:
+        - name: ZOO_DATA_LOG_DIR
+        - name: ZOO_PORT_NUMBER
+          value: "2181"
+        - name: ZOO_TICK_TIME
+          value: "2000"
+        - name: ZOO_INIT_LIMIT
+          value: "10"
+        - name: ZOO_SYNC_LIMIT
+          value: "5"
+        - name: ZOO_MAX_CLIENT_CNXNS
+          value: "60"
+        - name: ZOO_4LW_COMMANDS_WHITELIST
+          value: srvr, mntr, ruok
+        - name: ZOO_LISTEN_ALLIPS_ENABLED
+          value: "no"
+        - name: ZOO_AUTOPURGE_INTERVAL
+          value: "0"
+        - name: ZOO_AUTOPURGE_RETAIN_COUNT
+          value: "3"
+        - name: ZOO_MAX_SESSION_TIMEOUT
+          value: "40000"
+        - name: ZOO_SERVERS
+          value: zookeeper-0.zookeeper-headless.kafka.svc.cluster.local:2888:3888::1
+        - name: ZOO_ENABLE_AUTH
+          value: "no"
+        - name: ZOO_HEAP_SIZE
+          value: "1024"
+        - name: ZOO_LOG_LEVEL
+          value: ERROR
+        - name: ALLOW_ANONYMOUS_LOGIN
+          value: "yes"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        image: docker.io/bitnami/zookeeper:3.6.2-debian-10-r100
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - echo "ruok" | timeout 2 nc -w 2 localhost 2181 | grep imok
+          failureThreshold: 6
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: zookeeper
+        ports:
+        - containerPort: 2181
+          name: client
+          protocol: TCP
+        - containerPort: 2888
+          name: follower
+          protocol: TCP
+        - containerPort: 3888
+          name: election
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - echo "ruok" | timeout 2 nc -w 2 localhost 2181 | grep imok
+          failureThreshold: 6
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          runAsUser: 1001
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /bitnami/zookeeper
+          name: data
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - -R
+        - 1001:1001
+        - /bitnami/zookeeper
+        command:
+        - chown
+        image: docker.io/bitnami/minideb:buster
+        imagePullPolicy: Always
+        name: volume-permissions
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /bitnami/zookeeper
+          name: data
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1001
+      serviceAccount: default
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+      storageClassName: nfs-csi
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+status:
+  collisionCount: 0
+  currentReplicas: 1
+  currentRevision: zookeeper-777dc654cc
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updateRevision: zookeeper-777dc654cc
+  updatedReplicas: 1

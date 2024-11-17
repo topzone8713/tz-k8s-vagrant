@@ -1,0 +1,112 @@
+global:
+  enabled: true
+  tlsDisable: true
+  extraEnvironmentVars:
+    VAULT_CACERT: /vault/userconfig/vault-tls/vault.ca
+
+#injector:
+#  enabled: true
+#  certs:
+#    secretName: vault-tls
+#    #caBundle: "**enter string base64 of vault.ca**"
+#    certName: vault.crt
+#    keyName: vault.key
+#  image:
+#    repository: "hashicorp/vault-k8s"
+#    tag: "latest"
+#
+#  resources:
+#      requests:
+#        memory: 256Mi
+#        cpu: 250m
+#      limits:
+#        memory: 256Mi
+#        cpu: 250m
+#  nodeSelector: |
+#    team: devops
+#    environment: consul
+
+server:
+#  dev:
+#    enabled: true
+  image:
+    repository: "hashicorp/vault"
+    tag: "1.9.0"
+#  extraSecretEnvironmentVars:
+#    - envName: AWS_ACCESS_KEY_ID
+#      secretName: eks-creds
+#      secretKey: AWS_ACCESS_KEY_ID
+#    - envName: AWS_SECRET_ACCESS_KEY
+#      secretName: eks-creds
+#      secretKey: AWS_SECRET_ACCESS_KEY
+
+  resources:
+    requests:
+      memory: "400Mi"
+      cpu: 200m
+    limits:
+      memory: "500Mi"
+      cpu: 500m
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+
+  extraVolumes:
+  - type: secret
+    name: vault-tls
+
+  auditStorage:
+    enabled: true
+    storageClass: nfs-client
+    size: 1Gi
+
+  dataStorage:
+    enabled: true
+    storageClass: nfs-client
+    size: 1Gi
+
+  standalone:
+    enabled: false
+
+#  nodeSelector: |
+#    team: devops
+#    environment: consul
+
+  ha:
+    enabled: true
+    replicas: 2
+    raft:
+      enabled: false
+#      setNodeId: true
+
+#      tls_cert_file = "/vault/userconfig/vault-tls/vault.crt"
+#      tls_key_file  = "/vault/userconfig/vault-tls/vault.key"
+#      tls_client_ca_file = "/vault/userconfig/vault-tls/vault.ca"
+
+  config: |
+    ui = true
+
+    listener "tcp" {
+      address = "[::]:8200"
+      cluster_address = "[::]:8201"
+    }
+    storage "consul" {
+      path = "vault"
+      address = "consul-server.consul.svc.cluster.local:8500"
+    }
+    service_registration "kubernetes" {}
+#    seal "awskms" {
+#      region     = "AWS_REGION"
+#      kms_key_id = "VAULT_KMS_KEY"
+#    }
+
+ui:
+  enabled: true
+#  serviceType: "LoadBalancer"
+  serviceType: NodePort
+  serviceNodePort: null
+  externalPort: 8200

@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-deployed.slack: devops-alarm-testing
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: devops-alarm-testing
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: devops-alarm-testing
+    notifications.argoproj.io/subscribe.on-sync-running.slack: devops-alarm-testing
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: devops-alarm-testing
+  name: devops-demo
+  namespace: argocd
+spec:
+  project: devops
+  source:
+    repoURL: https://github.com/doohee323/tz-argocd-repo.git
+    path: devops-demo/dev
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devops
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+      allowEmpty: true
