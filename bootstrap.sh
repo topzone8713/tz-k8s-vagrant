@@ -47,11 +47,15 @@ fi
 
 if [[ "${EVENT}" == "up" ]]; then
   vagrant ${EVENT} --provider=virtualbox
-  vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+  if [[ "${A_ENV}" == "M" ]]; then
+    vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+  fi
 else
   if [[ "${PROVISION}" == "y" ]]; then
-    echo vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
-    vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+    if [[ "${A_ENV}" == "M" ]]; then
+      echo vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+    fi
   else
     vagrant ${EVENT}
   fi
@@ -60,7 +64,6 @@ fi
 #vagrant kube-master -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'
 
 for item in "${PROJECTS[@]}"; do
-  echo "vagrant ssh ${item} -c ifconfig | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'"
   IP=`vagrant ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
   echo ${item} ansible_host=${IP} ip=${IP} ansible_user=root ansible_ssh_private_key_file=/root/.ssh/tz_rsa ansible_ssh_extra_args='-o StrictHostKeyChecking=no' ansible_port=22 >> info
 done
@@ -68,8 +71,6 @@ for item in "${PROJECTS[@]}"; do
   IP=`vagrant ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
   echo ${IP}   ${item} >> info
 done
-
-mv Vagrantfile.bak Vagrantfile
 
 exit 0
 
