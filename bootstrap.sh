@@ -4,6 +4,7 @@
 
 WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd ${WORKING_DIR}
+echo "WORKING_DIR: ${WORKING_DIR}"
 
 PROVISION=''
 if [[ "$1" == "halt" ]]; then
@@ -28,7 +29,7 @@ if [ ! -f .ssh/${MYKEY} ]; then
 fi
 
 cp -Rf Vagrantfile Vagrantfile.bak
-EVENT=`vagrant status | grep kube-master | grep 'not created'`
+EVENT=`vagrant status | grep -E 'kube-master|kube-slave-1' | grep 'not created'`
 if [[ "${EVENT}" != "" ]]; then
   EVENT='up'
 else
