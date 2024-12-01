@@ -22,7 +22,7 @@ controller:
   tag: "lts-jdk11"
   tagLabel: jdk11
   imagePullPolicy: "Always"
-  imagePullSecretName:
+  imagePullSecretName: tz-registrykey
   # Optionally configure lifetime for controller-container
   lifecycle:
     postStart:
@@ -90,7 +90,7 @@ controller:
   # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
   # jenkinsUrlProtocol: "https"
   # If you are not using the provided ingress you can specify `controller.jenkinsUrl` to change the url definition.
-  # jenkinsUrl: "jenkins.devops.shoptoolstest.co.kr"
+  # jenkinsUrl: "jenkins.devops.topzone-k8s.topzone.me"
   # If you set this prefix and use ingress controller then you might want to set the ingress path below
   # jenkinsUriPrefix: "/jenkins"
   # Enable pod security context (must be `true` if podSecurityContextOverride, runAsUser or fsGroup are set)
@@ -242,27 +242,147 @@ controller:
 
   # List of plugins to be install during Jenkins controller start
   installPlugins:
-    - kubernetes:3802.vb_b_600831fcb_3
-    - kubernetes-cli:1.10.0
-    - greenballs:1.15.1
-    - docker-plugin:1.2.2
-    - docker-workflow:1.26
-    - workflow-aggregator:2.6
-    - git:5.0.0
-    - github:1.33.1
-    - github-branch-source:2.10.2
-    - ws-cleanup:0.44
-    - simple-theme-plugin:0.6
-    - matrix-auth:3.1.6
-    - pipeline-github-lib:38.v445716ea_edda_
-    - workflow-scm-step:400.v6b_89a_1317c9a_
-    - blueocean:1.27.0
-    - timestamper:1.21
-    - google-login:1.7
-    - role-strategy:587.v2872c41fa_e51
-    - hashicorp-vault-plugin:359.v2da_3b_45f17d5
+    - git:5.2.0
+    - workflow-cps-global-lib:609.vd95673f149b_b
+    - javax-mail-api:1.6.2-9
+    - snakeyaml-api:2.2-111.vc6598e30cc65
+    - sse-gateway:1.26
+    - pipeline-graph-analysis:202.va_d268e64deb_3
+    - blueocean-events:1.27.6
+    - authentication-tokens:1.53.v1c90fd9191a_b_
+    - plain-credentials:143.v1b_df8b_d3b_e48
+    - workflow-step-api:639.v6eca_cd8c04a_a_
+    - blueocean-i18n:1.27.6
+    - echarts-api:5.4.0-5
+    - bitbucket:223.vd12f2bca5430
+    - javax-activation-api:1.2.0-6
+    - blueocean-git-pipeline:1.27.6
+    - apache-httpcomponents-client-5-api:5.2.1-1.0
+    - blueocean-pipeline-editor:1.27.6
+    - github:1.37.3
+    - kubernetes:4029.v5712230ccb_f8
+    - kubernetes-client-api:6.8.1-224.vd388fca_4db_3b_
+    - pipeline-stage-step:305.ve96d0205c1c6
+    - trilead-api:2.84.v72119de229b_7
+    - script-security:1275.v23895f409fb_d
+    - global-slack-notifier:1.5
+    - blueocean-pipeline-scm-api:1.27.6
+    - bitbucket-push-and-pull-request:2.8.4
+    - blueocean-display-url:2.4.2
+    - ssh-slaves:2.916.vd17b_43357ce4
+    - jakarta-mail-api:2.0.1-3
+    - handy-uri-templates-2-api:2.1.8-22.v77d5b_75e6953
+    - job-dsl:1.85
+    - matrix-auth:3.2
+    - sshd:3.312.v1c601b_c83b_0e
+    - build-user-vars-plugin:1.9
+    - workflow-support:848.v5a_383b_d14921
+    - jdk-tool:73.vddf737284550
+    - git-client:4.4.0
+    - jaxb:2.3.8-1
+    - kubernetes-credentials:0.11
+    - pipeline-model-definition:2.2144.v077a_d1928a_40
+    - generic-webhook-trigger:1.87.0
+    - workflow-aggregator:596.v8c21c963d92d
+    - atlassian-bitbucket-server-integration:3.6.0
+    - blueocean-core-js:1.27.6
+    - junit:1217.v4297208a_a_b_ce
+    - pipeline-milestone-step:111.v449306f708b_7
+    - jsch:0.2.8-65.v052c39de79b_2
+    - cloudbees-bitbucket-branch-source:832.v43175a_425ea_6
+    - mina-sshd-api-common:2.10.0-69.v28e3e36d18eb_
+    - metrics:4.2.18-442.v02e107157925
+    - scm-api:676.v886669a_199a_a_
+    - bouncycastle-api:2.29
+    - data-tables-api:1.13.5-1
+    - durable-task:523.va_a_22cf15d5e0
+    - workflow-multibranch:756.v891d88f2cd46
+    - pubsub-light:1.17
+    - workflow-cps:3787.v8f5dcd14a_fa_c
+    - timestamper:1.26
+    - docker-plugin:1.5
+    - commons-text-api:1.11.0-95.v22a_d30ee5d36
+    - instance-identity:173.va_37c494ec4e5
+    - pipeline-groovy-lib:685.v8ee9ed91d574
+    - cloud-stats:320.v96b_65297a_4b_b_
+    - blueocean-jwt:1.27.6
+    - matrix-project:808.v5a_b_5f56d6966
+    - ws-cleanup:0.45
+    - blueocean-bitbucket-pipeline:1.27.6
+    - token-macro:384.vf35b_f26814ec
+    - ssh-credentials:308.ve4497b_ccd8f4
+    - blueocean-commons:1.27.6
     - hashicorp-vault-pipeline:1.4
-    - slack:631.v40deea_40323b
+    - jenkins-design-language:1.27.6
+    - jquery3-api:3.7.0-1
+    - pipeline-stage-tags-metadata:2.2144.v077a_d1928a_40
+    - pipeline-model-api:2.2144.v077a_d1928a_40
+    - role-strategy:689.v731678c3e0eb_
+    - pipeline-github-lib:42.v0739460cda_c4
+    - github-api:1.314-431.v78d72a_3fe4c3
+    - blueocean-personalization:1.27.6
+    - cloudbees-folder:6.848.ve3b_fd7839a_81
+    - workflow-job:1326.ve643e00e9220
+    - pipeline-build-step:505.v5f0844d8d126
+    - caffeine-api:3.1.8-133.v17b_1ff2e0599
+    - jjwt-api:0.11.5-77.v646c772fddb_0
+    - ionicons-api:56.v1b_1c8c49374e
+    - variant:60.v7290fc0eb_b_cd
+    - google-login:1.8
+    - display-url-api:2.3.9
+    - pipeline-model-extensions:2.2144.v077a_d1928a_40
+    - pipeline-rest-api:2.33
+    - pipeline-stage-view:2.33
+    - blueocean-rest-impl:1.27.6
+    - command-launcher:107.v773860566e2e
+    - commons-lang3-api:3.13.0-62.v7d18e55f51e2
+    - plugin-util-api:3.3.0
+    - greenballs:1.15.1
+    - jackson2-api:2.15.2-350.v0c2f3f8fc595
+    - docker-java-api:3.3.1-79.v20b_53427e041
+    - mercurial:1260.vdfb_723cdcc81
+    - docker-workflow:572.v950f58993843
+    - blueocean-config:1.27.6
+    - blueocean-pipeline-api-impl:1.27.6
+    - workflow-scm-step:415.v434365564324
+    - simple-theme-plugin:160.vb_76454b_67900
+    - workflow-durable-task-step:1289.v4d3e7b_01546b_
+    - okhttp-api:4.11.0-157.v6852a_a_fa_ec11
+    - htmlpublisher:1.32
+    - font-awesome-api:6.4.0-2
+    - jakarta-activation-api:2.0.1-3
+    - prometheus:2.3.1
+    - nodejs:1.6.1
+    - blueocean-rest:1.27.6
+    - sonar:2.15
+    - mailer:463.vedf8358e006b_
+    - antisamy-markup-formatter:162.v0e6ec0fcfcf6
+    - branch-api:2.1128.v717130d4f816
+    - favorite:2.4.3
+    - blueocean-dashboard:1.27.6
+    - workflow-basic-steps:1042.ve7b_140c4a_e0c
+    - github-branch-source:1734.v8a_ed3a_653490
+    - blueocean-github-pipeline:1.27.6
+    - hashicorp-vault-plugin:360.v0a_1c04cf807d
+    - blueocean:1.27.6
+    - checks-api:2.0.1
+    - email-ext:2.100
+    - credentials:1271.v54b_1c2c6388a_
+    - apache-httpcomponents-client-4-api:4.5.14-208.v438351942757
+    - kubernetes-cli:1.12.1
+    - pipeline-input-step:477.v339683a_8d55e
+    - lockable-resources:1185.v0c528656ce04
+    - credentials-binding:631.v861c06d062b_4
+    - resource-disposer:0.23
+    - blueocean-web:1.27.6
+    - docker-commons:439.va_3cb_0a_6a_fb_29
+    - workflow-api:1267.vd9b_a_ddd9eb_47
+    - slack:684.v833089650554
+    - bootstrap5-api:5.3.0-1
+    - config-file-provider:953.v0432a_802e4d2
+    - mina-sshd-api-core:2.10.0-69.v28e3e36d18eb_
+    - structs:337.v1b_04ea_4df7c8
+    - git-server:99.va_0826a_b_cdfa_d
 
   # Set to false to download the minimum required version of all dependencies.
   installLatestPlugins: true
@@ -494,7 +614,7 @@ controller:
 #    # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
 #    # path: "/jenkins"
 #    # configures the hostname e.g. jenkins.example.com
-#    hostName: jenkins.devops.shoptoolstest.co.kr
+#    hostName: jenkins.devops.topzone-k8s.topzone.me
 
   # often you want to have your controller all locked down and private
   # but you still want to get webhooks from your SCM
@@ -658,7 +778,7 @@ agent:
   nodeUsageMode: "NORMAL"
   customJenkinsLabels: []
   # name of the secret to be used for image pulling
-  imagePullSecretName:
+  imagePullSecretName: tz-registrykey
   componentName: "jenkins-agent"
   websocket: true
   privileged: false
@@ -685,7 +805,10 @@ agent:
   # Allowed types are: ConfigMap, EmptyDir, HostPath, Nfs, PVC, Secret
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes
-  volumes: []
+  volumes:
+    - type: HostPath
+      hostPath: /var/run/docker.sock
+      mountPath: /var/run/docker.sock
   # - type: ConfigMap
   #   configMapName: myconfigmap
   #   mountPath: /var/myapp/myconfigmap
@@ -858,7 +981,7 @@ persistence:
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined (the default) or set to null, no storageClassName spec is
-  ##   set, choosing the default provisioner.  (nfs-client on AWS, standard on
+  ##   set, choosing the default provisioner.  (local-path on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
   storageClass: nfs-client
@@ -900,7 +1023,7 @@ serviceAccount:
   # The name of the service account is autogenerated by default
   name: jenkins
   annotations: {}
-  imagePullSecretName:
+  imagePullSecretName: tz-registrykey
 
 serviceAccountAgent:
   # Specifies whether a ServiceAccount should be created
@@ -909,7 +1032,7 @@ serviceAccountAgent:
   # If not set and create is true, a name is generated using the fullname template
   name:
   annotations: {}
-  imagePullSecretName:
+  imagePullSecretName: tz-registrykey
 
 ## Backup cronjob configuration
 ## Ref: https://github.com/maorfr/kube-tasks
@@ -929,22 +1052,22 @@ backup:
     annotations: {}
     # Example for authorization to AWS S3 using kube2iam or IRSA
     # Can also be done using environment variables
-#    iam.amazonaws.com/role: "jenkins-k8s_project-role"
+    iam.amazonaws.com/role: "jenkins-k8s_project-role"
     # "eks.amazonaws.com/role-arn": "arn:aws:iam::123456789012:role/jenkins-backup"
   # Set this to terminate the job that is running/failing continously and set the job status to "Failed"
   activeDeadlineSeconds: ""
   image:
     repository: "maorfr/kube-tasks"
     tag: "0.2.0"
-  imagePullSecretName:
+  imagePullSecretName: tz-registrykey
   # Additional arguments for kube-tasks
   # Ref: https://github.com/maorfr/kube-tasks#simple-backup
   extraArgs: []
   # Add existingSecret for AWS credentials
   existingSecret: {}
 #  jenkinsaws:
-#    awsaccesskey: jenkins_aws_access_key
-#    awssecretkey: jenkins_aws_secret_key
+#    awsaccesskey: "jenkins_aws_access_key"
+#    awssecretkey: "jenkins_aws_secret_key"
   # Add additional environment variables
   # jenkinsgcp:
   ## Use this key for GCP credentials

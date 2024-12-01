@@ -6,55 +6,83 @@
 ```
 
  - get jenkins url
-   => http://jenkins.eks-main.shoptoolstest.co.kr
+   => https://jenkins.default.topzone-k8s.topzone.me
 
  - setting kubernetes plugin
-    http://jenkins.eks-main.shoptoolstest.co.kr/configureClouds/
-   - Name: k8s-aws  
+    https://jenkins.default.topzone-k8s.topzone.me/configureClouds/
+   - Name: topzone-k8s
    - Kubernetes URL: https://kubernetes.default
    - Kubernetes Namespace: jenkins
     * click Test Connection
-   - Jenkins URL: http://jenkins:8080
+   - Jenkins URL: http://jenkins.jenkins.svc.cluster.local
    - Jenkins tunnel: jenkins-agent:50000
 
-   - Add Pod Template
-     Pod Templates: slave1
-     Containers: slave1
-     Docker image: doohee323/jenkins-slave
-
- - add aws & github secrets  
-    - github
-      1. get github's personal access token: ex) d465eaa43af65cececde0a63e310c2bxxxxxxxx
+ - add github secrets  
+    - github-token
+      1. get github's personal access token:
         https://github.com/settings/tokens
-      2. http://jenkins.eks-main.shoptoolstest.co.kr/credentials/store/system/domain/_/newCredentials
+      2. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
         Kind: Username with password
-        Username: ex) doohee323@shoptoolstest.co.kr
-        Password: ex) d465eaa43af65cececde0a63e310c2bxxxxxxxx
-        ID: Github
+        Username: ex) topzone8713@gmail.com
+        Password: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
+        ID: github-token
 
-    - aws
-        http://jenkins.eks-main.shoptoolstest.co.kr/credentials/store/system/domain/_/newCredentials
+    - GITHUP_TOKEN
+      1. get github's personal access token:
+      2. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
         Kind: Secret text
-        Secret: ex) AKIATEMCRY56PRC5xxxxx
-        ID: jenkins-aws-secret-key-id
+        Secret: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
+        ID: GITHUP_TOKEN
 
-        http://jenkins.eks-main.shoptoolstest.co.kr/credentials/store/system/domain/_/newCredentials
-        Kind: Secret text
-        Secret: ex) Kotgln3kkPevmfKxxxxxxxxxxxxxxxxxxx
-        ID: jenkins-aws-secret-access-key
+ - email settings
+    http://localhost:53053/manage/configure
+    Git plugin
+        Global Config user.name Value: 
+        Global Config user.email Value: 
 
-    - jenkins-aws-secret
-      1. get aws access key: ex) 	AKIATEMCRY56PRC5xxxxx
-      2. http://jenkins.eks-main.shoptoolstest.co.kr/credentials/store/system/domain/_/newCredentials
-        Kind: AWS Credentials
-        ID: jenkins-aws-secret
-        Access Key ID: ex) AKIATEMCRY56PRC5xxxxx
-        Secret Access Key: ex) Kotgln3kkPevmfKxxxxxxxxxxxxxxxxxxx
+    - E-mail
+        SMTP Server: smtp.gmail.com
+        Use SMTP Authentication
+        Username: topzone8713@gmail.com
+        Password: xxxxx  => Google "App password"
+        Use SSL: false
+        Use TLS: yes
+        SMTP Port: 587
+        Test configuration by sending test e-mail
+        Test e-mail recipient
 
-    - set a sample project (devops-crawler)
-        http://jenkins.eks-main.shoptoolstest.co.kr/ 
-        - Github
-            - Credentials: ex) doohee323@shoptoolstest.co.kr
-
+    - Extended E-mail Notification
+        SMTP server: smtp.gmail.com
+        SMTP Port: 587
+        new credential: gmail-smtp
+        Use SSL: false
+        Use TLS: yes
 ```
+
+###################################################
+## build a demo app
+###################################################
+
+github fork: https://github.com/topzone8713/tz-devops-admin.git
+https://github.com/aaaaa/tz-devops-admin.git
+
+new project
+Name: tz-devops-admin
+Pipeline: Pipeline script from SCM
+    SCM: Git
+    Repository URL: https://github.com/aaaaa/tz-devops-admin.git
+    credentials: github-token
+    branch: devops
+Script Path: k8s/Jenkinsfile
+
+tz-devops-admin/k8s/Jenkinsfile
+
+    environment {
+        GITHUP_ID = "topzone8713"               =>
+        GIT_URL = "https://github.com/${GITHUP_ID}/tz-devops-admin.git"
+        GIT_BRANCH = "devops"                   =>
+        GIT_COMMITTER_EMAIL = "topzone8713@gmail.com"   =>
+
+        DOMAIN = "topzone.me"                   =>
+        CLUSTER_NAME = "topzone-k8s"
 

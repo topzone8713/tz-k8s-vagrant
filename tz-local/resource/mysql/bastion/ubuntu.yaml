@@ -1,0 +1,33 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: bastion-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bastion
+spec:
+  containers:
+  - name: bastion
+    image: ubuntu:20.04
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
+    volumeMounts:
+    - name: persistent-storage
+      mountPath: /data
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: bastion-pvc
+#  nodeSelector:
+#    team: devops
+#    environment: dev

@@ -3,6 +3,8 @@ global:
   tlsDisable: true
   extraEnvironmentVars:
     VAULT_CACERT: /vault/userconfig/vault-tls/vault.ca
+  metrics:
+    enabled: true
 
 #injector:
 #  enabled: true

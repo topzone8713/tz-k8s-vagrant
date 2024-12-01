@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: tz-py-crawler-job
+spec:
+  schedule: "* * * * *" # run every minute
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: jenkins
+          containers:
+          - name: tz-py-crawler-job
+#            image: slkr/tz-py-crawler:latest
+            image: ${REPOSITORY_TAG}
+#            imagePullPolicy: IfNotPresent
+#            imagePullPolicy: Never
+            args:
+            - /usr/bin/python3
+            - /code/youtube/cli.py
+            - -l
+            - /mnt/list.txt
+            volumeMounts:
+              - name: local-persistent-storage
+                mountPath: /mnt
+          volumes:
+            - name: local-persistent-storage
+              persistentVolumeClaim:
+                claimName: pvc-nfs-dynamic
+          restartPolicy: OnFailure
+
+#            args:
+#            - /usr/bin/python3
+#            - /code/youtube/cli.py
+#            - -l
+#            - /mnt/list.txt
+
+
+#            args:
+#            - /usr/sleep
+#            - "10000000"

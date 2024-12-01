@@ -25,7 +25,7 @@ tz-eks-main/tz-local/resource/monitoring/prometheus/prometheus-values.yaml
 ```
   grafana에서 할당된 팀별 폴더에서 Dashboard 및 pannel을 정의하면서 alert을 정의할 수 있습니다.
   예시)
-  https://grafana.default.eks-main.eks_domain/d/v1XzetqGz/devops-demo?orgId=1
+  https://grafana.default.eks-main.k8s_domain/d/v1XzetqGz/devops-demo?orgId=1
 
   "0. 모니터링할 http url 등록"에서 수집된 url별로, http, https의 에러 코드별로 쿼리하고
   alert 정의를 통해서 담당자에게 메일 발송을 정의합니다.
@@ -53,18 +53,18 @@ tz-eks-main/tz-local/resource/monitoring/prometheus/alertmanager.values
   receivers:
   - name: 'k8s-admin'
     email_configs:
-    - to: doohee323@gmail.com
+    - to: doohee@${k8s_domain}
   - name: 'dev_mail'
     email_configs:
-    - to: doohee323@gmail.com
+    - to: doohee.hong@tz.com
   - name: 'prod_mail'
     email_configs:
-    - to: doohee323@gmail.com
+    - to: topzone8713@gmail.com
 ```
 
 ## 룰 적용 (DevOps가 수행)
 ```
-bash /vagrant/tz-local/resource/monitoring/prometheus/update.sh
+bash /topzone/tz-local/resource/monitoring/prometheus/update.sh
 
 update.sh에는 아래의 작업들이 포함되어 있습니다.
 export NS=monitoring

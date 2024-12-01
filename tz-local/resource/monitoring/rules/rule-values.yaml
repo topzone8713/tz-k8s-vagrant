@@ -1,6 +1,9 @@
 prometheus:
   prometheusSpec:
-    externalUrl: https://prometheus.default.eks_project.eks_domain
+    externalUrl: https://prometheus.default.k8s_project.k8s_domain
+#    nodeSelector:
+#      environment: monitoring
+#      team: devops
 #    podAntiAffinity: ""
 #    podAntiAffinityTopologyKey: kubernetes.io/hostname
 #    affinity:
@@ -23,208 +26,27 @@ prometheus:
           storageClassName: nfs-client
 
     additionalScrapeConfigs:
-#      - job_name: 'linkerd-controller'
-#        kubernetes_sd_configs:
-#        - role: pod
-#          namespaces:
-#            names:
-#            - 'linkerd'
-#            - 'linkerd-viz'
-#        relabel_configs:
-#        - source_labels:
-#          - __meta_kubernetes_pod_container_port_name
-#          action: keep
-#          regex: admin-http
-#        - source_labels: [__meta_kubernetes_pod_container_name]
-#          action: replace
-#          target_label: component
-#      - job_name: 'linkerd-service-mirror'
-#        kubernetes_sd_configs:
-#        - role: pod
-#        relabel_configs:
-#        - source_labels:
-#          - __meta_kubernetes_pod_label_component
-#          - __meta_kubernetes_pod_container_port_name
-#          action: keep
-#          regex: linkerd-service-mirror;admin-http$
-#        - source_labels: [__meta_kubernetes_pod_container_name]
-#          action: replace
-#          target_label: component
-#
-#      - job_name: 'linkerd-proxy'
-#        kubernetes_sd_configs:
-#        - role: pod
-#        relabel_configs:
-#        - source_labels:
-#          - __meta_kubernetes_pod_container_name
-#          - __meta_kubernetes_pod_container_port_name
-#          - __meta_kubernetes_pod_label_linkerd_io_control_plane_ns
-#          action: keep
-#          regex: ^linkerd-proxy;linkerd-admin;linkerd$
-#        - source_labels: [__meta_kubernetes_namespace]
-#          action: replace
-#          target_label: namespace
-#        - source_labels: [__meta_kubernetes_pod_name]
-#          action: replace
-#          target_label: pod
-#        # special case k8s' "job" label, to not interfere with prometheus' "job"
-#        # label
-#        # __meta_kubernetes_pod_label_linkerd_io_proxy_job=foo =>
-#        # k8s_job=foo
-#        - source_labels: [__meta_kubernetes_pod_label_linkerd_io_proxy_job]
-#          action: replace
-#          target_label: k8s_job
-#        # drop __meta_kubernetes_pod_label_linkerd_io_proxy_job
-#        - action: labeldrop
-#          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_job
-#        # __meta_kubernetes_pod_label_linkerd_io_proxy_deployment=foo =>
-#        # deployment=foo
-#        - action: labelmap
-#          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
-#        # drop all labels that we just made copies of in the previous labelmap
-#        - action: labeldrop
-#          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
-#        # __meta_kubernetes_pod_label_linkerd_io_foo=bar =>
-#        # foo=bar
-#        - action: labelmap
-#          regex: __meta_kubernetes_pod_label_linkerd_io_(.+)
-#        # Copy all pod labels to tmp labels
-#        - action: labelmap
-#          regex: __meta_kubernetes_pod_label_(.+)
-#          replacement: __tmp_pod_label_$1
-#        # Take `linkerd_io_` prefixed labels and copy them without the prefix
-#        - action: labelmap
-#          regex: __tmp_pod_label_linkerd_io_(.+)
-#          replacement:  __tmp_pod_label_$1
-#        # Drop the `linkerd_io_` originals
-#        - action: labeldrop
-#          regex: __tmp_pod_label_linkerd_io_(.+)
-#        # Copy tmp labels into real labels
-#        - action: labelmap
-#          regex: __tmp_pod_label_(.+)
-
-#      - job_name: 'tz-kubernetes-pod-job'
-#        scrape_interval: 15s
-#        kubernetes_sd_configs:
-#        - role: pod
-#        relabel_configs:
-#        # only scrape when annotation prometheus.io/scrape: 'true' is set
-#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-#          action: keep
-#          regex: true
-#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-#          action: replace
-#          target_label: __metrics_path__
-#          regex: (.+)
-#        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-#          action: replace
-#          regex: ([^:]+)(?::\d+)?;(\d+)
-#          replacement: $1:$2
-#          target_label: __address__
-#        - action: labelmap
-#          regex: __meta_kubernetes_pod_label_(.+)
-#        - source_labels: [__meta_kubernetes_namespace]
-#          action: replace
-#          target_label: kubernetes_namespace
-#        - source_labels: [__meta_kubernetes_pod_name]
-#          action: replace
-#          target_label: kubernetes_pod_name
-
-
-#      - job_name: 'tz-kubernetes-pod-job'
-#        scrape_interval: 15s
-#        kubernetes_sd_configs:
-#        - role: pod
-#        relabel_configs:
-#        # only scrape when annotation prometheus.io/scrape: 'true' is set
-#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-#          action: keep
-#          regex: true
-#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-#          action: replace
-#          target_label: __metrics_path__
-#          regex: (.+)
-#        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-#          action: replace
-#          regex: ([^:]+)(?::\d+)?;(\d+)
-#          replacement: $1:$2
-#          target_label: __address__
-#        - action: labelmap
-#          regex: __meta_kubernetes_pod_label_(.+)
-#        - source_labels: [__meta_kubernetes_namespace]
-#          action: replace
-#          target_label: kubernetes_namespace
-#        - source_labels: [__meta_kubernetes_pod_name]
-#          action: replace
-#          target_label: kubernetes_pod_name
-#      - job_name: 'tz-kubernetes-service-endpoints'
-#        kubernetes_sd_configs:
-#        - role: endpoints
-#        relabel_configs:
-##          annotation:
-##            prometheus.io/scrape: 'true'
-##            prometheus.io/path: /metrics
-##            prometheus.io/port: '9900'
-##            prometheus.io/scheme: http
-#        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
-#          action: keep
-#          regex: true
-#        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
-#          action: replace
-#          target_label: __metrics_path__
-#          regex: (.+)
-#        - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
-#          action: replace
-#          regex: ([^:]+)(?::\d+)?;(\d+)
-#          replacement: $1:$2
-#          target_label: __address__
-#        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
-#          action: replace
-#          target_label: __scheme__
-#          regex: (https?)
-#        - action: labelmap
-#          regex: __meta_kubernetes_service_label_(.+)
-#        - source_labels: [__meta_kubernetes_namespace]
-#          action: replace
-#          target_label: kubernetes_namespace
-#        - source_labels: [__meta_kubernetes_service_name]
-#          action: replace
-#          target_label: kubernetes_name
-#      - job_name: 'jenkins'
-#        metrics_path: /prometheus/
-#        static_configs:
-#          - targets: ['jenkins.shoptoolstest.co.kr:80']
-#        scheme: http
-#        tls_config:
-#          insecure_skip_verify: true
-#        basic_auth:
-#          username: 'devops'
-#          password: 'admin_password'
-#      - job_name: 'tz-blackbox-exporter'
-#        metrics_path: /probe
-#        params:
-#          module: [http_2xx]
-#        static_configs:
-#          - targets:
-#            - https://grafana.shoptoolstest.co.kr
-#            - https://prometheus.shoptoolstest.co.kr
-#        relabel_configs:
-#          - source_labels: [__address__]
-#            target_label: __param_target
-#          - source_labels: [__param_target]
-#            target_label: instance
-#          - target_label: __address__
-#            replacement: tz-blackbox-exporter-prometheus-blackbox-exporter:9115
-#      - job_name: 'prometheus'
-#        metrics_path: /metrics
-#        static_configs:
-#          - targets:
-#            # jenkins
-#            - 20.10.11.28:9090
-#        scheme: http
-#      - job_name: 'node-exporter'
-#        scrape_interval: 5s
-#        static_configs:
-#          - targets:
-#            # jenkins
-#            - 20.10.11.28:9100
+      - job_name: 'tz-blackbox-exporter'
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        static_configs:
+#            - https://devops-demo.devops-dev.k8s_project.k8s_domain
+          - targets:
+            - https://jenkins.default.k8s_project.k8s_domain
+            - https://argocd.default.k8s_project.k8s_domain
+            - https://grafana.default.k8s_project.k8s_domain
+            - https://prometheus.default.k8s_project.k8s_domain
+            - https://alertmanager.default.k8s_project.k8s_domain
+            - https://vault.default.k8s_project.k8s_domain
+            - https://consul.default.k8s_project.k8s_domain
+#            - https://kiali.istio-system.k8s_project.k8s_domain
+#            - https://jaeger.istio-system.k8s_project.k8s_domain
+            - https://devops-demo-app.devops-dev.k8s_project.k8s_domain
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: tz-blackbox-exporter-prometheus-blackbox-exporter:9115

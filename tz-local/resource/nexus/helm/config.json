@@ -1,0 +1,8 @@
+{
+  "auths": {
+      "http://docker.topzone-k8s.topzone.me/v1/": {
+          "auth": "admin",
+          "email": "topzone8713@gmail.com"
+      }
+  }
+}

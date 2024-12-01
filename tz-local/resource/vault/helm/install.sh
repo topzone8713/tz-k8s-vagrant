@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-#bash /vagrant/tz-local/resource/vault/helm/install.sh
-cd /vagrant/tz-local/resource/vault/helm
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+#bash /topzone/tz-local/resource/vault/helm/install.sh
+cd /topzone/tz-local/resource/vault/helm
 
 #set -x
 shopt -s expand_aliases
@@ -15,10 +16,9 @@ NS=vault
 
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm search repo hashicorp/vault
-helm repo update
 
 helm uninstall vault -n vault
-k delete namespace vault
+#k delete namespace vault
 k create namespace vault
 
 #kubectl -n vault delete secret generic eks-creds
@@ -26,12 +26,13 @@ k create namespace vault
 #    --from-literal=AWS_ACCESS_KEY_ID="${aws_access_key_id}" \
 #    --from-literal=AWS_SECRET_ACCESS_KEY="${aws_secret_access_key}"
 
-bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh vault
+bash /topzone/tz-local/resource/vault/vault-injection/cert.sh vault
 
+#helm show values hashicorp/vault > values2.yaml
 cp -Rf values_cert.yaml values_cert.yaml_bak
 sed -i "s/k8s_project/${k8s_project}/g" values_cert.yaml_bak
-# --version 0.19.0
-helm upgrade --debug --install --reuse-values vault hashicorp/vault -n vault -f values_cert.yaml_bak
+#--reuse-values
+helm upgrade --debug --install vault hashicorp/vault -n vault -f values_cert.yaml_bak --version 0.25.0
 kubectl taint nodes --all node-role.kubernetes.io/master-
 #kubectl rollout restart statefulset.apps/vault -n vault
 
@@ -61,27 +62,29 @@ sleep 60
 # vault operator init
 # vault operator init -key-shares=3 -key-threshold=2
 #export VAULT_ADDR='http://127.0.0.1:8200'
-#export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
-export VAULT_ADDR="https://vault.shoptools.co.kr"
+export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 echo $VAULT_ADDR
 
-mkdir -p /vagrant/resources
-k -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /vagrant/resources/unseal.txt
+echo "#######################################################"
+echo "Initial Root Token vault!!!"
+echo "#######################################################"
+k -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /topzone/resources/unseal.txt
 sleep 20
-vault_token_new=$(cat /vagrant/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
+vault_token_new=$(cat /topzone/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
 echo "#######################################################"
 echo "vault_token_new: ${vault_token_new}"
 echo "#######################################################"
 if [[ "${vault_token_new}" != "" ]]; then
-  touch /vagrant/resources/project
-  awk '!/vault=/' /vagrant/resources/project > tmpfile && mv tmpfile /vagrant/resources/project
-  echo "vault=${vault_token_new}" >> /vagrant/resources/project
-  cp -Rf /vagrant/resources/project ~/.aws/project
+  awk '!/vault=/' /topzone/resources/project > tmpfile && mv tmpfile /topzone/resources/project
+  echo "vault=${vault_token_new}" >> /topzone/resources/project
+  cp -Rf /topzone/resources/project ~/.aws/project
   mkdir -p /home/vagrant/.aws
-  cp -Rf /vagrant/resources/project /home/vagrant/.aws/project
+  cp -Rf /topzone/resources/project /home/topzone/.aws/project
 fi
 
-# vault operator unseal
+exit 0
+
+# Need to unseal vault manually !!!!
 #echo k -n vault exec -ti vault-0 -- vault operator unseal
 #k -n vault exec -ti vault-0 -- vault operator unseal # ... Unseal Key 1
 #k -n vault exec -ti vault-0 -- vault operator unseal # ... Unseal Key 2,3,4,5
@@ -101,17 +104,16 @@ k apply -f values_config.yaml_bak -n vault
 
 sleep 30
 # to NodePort
-
 k -n vault get pods -l app.kubernetes.io/name=vault
 
 #curl http://dooheehong323:31700/ui/vault/secrets
 
-VAULT_VERSION="1.3.1"
-curl -sO https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
-unzip vault_${VAULT_VERSION}_linux_amd64.zip
-rm -Rf vault_${VAULT_VERSION}_linux_amd64.zip
-mv vault /usr/local/bin/
-vault --version
+#VAULT_VERSION="1.3.1"
+#curl -sO https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
+#unzip vault_${VAULT_VERSION}_linux_amd64.zip
+#rm -Rf vault_${VAULT_VERSION}_linux_amd64.zip
+#mv vault /usr/local/bin/
+#vault --version
 
 #vault -autocomplete-install
 #complete -C /usr/local/bin/vault vault
@@ -140,9 +142,7 @@ vault kv metadata delete kv/tz-vault
 # aws key
 vault secrets enable aws
 
-vault write aws/config/root \
-region=ap-southeast-1
-
+vault write aws/config/root
 
 #vault secrets enable -path=kv kv
 
@@ -153,7 +153,7 @@ export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
 vault login xxxx
 vault secrets list -detailed
 
-vault audit enable file file_path=/home/vagrant/tmp/a.log
+vault audit enable file file_path=/home/topzone/tmp/a.log
 
 # path ex)
 secrets
@@ -172,8 +172,8 @@ vault operator raft snapshot save backup.snap
 vault operator raft snapshot restore -force backup.snap
 
 #######################################################################
-" >> /vagrant/info
-cat /vagrant/info
+" >> /topzone/info
+cat /topzone/info
 
 exit 0
 

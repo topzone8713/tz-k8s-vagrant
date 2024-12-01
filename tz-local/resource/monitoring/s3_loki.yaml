@@ -42,9 +42,9 @@ storage_config:
     cache_location: /data/loki/boltdb-shipper-cache
     cache_ttl: 84h
     shared_store: s3
-  aws:
-    s3: s3://aws_access_key_id:aws_secret_access_key@AWS_REGION/devops-loki-eks_project
-    s3forcepathstyle: true
+#  aws:
+#    s3: s3://aws_access_key_id:aws_secret_access_key@AWS_REGION/devops-loki-k8s_project
+#    s3forcepathstyle: true
 chunk_store_config:
   max_look_back_period: 336h
 table_manager:

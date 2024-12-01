@@ -29,9 +29,14 @@ spec:
     - alert: devops-demo-prom
       expr: count(kube_pod_status_phase{pod=~"devops-demo-prom.*", phase="Failed"}) by (namespace) == 0
       for: 1m
+#      annotations:
+#        message: |
+#          `{{ $labels.namespace }}/devops-demo` 서비스가 다운되었습니다!!!!!
       annotations:
-        message: |
-          `{{ $labels.namespace }}/{{ $labels.pod }}` is down.
+        description: |
+          `{{ $labels.namespace }}/devops-demo` 서비스가 다운되었습니다!!!!!
+        runbook_url: https://prometheus.default.k8s_project.k8s_domain/alerts?search=devops-demo
+        summary: devops-demo 서비스 다운
       labels:
         severity: critical
         project: devops-demo
@@ -97,7 +102,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: prom.devops-dev.eks-main-t.shoptoolstest.co.kr
+    - host: prom.devops-dev.k8s_project.k8s_domain
       http:
         paths:
           - path: /

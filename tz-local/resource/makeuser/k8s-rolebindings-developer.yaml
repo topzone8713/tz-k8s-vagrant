@@ -1,0 +1,48 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: topzone-k8s-k8sDev
+subjects:
+- kind: Group
+  name: topzone-k8s-k8sDev
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: devops-developer
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: devops-dev
+  name: devops-dev-binding
+subjects:
+- kind: User
+  name: topzone-k8s-k8sDev
+  apiGroup: rbac.authorization.k8s.io
+- kind: User
+  name: doogee
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: devops-developer
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: lens-metrics
+  name: vendor-read-metrics-dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: read-only-lens-metrics
+subjects:
+- kind: Group
+  name: topzone-k8s-k8sDev
+  apiGroup: rbac.authorization.k8s.io
+- kind: Group
+  name: devops-admin
+  apiGroup: rbac.authorization.k8s.io

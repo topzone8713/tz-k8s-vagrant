@@ -12,7 +12,7 @@ metadata:
 #    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - admin'
 spec:
   rules:
-#  - host: prometheus.eks_domain
+#  - host: prometheus.k8s_domain
 #    http:
 #      paths:
 #      - path: /
@@ -22,7 +22,7 @@ spec:
 #            name: prometheus-kube-prometheus-prometheus
 #            port:
 #              number: 9090
-  - host: prometheus.default.eks_project.eks_domain
+  - host: prometheus.default.k8s_project.k8s_domain
     http:
       paths:
       - path: /
@@ -32,7 +32,7 @@ spec:
             name: prometheus-kube-prometheus-prometheus
             port:
               number: 9090
-  - host: metric.default.eks_project.eks_domain
+  - host: metric.default.k8s_project.k8s_domain
     http:
       paths:
       - path: /
@@ -44,7 +44,7 @@ spec:
               number: 8080
   tls:
     - hosts:
-#        - prometheus.eks_domain
-        - prometheus.default.eks_project.eks_domain
-        - metric.default.eks_project.eks_domain
+#        - prometheus.k8s_domain
+        - prometheus.default.k8s_project.k8s_domain
+        - metric.default.k8s_project.k8s_domain
       secretName: ingress-prometheus-tls

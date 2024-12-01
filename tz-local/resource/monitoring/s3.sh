@@ -5,15 +5,16 @@
 # https://grafana.com/docs/loki/latest/configuration/examples/#3-s3-without-credentials-snippetyaml
 
 source /root/.bashrc
-#bash /vagrant/tz-local/resource/monitoring/s3.sh
-cd /vagrant/tz-local/resource/monitoring
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+#bash /topzone/tz-local/resource/monitoring/s3.sh
+cd /topzone/tz-local/resource/monitoring
 
 #set -x
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 
-eks_project=$(prop 'project' 'project')
-eks_domain=$(prop 'project' 'domain')
+k8s_project=$(prop 'project' 'project')
+k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
 basic_password=$(prop 'project' 'basic_password')
 grafana_goauth2_client_id=$(prop 'project' 'grafana_goauth2_client_id')
@@ -29,7 +30,7 @@ cp -Rf s3_loki.yaml s3_loki.yaml_bak
 sed -i "s/AWS_REGION/${AWS_REGION}/g" s3_loki.yaml_bak
 sed -i "s/aws_access_key_id/${aws_access_key_id}/g" s3_loki.yaml_bak
 sed -i "s/aws_secret_access_key/${aws_secret_access_key}/g" s3_loki.yaml_bak
-sed -i "s/eks_project/${eks_project}/g" s3_loki.yaml_bak
+sed -i "s/k8s_project/${k8s_project}/g" s3_loki.yaml_bak
 
 s3_loki=$(cat s3_loki.yaml_bak | base64 -w0)
 cp s3_loki-secret.yaml s3_loki-secret.yaml_bak

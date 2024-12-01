@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-cd /vagrant/tz-local/resource/ingress_nginx
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+cd /topzone/tz-local/resource/ingress_nginx
 
 NS=$1
 if [[ "${NS}" == "" ]]; then

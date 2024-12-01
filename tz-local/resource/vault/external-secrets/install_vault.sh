@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-#bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
-cd /vagrant/tz-local/resource/vault/external-secrets
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+#bash /topzone/tz-local/resource/vault/external-secrets/install.sh
+cd /topzone/tz-local/resource/vault/external-secrets
 
 k8s_domain=$(prop 'project' 'domain')
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
+k8s_project=$(prop 'project' 'project')
 vault_token=$(prop 'project' 'vault')
 NS=external-secrets
 
@@ -20,13 +21,12 @@ helm upgrade --debug --install external-secrets \
     --set installCRDs=true
 
 #export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-export VAULT_ADDR=https://vault.shoptools.co.kr
-vault login ${vault_token}
+#vault login ${vault_token}
 #vault kv get secret/devops-prod/dbinfo
-vault_tokend=`echo -n ${vault_token} | openssl base64 -A`
+vault_token_en=`echo -n ${vault_token} | openssl base64 -A`
 
-#PROJECTS=(default argocd devops-dev)
-PROJECTS=(devops devops-dev)
+#PROJECTS=(devops-dev)
+PROJECTS=(default argocd devops devops-dev)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     STAGING="dev"
@@ -36,19 +36,12 @@ for item in "${PROJECTS[@]}"; do
       namespace=${project}
     else
       project=${item}-prod
-      project_qa=${item}-qa
+      project_stg=${item}-stg
       STAGING="prod"
       namespace=${item}
     fi
     echo "=====================STAGING: ${STAGING}"
 echo '
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: PROJECT-svcaccount
-  namespace: "NAMESPACE"
----
-
 apiVersion: external-secrets.io/v1beta1
 kind: SecretStore
 metadata:
@@ -57,14 +50,13 @@ metadata:
 spec:
   provider:
     vault:
-      server: "https://vault.shoptools.co.kr"
+      server: "http://vault.default.k8s_project.k8s_domain"
       path: "secret"
       version: "v2"
       auth:
         tokenSecretRef:
           name: "vault-token"
           key: "token"
-
 ---
 apiVersion: v1
 kind: Secret
@@ -79,25 +71,55 @@ data:
     cp secret.yaml secret.yaml_bak
     sed -i "s|PROJECT|${project}|g" secret.yaml_bak
     sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
-    sed -i "s|VAULT_TOKEN|${vault_tokend}|g" secret.yaml_bak
+    sed -i "s|VAULT_TOKEN|${vault_token_en}|g" secret.yaml_bak
     sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
     sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
-
+    kubectl delete -f secret.yaml_bak
     kubectl apply -f secret.yaml_bak
 
+echo '
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: PROJECT-svcaccount
+  namespace: NAMESPACE
+' > account.yaml
+
     if [ "${STAGING}" == "prod" ]; then
+      cp account.yaml account.yaml_bak
+      sed -i "s|PROJECT|${item}|g" account.yaml_bak
+      sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
+      kubectl delete -f account.yaml_bak
+      kubectl apply -f account.yaml_bak
+
       cp secret.yaml secret.yaml_bak
-      sed -i "s|PROJECT|${project_qa}|g" secret.yaml_bak
+      sed -i "s|PROJECT|${project_stg}|g" secret.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
-      sed -i "s|VAULT_TOKEN|${vault_tokend}|g" secret.yaml_bak
+      sed -i "s|VAULT_TOKEN|${vault_token_en}|g" secret.yaml_bak
       sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
       sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
+      kubectl delete -f secret.yaml_bak
       kubectl apply -f secret.yaml_bak
+
+      cp account.yaml account.yaml_bak
+      sed -i "s|PROJECT|${project_stg}|g" account.yaml_bak
+      sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
+      kubectl delete -f account.yaml_bak
+      kubectl apply -f account.yaml_bak
+    else
+      cp account.yaml account.yaml_bak
+      sed -i "s|PROJECT|${project}|g" account.yaml_bak
+      sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
+      kubectl delete -f account.yaml_bak
+      kubectl apply -f account.yaml_bak
     fi
   fi
 done
 
-rm -Rf secret.yaml secret.yaml_bak
+#kubectl create serviceaccount mtown-prod-svcaccount -n mtown
+#kubectl create serviceaccount mtown-dev-svcaccount -n mtown-dev
+
+rm -Rf secret.yaml secret.yaml_bak account.yaml account.yaml_bak
 
 kubectl apply -f test.yaml
 kubectl -n devops describe externalsecret devops-externalsecret
@@ -108,7 +130,7 @@ exit 0
 NAMESPACE=devops
 STAGING=prod
 
-PROJECTS=(kubeconfig_k8s-main-p kubeconfig_k8s-main-t kubeconfig_k8s-main-s kubeconfig_k8s-main-u kubeconfig_k8s-main-c devops.pub devops.pem devops credentials config auth.env ssh_config)
+PROJECTS=(kubeconfig_eks-main-p kubeconfig_topzone-k8s kubeconfig_eks-main-s kubeconfig_topzone-k8s kubeconfig_eks-main-c devops.pub devops.pem devops credentials config auth.env ssh_config)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     bash vault.sh fput ${NAMESPACE}-${STAGING} ${item} ${item}

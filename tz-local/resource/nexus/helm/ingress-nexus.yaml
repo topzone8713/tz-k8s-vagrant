@@ -1,0 +1,38 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nexus
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100g
+spec:
+  rules:
+  - host: docker.default.k8s_project.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sonatype-nexus
+            port:
+              number: 5003
+  - host: nexus.default.k8s_project.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sonatype-nexus
+            port:
+              number: 8080
+  tls:
+    - hosts:
+        - docker.default.k8s_project.k8s_domain
+        - nexus.default.k8s_project.k8s_domain
+      secretName: ingress-nexus-tls

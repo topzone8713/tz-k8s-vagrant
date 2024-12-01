@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-cd /vagrant/tz-local/resource/ingress_nginx
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+cd /topzone/tz-local/resource/ingress_nginx
 
 NS=$1
 if [[ "${NS}" == "" ]]; then
@@ -20,6 +21,26 @@ fi
 shopt -s expand_aliases
 alias k="kubectl -n ${NS} --kubeconfig ~/.kube/config"
 
+#kubectl delete ns ${NS}
+kubectl create ns ${NS}
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+APP_VERSION=4.0.13
+#helm search repo nginx-ingress
+helm uninstall ingress-nginx -n ${NS}
+
+helm upgrade --debug --install --reuse-values ingress-nginx ingress-nginx/ingress-nginx \
+  -f values.yaml --version ${APP_VERSION} -n ${NS}
+
+kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+
+sleep 60
+DEVOPS_ELB=$(kubectl get svc | grep ingress-nginx-controller | grep LoadBalancer | head -n 1 | awk '{print $4}')
+if [[ "${DEVOPS_ELB}" == "" ]]; then
+  echo "No elb! check nginx-ingress-controller with LoadBalancer type!"
+  exit 1
+fi
+sleep 20
 cp -Rf nginx-ingress.yaml nginx-ingress.yaml_bak
 sed -i "s|NS|${NS}|g" nginx-ingress.yaml_bak
 sed -i "s/k8s_project/${k8s_project}/g" nginx-ingress.yaml_bak
@@ -45,7 +66,13 @@ k delete namespace cert-manager
 k create namespace cert-manager
 # Install needed CRDs
 k apply --validate=false -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.crds.yaml
-helm template cert-manager jetstack/cert-manager --namespace cert-manager | kubectl apply -f -
+# --reuse-values
+helm upgrade --debug --install --reuse-values \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --set installCRDs=false \
+  --version v1.10.0
 
 sleep 30
 
@@ -78,13 +105,13 @@ kubectl describe certificate nginx-test-tls -n ${NS}
 kubectl get secrets --all-namespaces | grep nginx-test-tls
 kubectl get certificates --all-namespaces | grep nginx-test-tls
 
-PROJECTS=(default argocd consul vault)
-#PROJECTS=(default devops devops-dev argocd consul vault)
+#PROJECTS=(default)
+PROJECTS=(default devops devops-dev argocd consul vault)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     echo "====================="
     echo ${item}
-    bash /vagrant/tz-local/resource/ingress_nginx/update.sh ${item} ${k8s_project} ${k8s_domain}
+    bash /topzone/tz-local/resource/ingress_nginx/update.sh ${item} ${k8s_project} ${k8s_domain}
   fi
 done
 

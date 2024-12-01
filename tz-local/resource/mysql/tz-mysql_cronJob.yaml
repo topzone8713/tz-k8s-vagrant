@@ -1,0 +1,74 @@
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: tz-py-crawler-job
+spec:
+  schedule: "* * * * *" # run every minute
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+            vault.hashicorp.com/role: "devops-prod"
+            vault.hashicorp.com/agent-inject: "true"
+            vault.hashicorp.com/agent-inject-status: "update"
+            vault.hashicorp.com/agent-inject-secret-aws: "secret/devops-prod/aws"
+#            cat /vault/secrets/aws
+            vault.hashicorp.com/agent-inject-template-aws: |
+              {{ with secret "secret/devops-prod/aws" }}
+              AWS_ACCESS_KEY_ID={{ .Data.data.AWS_ACCESS_KEY_ID }}
+              AWS_SECRET_ACCESS_KEY={{ .Data.data.AWS_SECRET_ACCESS_KEY }}
+              AWS_DEFAULT_REGION={{ .Data.data.AWS_DEFAULT_REGION }}
+              {{ end }}
+        spec:
+          serviceAccountName: devops-svcaccount
+          containers:
+          - name: tz-py-crawler-job
+            image: aws_account_id.dkr.ecr.AWS_REGION.amazonaws.com/tz-mysql-snapshot:11
+#            imagePullPolicy: IfNotPresent
+            command: [ "/app/run.sh", "vol-0ccc1a959af735003" ]
+            volumeMounts:
+              - name: script
+                mountPath: /app
+          volumes:
+          - name: script
+            configMap:
+              name: tz-mysql-snapshot-script
+              defaultMode: 0777
+#          imagePullSecrets:
+#            - name: docker-hub-config
+          restartPolicy: Never
+
+
+#---
+#
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: tz-mysql-snapshot-script
+#  labels:
+#    app: tz-mysql-job
+#data:
+#  run.sh: |
+#    #!/bin/sh
+#
+#    echo $1 > /aaa
+#    VOLUME_ID=$1
+#    DESC="aaa"
+#
+#    function prop {
+#        grep "${2}" "/home/topzone/.aws/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
+#    }
+#    export AWS_ACCESS_KEY_ID=$(prop 'config' 'AWS_ACCESS_KEY_ID')
+#    export AWS_SECRET_ACCESS_KEY=$(prop 'config' 'AWS_SECRET_ACCESS_KEY')
+#    export AWS_DEFAULT_REGION=$(prop 'config' 'AWS_DEFAULT_REGION')
+#    VOLUME_ID=vol-0ccc1a959af735003
+#    DESC="k8s mysql volume snapshot"
+#
+#    aws ec2 create-snapshot \
+#      --volume-id ${VOLUME_ID} \
+#      --description ${DESC}
+#
+#---

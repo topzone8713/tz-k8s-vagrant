@@ -1,7 +1,0 @@
-
-path "auth/userpass/users/{{identity.entity.aliases.auth_userpass_13083179.name}}" {
-  capabilities = [ "update" ]
-  allowed_parameters = {
-    "password" = []
-  }
-}

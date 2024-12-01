@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-#bash /vagrant/tz-local/resource/monitoring/backup.sh
-cd /vagrant/tz-local/resource/monitoring
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+#bash /topzone/tz-local/resource/monitoring/backup.sh
+cd /topzone/tz-local/resource/monitoring
 
-eks_project=$(prop 'project' 'project')
-eks_domain=$(prop 'project' 'domain')
+k8s_project=$(prop 'project' 'project')
+k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
 
-# curl -X POST -H "Content-Type: application/json" -d '{"name":"admin-key", "role": "Admin"}' https://admin:${admin_password}@grafana.default.${eks_project}.${eks_domain}/api/auth/keys
+# curl -X POST -H "Content-Type: application/json" -d '{"name":"admin-key", "role": "Admin"}' https://admin:${admin_password}@grafana.default.${k8s_project}.${k8s_domain}/api/auth/keys
 
 #set -x
 shopt -s expand_aliases
@@ -18,7 +19,7 @@ cp -Rf grafanaSettings.json grafana-backup-tool/grafana_backup/conf
 
 cd grafana-backup-tool
 pip install --user virtualenv
-export PATH=$PATH:/home/vagrant/.local/bin
+export PATH=$PATH:/home/topzone/.local/bin
 virtualenv --python=python3.8 .venv
 source .venv/bin/activate
 pip install .

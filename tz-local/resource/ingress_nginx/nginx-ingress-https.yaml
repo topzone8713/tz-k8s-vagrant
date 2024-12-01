@@ -50,7 +50,7 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   rules:
-  - host: test2.NS.k8s_project.k8s_domain
+  - host: test.NS.k8s_project.k8s_domain
     http:
       paths:
       - path: /
@@ -62,5 +62,5 @@ spec:
               number: 80
   tls:
     - hosts:
-        - test2.NS.k8s_project.k8s_domain
+        - test.NS.k8s_project.k8s_domain
       secretName: nginx-test-tls

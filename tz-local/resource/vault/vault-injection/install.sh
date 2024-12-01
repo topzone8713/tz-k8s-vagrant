@@ -1,27 +1,25 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-#bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
-cd /vagrant/tz-local/resource/vault/vault-injection
+function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+#bash /topzone/tz-local/resource/vault/vault-injection/install.sh
+cd /topzone/tz-local/resource/vault/vault-injection
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 VAULT_TOKEN=$(prop 'project' 'vault')
 
-#export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
-export VAULT_ADDR="https://vault.shoptools.co.kr"
+export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 vault login ${VAULT_TOKEN}
 
 curl -s ${VAULT_ADDR}/v1/sys/seal-status | jq
-#EXTERNAL_VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
-#EXTERNAL_VAULT_ADDR="https://vault.shoptools.co.kr"
-#echo $EXTERNAL_VAULT_ADDR
+EXTERNAL_VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
+echo $EXTERNAL_VAULT_ADDR
 
-bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh
+bash /topzone/tz-local/resource/vault/vault-injection/cert.sh
 kubectl get csr -o name | xargs kubectl certificate approve
 
 vault secrets enable -path=secret/ kv
-vault auth disable kubernetes
 vault auth enable kubernetes
 
 #kubectl -n vault create serviceaccount vault-auth
@@ -60,10 +58,10 @@ vault write auth/kubernetes/config \
         issuer="https://kubernetes.default.svc.cluster.local"
 #        disable_iss_validation=true
 
-#export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
-export VAULT_ADDR=https://vault.shoptools.co.kr
-vault write auth/userpass/users/doogee323 password=1111111 policies=tz-vault-devops
-vault login -method=userpass username=doogee323 password=1111111
+export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
+#export VAULT_ADDR=http://vault.vault.svc.cluster.local:8200
+vault write auth/userpass/users/topzone8713 password=1111111 policies=tz-vault-devops
+vault login -method=userpass username=topzone8713 password=1111111
 
 ## ********* in vault pod *********
 #VAULT_ADDR=http://vault.vault.svc.cluster.local:8200
