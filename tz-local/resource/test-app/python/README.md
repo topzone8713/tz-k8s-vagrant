@@ -7,7 +7,7 @@ ORGANIZATION_NAME: doohee323
 YOUR_DOCKERHUB_USERNAME: doohee323
 
 ## git clone a test project
-mkdir -p tz-k8s-vagrant/projects
+mkdir -p tz-k8s-topzone/projects
 git clone https://github.com/doohee323/tz-py-crawlery.git
 
 ## Add a Credentials for Github

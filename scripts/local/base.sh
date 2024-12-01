@@ -6,22 +6,22 @@
 # k8s base
 ##################################################################
 
-if [ -d /vagrant ]; then
-  cd /vagrant
+if [ -d /topzone ]; then
+  cd /topzone
 fi
 
 MYKEY=tz_rsa
-cp -Rf /vagrant/.ssh/${MYKEY} /root/.ssh/${MYKEY}
-cp -Rf /vagrant/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
-cp /home/vagrant/.ssh/authorized_keys /root/.ssh/authorized_keys
+cp -Rf /topzone/.ssh/${MYKEY} /root/.ssh/${MYKEY}
+cp -Rf /topzone/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
+cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
 cat /root/.ssh/${MYKEY}.pub >> /root/.ssh/authorized_keys
 chown -R root:root /root/.ssh \
   chmod -Rf 400 /root/.ssh
-rm -Rf /home/vagrant/.ssh \
-  && cp -Rf /root/.ssh /home/vagrant/.ssh \
-  && chown -Rf vagrant:vagrant /home/vagrant/.ssh \
-  && chmod -Rf 700 /home/vagrant/.ssh \
-  && chmod -Rf 600 /home/vagrant/.ssh/*
+rm -Rf /home/topzone/.ssh \
+  && cp -Rf /root/.ssh /home/topzone/.ssh \
+  && chown -Rf topzone:topzone /home/topzone/.ssh \
+  && chmod -Rf 700 /home/topzone/.ssh \
+  && chmod -Rf 600 /home/topzone/.ssh/*
 
 cat <<EOF >> /etc/resolv.conf
 nameserver 1.1.1.1 #cloudflare DNS
@@ -54,10 +54,10 @@ sudo sysctl --system
 #sudo ufw allow 6443
 sudo ufw disable
 
-sudo groupadd vagrant
-sudo useradd -g vagrant -d /home/vagrant -s /bin/bash -m vagrant
+sudo groupadd topzone
+sudo useradd -g topzone -d /home/topzone -s /bin/bash -m topzone
 cat <<EOF > pass.txt
-vagrant:vagrant
+topzone:topzone
 EOF
 sudo chpasswd < pass.txt
 

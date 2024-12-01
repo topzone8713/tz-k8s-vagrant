@@ -3,7 +3,7 @@
 #https://longhorn.io/docs/1.5.1/deploy/install/install-with-helm/
 
 source /root/.bashrc
-cd /vagrant/tz-local/resource/dynamic-provisioning/longhorn
+cd /topzone/tz-local/resource/dynamic-provisioning/longhorn
 
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'

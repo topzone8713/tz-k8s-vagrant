@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-cd /vagrant/tz-local/resource/dynamic-provisioning/nfs
+cd /topzone/tz-local/resource/dynamic-provisioning/nfs
 
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
@@ -40,7 +40,7 @@ helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs
 #k exec nginx-nfs-example -n default -- bash -c "findmnt /var/www -o TARGET,SOURCE,FSTYPE"
 #k delete -f https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/deploy/example/nfs-provisioner/nginx-pod.yaml
 
-cd /vagrant/tz-local/resource/dynamic-provisioning/nfs
+cd /topzone/tz-local/resource/dynamic-provisioning/nfs
 ###############################################################
 # !!! Storage Class Usage (Dynamic Provisioning)
 ###############################################################

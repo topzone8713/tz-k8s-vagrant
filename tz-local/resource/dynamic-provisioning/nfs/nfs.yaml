@@ -27,10 +27,10 @@ spec:
             - name: NFS_SERVER # do not change
               value: 192.168.86.90 # Ip of the NFS SERVER
             - name: NFS_PATH # do not change
-              value: /home/vagrant/data  # path to nfs directory setup
+              value: /home/topzone/data  # path to nfs directory setup
       volumes:
        - name: nfs-provisioner-v # same as volumemouts name
          nfs:
            server: 192.168.86.90
-           path: /home/vagrant/data
+           path: /home/topzone/data
 

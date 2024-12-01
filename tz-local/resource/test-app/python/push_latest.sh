@@ -6,7 +6,7 @@ USERNAME=$1
 PASSWD=$2
 
 cd /var/jenkins_home/workspace/tz-py-crawler_push
-#cd /vagrant/projects/tz-py-crawler
+#cd /topzone/projects/tz-py-crawler
 
 if [[ ! -d 'projects/tz-py-crawler' ]]; then
   mkdir projects
@@ -18,7 +18,7 @@ cd /var/jenkins_home/workspace/tz-py-crawler_push/projects/tz-py-crawler
 
 #vi Dockerfile
 #CMD [ "python", "/code/youtube/youtube/server.py" ]
-sudo chown -Rf vagrant:vagrant /var/run/docker.sock
+sudo chown -Rf topzone:topzone /var/run/docker.sock
 docker login -u="$USERNAME" -p="$PASSWD"
 
 docker rmi tz-py-crawler
@@ -28,7 +28,7 @@ docker tag tz-py-crawler:latest doohee323/tz-py-crawler:latest
 docker push doohee323/tz-py-crawler:latest
 
 # push to local repo
-#sudo chown -Rf vagrant:vagrant /var/run/docker.sock
+#sudo chown -Rf topzone:topzone /var/run/docker.sock
 #export USERNAME=admin
 #export PASSWD=passwordg
 #docker login 192.168.86.90:5000 -u="$USERNAME" -p="$PASSWD"
@@ -37,6 +37,6 @@ docker push doohee323/tz-py-crawler:latest
 
 exit 0
 
-k delete -f /vagrant/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
-k apply -f /vagrant/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
+k delete -f /topzone/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
+k apply -f /topzone/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
 

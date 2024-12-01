@@ -1,13 +1,13 @@
-# tz-k8s-vagrant
+# tz-k8s-topzone
 
 It supports two version of k8s installation in terraform or local VMs.
 to project root directory. 
 
-![Architecture1](./resource/tz-k8s-vagrant-env.png)
+![Architecture1](./resource/tz-k8s-topzone-env.png)
 
 ## -. Features 
 ```
-    -. build a vagrant env
+    -. build a topzone env
     -. install k8s master and nodes
     -. install dashboard
     -. install monitoring (Prometheus, Grafana)
@@ -27,10 +27,10 @@ to project root directory.
 
 ## -. Refer to README.md for each version.
 ```
-    cf) my vagrant's host server priavte ip: 192.168.0.143
+    cf) my topzone's host server priavte ip: 192.168.0.143
 
-    - build a K8S in local vagrant VMs
-        vagrant -> VMs -> k8s -> monitoring -> jenkins -> teat-app build
+    - build a K8S in local topzone VMs
+        topzone -> VMs -> k8s -> monitoring -> jenkins -> teat-app build
         scripts/local/README.md
 ```
 
@@ -39,7 +39,7 @@ to project root directory.
 ``` 
     brew install kubectl
     mkdir -p ~/.kube
-    cp tz-k8s-vagrant/config ~/.kube/config
+    cp tz-k8s-topzone/config ~/.kube/config
     kubectl get nodes
 ```
 

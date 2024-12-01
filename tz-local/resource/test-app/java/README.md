@@ -7,7 +7,7 @@ ORGANIZATION_NAME: my-fleetman-organization
 YOUR_DOCKERHUB_USERNAME: doohee323
 
 ## git clone a test project
-mkdir -p tz-k8s-vagrant/projects
+mkdir -p tz-k8s-topzone/projects
 git clone https://github.com/devinterview-tz/fleetman-api-gateway.git
 
 ## make a project in Jenkins

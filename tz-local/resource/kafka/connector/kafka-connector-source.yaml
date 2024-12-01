@@ -23,7 +23,7 @@ spec:
   storageClassName: postgres-pv-0
   local:
 #    path: /ubuntu/data/postgres     # can't use shared folder
-    path: /home/vagrant/data/postgres
+    path: /home/topzone/data/postgres
   nodeAffinity:
     required:
       nodeSelectorTerms:

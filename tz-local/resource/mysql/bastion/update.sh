@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
 #bash /topzone/tz-local/resource/mysql/install.sh
 cd /topzone/tz-local/resource/mysql/bastion
 
@@ -31,7 +31,7 @@ curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/l
     mv kubectl /usr/bin/kubectl
 
 # 2. upload aws, k8s credentials
-kubectl -n devops-dev cp /root/.aws devops-dev/bastion:/root/.aws
+kubectl -n devops-dev cp /root/.k8s devops-dev/bastion:/root/.k8s
 kubectl -n devops-dev cp /root/.kube devops-dev/bastion:/root/.kube
 kubectl -n devops-dev cp /root/.ssh devops-dev/bastion:/root/.ssh
 

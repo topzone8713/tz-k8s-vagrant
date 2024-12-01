@@ -8,8 +8,8 @@ k taint nodes --all node-role.kubernetes.io/master-
 
 k create namespace kafka
 
-k delete -f /vagrant/tz-local/resource/kafka/storage-local.yaml -n kafka
-k apply -f /vagrant/tz-local/resource/kafka/storage-local.yaml -n kafka
+k delete -f /topzone/tz-local/resource/kafka/storage-local.yaml -n kafka
+k apply -f /topzone/tz-local/resource/kafka/storage-local.yaml -n kafka
 k get pv -n kafka
 k get pvc -n kafka
 k get storageclass -n kafka
@@ -47,20 +47,20 @@ sleep 30
 
 k get all -n kafka
 
-k get statefulset.apps/zookeeper -n kafka -o yaml > /vagrant/tz-local/resource/kafka/zookeeper.yaml
+k get statefulset.apps/zookeeper -n kafka -o yaml > /topzone/tz-local/resource/kafka/zookeeper.yaml
 k delete statefulset.apps/zookeeper -n kafka
-sudo sed -i "s|8Gi|100Mi|g" /vagrant/tz-local/resource/kafka/zookeeper.yaml
-k apply -f /vagrant/tz-local/resource/kafka/zookeeper.yaml -n kafka
+sudo sed -i "s|8Gi|100Mi|g" /topzone/tz-local/resource/kafka/zookeeper.yaml
+k apply -f /topzone/tz-local/resource/kafka/zookeeper.yaml -n kafka
 
-k get statefulset.apps/kafka -n kafka -o yaml > /vagrant/tz-local/resource/kafka/kafka.yaml
+k get statefulset.apps/kafka -n kafka -o yaml > /topzone/tz-local/resource/kafka/kafka.yaml
 k delete statefulset.apps/kafka -n kafka
-sudo sed -i "s|8Gi|100Mi|g" /vagrant/tz-local/resource/kafka/kafka.yaml
-sudo sed -i "s|failureThreshold: 3|failureThreshold: 1|g" /vagrant/tz-local/resource/kafka/kafka.yaml
+sudo sed -i "s|8Gi|100Mi|g" /topzone/tz-local/resource/kafka/kafka.yaml
+sudo sed -i "s|failureThreshold: 3|failureThreshold: 1|g" /topzone/tz-local/resource/kafka/kafka.yaml
 ## for access from external device
-#sudo sed -i "s|INTERNAL\:PLAINTEXT,CLIENT\:PLAINTEXT|INTERNAL\:PLAINTEXT,CLIENT\:PLAINTEXT,EXTERNAL\:PLAINTEXT|g" /vagrant/tz-local/resource/kafka/kafka.yaml
-#sudo sed -i "s|CLIENT\://\:9092|CLIENT\://\:9092,EXTERNAL\://0.0.0.0\:9094|g" /vagrant/tz-local/resource/kafka/kafka.yaml
-#sudo sed -i "s|kafka-headless.kafka.svc.cluster.local\:9092|kafka-headless.kafka.svc.cluster.local\:9092,EXTERNAL\://localhost:9094|g" /vagrant/tz-local/resource/kafka/kafka.yaml
-k apply -f /vagrant/tz-local/resource/kafka/kafka.yaml -n kafka
+#sudo sed -i "s|INTERNAL\:PLAINTEXT,CLIENT\:PLAINTEXT|INTERNAL\:PLAINTEXT,CLIENT\:PLAINTEXT,EXTERNAL\:PLAINTEXT|g" /topzone/tz-local/resource/kafka/kafka.yaml
+#sudo sed -i "s|CLIENT\://\:9092|CLIENT\://\:9092,EXTERNAL\://0.0.0.0\:9094|g" /topzone/tz-local/resource/kafka/kafka.yaml
+#sudo sed -i "s|kafka-headless.kafka.svc.cluster.local\:9092|kafka-headless.kafka.svc.cluster.local\:9092,EXTERNAL\://localhost:9094|g" /topzone/tz-local/resource/kafka/kafka.yaml
+k apply -f /topzone/tz-local/resource/kafka/kafka.yaml -n kafka
 
 # run client
 k delete pod/kafka-client -n kafka
@@ -107,8 +107,8 @@ deleteall /brokers/topics/quickstart-events
 delete /admin/delete_topics/quickstart-events
 
 #######################################################################
-' >> /vagrant/info
-cat /vagrant/info
+' >> /topzone/info
+cat /topzone/info
 
 # 4: Scale Apache Kafka
 #k scale statefulset.apps/zookeeper --replicas=2 -n kafka

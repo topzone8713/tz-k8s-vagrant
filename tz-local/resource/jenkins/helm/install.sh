@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
 cd /topzone/tz-local/resource/jenkins/helm
 
 #set -x
@@ -56,7 +56,7 @@ kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/conf
 
 kubectl -n jenkins delete secret aws-secret
 kubectl -n jenkins create secret generic aws-secret \
-  --from-file=/root/.aws/credentials
+  --from-file=/root/.k8s/credentials
 
 #kubectl cp plugin.txt jenkins/jenkins-0:/tmp/plugin.txt
 #kubectl -n jenkins exec -it jenkins-0 /bin/bash

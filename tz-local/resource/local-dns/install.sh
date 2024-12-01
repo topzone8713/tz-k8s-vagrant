@@ -4,7 +4,7 @@
 #https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/
 #https://medium.com/@danielmller_75561/performance-issues-with-rds-aurora-on-eks-due-to-coredns-defaults-5fb2166366c9
 
-cd /vagrant/tz-local/resource/local-dns
+cd /topzone/tz-local/resource/local-dns
 
 kubectl scale deployment/coredns \
     --namespace kube-system \

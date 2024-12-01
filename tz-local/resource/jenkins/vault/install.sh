@@ -43,7 +43,7 @@ secret_id=$(echo $secret_id | awk '{print $6}')
 awk '!/jenkins_vault_secret_id=/' /topzone/resources/project > tmpfile && mv tmpfile /topzone/resources/project
 echo "jenkins_vault_secret_id=${secret_id}" >> /topzone/resources/project
 
-cp -Rf /topzone/resources/project /root/.aws/project
+cp -Rf /topzone/resources/project /root/.k8s/project
 
 # Create dbinfo secret with 3 keys to read in jenkins pipeline
 tee dbinfo.json <<"EOF"

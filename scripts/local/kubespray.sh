@@ -7,7 +7,7 @@
 echo "
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'
-alias base='cd /vagrant'
+alias base='cd /topzone'
 alias ll='ls -al'
 " >> /root/.bashrc
 
@@ -16,24 +16,24 @@ function prop {
   key="\${2}="
   rslt=""
   if [[ "\${3}" == "" ]]; then
-    rslt=\$(grep "\${key}" "/root/.aws/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
+    rslt=\$(grep "\${key}" "/root/.k8s/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
     if [[ "\${rslt}" == "" ]]; then
       key="\${2} = "
-      rslt=\$(grep "\${key}" "/root/.aws/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
+      rslt=\$(grep "\${key}" "/root/.k8s/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
     fi
   else
-    rslt=\$(grep "\${3}" "/root/.aws/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
+    rslt=\$(grep "\${3}" "/root/.k8s/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
     if [[ "\${rslt}" == "" ]]; then
       key="\${2} = "
-      rslt=\$(grep "\${3}" "/root/.aws/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
+      rslt=\$(grep "\${3}" "/root/.k8s/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
     fi
   fi
   echo \${rslt}
 }
 EOF
 
-if [ -d /vagrant ]; then
-  cd /vagrant
+if [ -d /topzone ]; then
+  cd /topzone
 fi
 
 sudo rm -Rf kubespray
@@ -89,10 +89,10 @@ rm -Rf $HOME/.kube
 #cat inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
 
 #cd resource/kubespray
-#scp doohee323@master:/Volumes/workspace/etc/tz-k8s-vagrant/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml .
-#scp k8s-cluster.yml doohee323@master:/Volumes/workspace/etc/tz-k8s-vagrant/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
-#scp master:/Volumes/workspace/etc/tz-k8s-vagrant/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml k8s-cluster.yml
-#scp master:/Volumes/workspace/etc/tz-k8s-vagrant/kubespray/inventory/test-cluster/group_vars/k8s_cluster/addons.yml addons.yml
+#scp doohee323@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml .
+#scp k8s-cluster.yml doohee323@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
+#scp master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml k8s-cluster.yml
+#scp master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/addons.yml addons.yml
 
 #export ANSIBLE_PERSISTENT_CONNECT_TIMEOUT=120
 #ansible -vvvv -i inventory/test-cluster/inventory.ini all -a "systemctl status sshd" -u root
@@ -110,9 +110,9 @@ ansible-playbook -u root -i resource/kubespray/inventory.ini \
   kubespray/cluster.yml
 #ansible-playbook -i resource/kubespray/inventory.ini --become --become-user=root cluster.yml
 
-sudo cp -Rf /root/.kube /home/vagrant/
-sudo chown -Rf vagrant:vagrant /home/vagrant/.kube
-sudo cp -Rf /root/.kube/config /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
+sudo cp -Rf /root/.kube /home/topzone/
+sudo chown -Rf topzone:topzone /home/topzone/.kube
+sudo cp -Rf /root/.kube/config /topzone/.ssh/kubeconfig_tz-k8s-topzone
 
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
 #exec bash

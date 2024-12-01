@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-function prop { key="${2}=" file="/root/.aws/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
 #bash /topzone/tz-local/resource/vault/helm/install.sh
 cd /topzone/tz-local/resource/vault/helm
 
@@ -78,7 +78,7 @@ if [[ "${vault_token_new}" != "" ]]; then
   awk '!/vault=/' /topzone/resources/project > tmpfile && mv tmpfile /topzone/resources/project
   echo "vault=${vault_token_new}" >> /topzone/resources/project
   cp -Rf /topzone/resources/project ~/.aws/project
-  mkdir -p /home/vagrant/.aws
+  mkdir -p /home/topzone/.k8s
   cp -Rf /topzone/resources/project /home/topzone/.aws/project
 fi
 

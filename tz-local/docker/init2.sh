@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
-export PROJECT_BASE='/vagrant/'
+export PROJECT_BASE='/topzone/'
 
-cd /vagrant
+cd /topzone
 
-sudo mkdir -p /home/vagrant/.aws
-sudo cp -Rf /vagrant/resources/${k8s_project}/project /home/vagrant/.aws/project
-sudo chown -Rf vagrant:vagrant /home/vagrant/.aws
-sudo rm -Rf /root/.aws
-sudo cp -Rf /home/vagrant/.aws /root/.aws
+sudo mkdir -p /home/topzone/.k8s
+sudo cp -Rf /topzone/resources/${k8s_project}/project /home/topzone/.k8s/project
+sudo chown -Rf topzone:topzone /home/topzone/.k8s
+sudo rm -Rf /root/.k8s
+sudo cp -Rf /home/topzone/.k8s /root/.k8s
 
-sudo mkdir -p /home/vagrant/.kube
-sudo cp -Rf /vagrant/resources/${k8s_project}/kubeconfig_${k8s_project} /home/vagrant/.kube/config
-sudo chown -Rf vagrant:vagrant /home/vagrant/.kube
+sudo mkdir -p /home/topzone/.kube
+sudo cp -Rf /topzone/resources/${k8s_project}/kubeconfig_${k8s_project} /home/topzone/.kube/config
+sudo chown -Rf topzone:topzone /home/topzone/.kube
 sudo rm -Rf /root/.kube
-sudo cp -Rf /home/vagrant/.kube /root/.kube
+sudo cp -Rf /home/topzone/.kube /root/.kube
 
 git config --global --add safe.directory '*'
 

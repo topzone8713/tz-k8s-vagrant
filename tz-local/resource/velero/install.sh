@@ -4,8 +4,8 @@
 # https://guide.ncloud-docs.com/docs/k8s-k8sexamples-velero
 
 source /root/.bashrc
-#bash /vagrant/tz-local/resource/velero/install.sh
-cd /vagrant/tz-local/resource/velero
+#bash /topzone/tz-local/resource/velero/install.sh
+cd /topzone/tz-local/resource/velero
 
 #set -x
 shopt -s expand_aliases
@@ -28,7 +28,7 @@ sudo mv velero-v1.10.3-linux-amd64/velero /usr/local/bin/velero
 
 #aws iam create-access-key --user-name ${k8s_project}-velero
 
-credentials_velero="/root/.aws/credentials"
+credentials_velero="/root/.k8s/credentials"
 #[default]
 #aws_access_key_id=<AWS_ACCESS_KEY_ID>
 #aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>

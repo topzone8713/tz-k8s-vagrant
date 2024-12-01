@@ -6,14 +6,14 @@ echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
 echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
 
-if [ -d /vagrant ]; then
-  cd /vagrant
+if [ -d /topzone ]; then
+  cd /topzone
 fi
 
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 
-bash /vagrant/scripts/local/base.sh
+bash /topzone/scripts/local/base.sh
 
 sudo apt-add-repository ppa:ansible/ansible
 sudo apt update
