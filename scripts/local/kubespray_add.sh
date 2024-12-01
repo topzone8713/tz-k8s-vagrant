@@ -10,7 +10,8 @@ if [ -d /vagrant ]; then
 fi
 
 cd kubespray
-ansible all -i resource/kubespray/inventory.ini -m ping -u root
+#ansible all -i resource/kubespray/inventory.ini -m ping -u root
+ansible all -i resource/kubespray/inventory_add.ini -m ping -u root
 
 #ansible-playbook -i inventory/test-cluster/hosts.yaml cluster.yml -b -become-user=root -l node3
 ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
