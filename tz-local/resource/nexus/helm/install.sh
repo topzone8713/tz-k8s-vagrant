@@ -104,8 +104,8 @@ RMI=`docker images -a | grep busybox | awk '{print $3}' | head -n 1`
 docker tag $RMI docker.default.${k8s_project}.${k8s_domain}/busybox:v20201225
 docker push docker.default.${k8s_project}.${k8s_domain}/busybox:v20201225
 #######################################################################
-" >> /topzone/info
-cat /topzone/info
+" >> /vagrant/info
+cat /vagrant/info
 
 exit 0
 

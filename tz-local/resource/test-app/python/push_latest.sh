@@ -6,7 +6,7 @@ USERNAME=$1
 PASSWD=$2
 
 cd /var/jenkins_home/workspace/tz-py-crawler_push
-#cd /topzone/projects/tz-py-crawler
+#cd /vagrant/projects/tz-py-crawler
 
 if [[ ! -d 'projects/tz-py-crawler' ]]; then
   mkdir projects

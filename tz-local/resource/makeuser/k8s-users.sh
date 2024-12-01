@@ -53,7 +53,7 @@ rm -Rf sa.yaml
 
 #k8s_role=$(aws iam list-roles --out=text | grep "${k8s_project}2" | grep "0000000" | head -n 1 | awk '{print $7}')
 pushd `pwd`
-cd /topzone/terraform-aws-eks/workspace/base
+cd /vagrant/terraform-aws-eks/workspace/base
 k8s_role=$(terraform output | grep cluster_iam_role_arn | awk '{print $3}' | tr "/" "\n" | tail -n 1 | sed 's/"//g')
 popd
 echo k8s_role: ${k8s_role}

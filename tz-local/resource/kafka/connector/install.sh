@@ -8,22 +8,22 @@ shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 
 # install kafka schema-registry
-cd /topzone/kafka
+cd /vagrant/kafka
 git clone https://github.com/confluentinc/cp-helm-charts.git
-cp -Rf /topzone/kafka/cp-helm-charts/charts/cp-schema-registry/values.yaml /topzone/kafka/cp-helm-charts/charts/schema-registry-values.yaml
-sudo sed -i "s|bootstrapServers: \"\"|bootstrapServers: \"kafka-headless:9092\"|g" /topzone/kafka/cp-helm-charts/charts/schema-registry-values.yaml
+cp -Rf /vagrant/kafka/cp-helm-charts/charts/cp-schema-registry/values.yaml /vagrant/kafka/cp-helm-charts/charts/schema-registry-values.yaml
+sudo sed -i "s|bootstrapServers: \"\"|bootstrapServers: \"kafka-headless:9092\"|g" /vagrant/kafka/cp-helm-charts/charts/schema-registry-values.yaml
 helm uninstall my-schema -n kafka
-cd /topzone/kafka/cp-helm-charts/charts
+cd /vagrant/kafka/cp-helm-charts/charts
 helm install my-schema -f schema-registry-values.yaml cp-schema-registry -n kafka
 k get all -n kafka
 
-cp -Rf /topzone/kafka/cp-helm-charts/charts/cp-kafka-connect/values.yaml /topzone/kafka/cp-helm-charts/charts/my-connect-values.yaml
-sudo sed -i "s|bootstrapServers: \"\"|bootstrapServers: \"kafka-headless:9092\"|g" /topzone/kafka/cp-helm-charts/charts/my-connect-values.yaml
-sudo sed -i "s|url: \"\"|url: \"http://my-schema-cp-schema-registry:8081\"|g" /topzone/kafka/cp-helm-charts/charts/my-connect-values.yaml
-sudo sed -i "s|enabled: true|enabled: false|g" /topzone/kafka/cp-helm-charts/charts/my-connect-values.yaml
+cp -Rf /vagrant/kafka/cp-helm-charts/charts/cp-kafka-connect/values.yaml /vagrant/kafka/cp-helm-charts/charts/my-connect-values.yaml
+sudo sed -i "s|bootstrapServers: \"\"|bootstrapServers: \"kafka-headless:9092\"|g" /vagrant/kafka/cp-helm-charts/charts/my-connect-values.yaml
+sudo sed -i "s|url: \"\"|url: \"http://my-schema-cp-schema-registry:8081\"|g" /vagrant/kafka/cp-helm-charts/charts/my-connect-values.yaml
+sudo sed -i "s|enabled: true|enabled: false|g" /vagrant/kafka/cp-helm-charts/charts/my-connect-values.yaml
 
 helm uninstall my-connect -n kafka
-cd /topzone/kafka/cp-helm-charts/charts
+cd /vagrant/kafka/cp-helm-charts/charts
 helm install my-connect -f my-connect-values.yaml cp-kafka-connect -n kafka
 
 #https://tsuyoshiushio.medium.com/local-kafka-cluster-on-kubernetes-on-your-pc-in-5-minutes-651a2ff4dcde
@@ -85,8 +85,8 @@ k exec -it `k get pod -n kafka | grep postgres-target | awk '{print $1}'` -n kaf
 psql -d postgres -U postgres
 
 #######################################################################
-' >> /topzone/info
-cat /topzone/info
+' >> /vagrant/info
+cat /vagrant/info
 exit 0
 
 

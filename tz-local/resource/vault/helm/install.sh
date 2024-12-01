@@ -68,18 +68,18 @@ echo $VAULT_ADDR
 echo "#######################################################"
 echo "Initial Root Token vault!!!"
 echo "#######################################################"
-k -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /topzone/resources/unseal.txt
+k -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /vagrant/resources/unseal.txt
 sleep 20
-vault_token_new=$(cat /topzone/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
+vault_token_new=$(cat /vagrant/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
 echo "#######################################################"
 echo "vault_token_new: ${vault_token_new}"
 echo "#######################################################"
 if [[ "${vault_token_new}" != "" ]]; then
-  awk '!/vault=/' /topzone/resources/project > tmpfile && mv tmpfile /topzone/resources/project
-  echo "vault=${vault_token_new}" >> /topzone/resources/project
-  cp -Rf /topzone/resources/project ~/.aws/project
+  awk '!/vault=/' /vagrant/resources/project > tmpfile && mv tmpfile /vagrant/resources/project
+  echo "vault=${vault_token_new}" >> /vagrant/resources/project
+  cp -Rf /vagrant/resources/project ~/.aws/project
   mkdir -p /home/topzone/.k8s
-  cp -Rf /topzone/resources/project /home/topzone/.aws/project
+  cp -Rf /vagrant/resources/project /home/topzone/.aws/project
 fi
 
 exit 0
@@ -172,8 +172,8 @@ vault operator raft snapshot save backup.snap
 vault operator raft snapshot restore -force backup.snap
 
 #######################################################################
-" >> /topzone/info
-cat /topzone/info
+" >> /vagrant/info
+cat /vagrant/info
 
 exit 0
 

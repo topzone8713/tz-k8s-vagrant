@@ -74,8 +74,8 @@ echo "
 #  - Password:
 #    kubectl -n jenkins exec -it svc/jenkins -c jenkins -- /bin/cat /run/secrets/chart-admin-password && echo
 #######################################################################
-" >> /topzone/info
-cat /topzone/info
+" >> /vagrant/info
+cat /vagrant/info
 
 exit 0
 

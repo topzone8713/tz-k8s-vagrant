@@ -49,13 +49,13 @@ fi
 if [[ "${EVENT}" == "up" ]]; then
   topzone ${EVENT} --provider=virtualbox
   if [[ "${A_ENV}" == "M" ]]; then
-    topzone ssh kube-master -- -t "sudo bash /topzone/scripts/local/kubespray.sh"
+    topzone ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
   fi
 else
   if [[ "${PROVISION}" == "y" ]]; then
     if [[ "${A_ENV}" == "M" ]]; then
-      echo topzone ssh kube-master -- -t "sudo bash /topzone/scripts/local/kubespray.sh"
-      topzone ssh kube-master -- -t "sudo bash /topzone/scripts/local/kubespray.sh"
+      echo topzone ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      topzone ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
     fi
   else
     topzone ${EVENT}

@@ -11,17 +11,17 @@ if [ -d /topzone ]; then
 fi
 
 MYKEY=tz_rsa
-cp -Rf /topzone/.ssh/${MYKEY} /root/.ssh/${MYKEY}
-cp -Rf /topzone/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
-cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
+cp -Rf /vagrant/.ssh/${MYKEY} /root/.ssh/${MYKEY}
+cp -Rf /vagrant/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
+cp /home/vagrant/.ssh/authorized_keys /root/.ssh/authorized_keys
 cat /root/.ssh/${MYKEY}.pub >> /root/.ssh/authorized_keys
 chown -R root:root /root/.ssh \
   chmod -Rf 400 /root/.ssh
-rm -Rf /home/topzone/.ssh \
-  && cp -Rf /root/.ssh /home/topzone/.ssh \
-  && chown -Rf topzone:topzone /home/topzone/.ssh \
-  && chmod -Rf 700 /home/topzone/.ssh \
-  && chmod -Rf 600 /home/topzone/.ssh/*
+rm -Rf /home/vagrant/.ssh \
+  && cp -Rf /root/.ssh /home/vagrant/.ssh \
+  && chown -Rf topzone:topzone /home/vagrant/.ssh \
+  && chmod -Rf 700 /home/vagrant/.ssh \
+  && chmod -Rf 600 /home/vagrant/.ssh/*
 
 cat <<EOF >> /etc/resolv.conf
 nameserver 1.1.1.1 #cloudflare DNS

@@ -13,7 +13,7 @@ fi
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 
-bash /topzone/scripts/local/base.sh
+bash /vagrant/scripts/local/base.sh
 
 sudo apt-add-repository ppa:ansible/ansible
 sudo apt update

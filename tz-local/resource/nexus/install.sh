@@ -88,6 +88,6 @@ docker push nexus.topzone-k8s.topzone.me:5000/busybox:v20201225
 http://nexus.topzone-k8s.topzone.me:8081/#browse/browse:docker-hosted
 
 #######################################################################
-' >> /topzone/info
-cat /topzone/info
+' >> /vagrant/info
+cat /vagrant/info
 

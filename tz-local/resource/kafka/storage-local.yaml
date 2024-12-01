@@ -71,7 +71,7 @@ spec:
 #  persistentVolumeReclaimPolicy: Retain
 #  storageClassName: kafka-pv-0
 #  local:
-#    path: /topzone/kafka/index0
+#    path: /vagrant/kafka/index0
 #  nodeAffinity:
 #    required:
 #      nodeSelectorTerms:
@@ -115,7 +115,7 @@ spec:
 #  persistentVolumeReclaimPolicy: Retain
 #  storageClassName: kafka-pv-1
 #  local:
-#    path: /topzone/kafka/index0
+#    path: /vagrant/kafka/index0
 #  nodeAffinity:
 #    required:
 #      nodeSelectorTerms:
@@ -159,7 +159,7 @@ spec:
 #  persistentVolumeReclaimPolicy: Retain
 #  storageClassName: zookeeper-pv-0
 #  local:
-#    path: /topzone/kafka/index1
+#    path: /vagrant/kafka/index1
 #  nodeAffinity:
 #    required:
 #      nodeSelectorTerms:
@@ -203,7 +203,7 @@ spec:
 #  persistentVolumeReclaimPolicy: Retain
 #  storageClassName: zookeeper-pv-1
 #  local:
-#    path: /topzone/kafka/index1
+#    path: /vagrant/kafka/index1
 #  nodeAffinity:
 #    required:
 #      nodeSelectorTerms:

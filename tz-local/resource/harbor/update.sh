@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /topzone/projects/tgd-web
+cd /vagrant/projects/tgd-web
 
 export AWS_ACCESS_KEY_ID=$(prop 'credentials' 'aws_access_key_id')
 export AWS_SECRET_ACCESS_KEY=$(prop 'credentials' 'aws_secret_access_key')

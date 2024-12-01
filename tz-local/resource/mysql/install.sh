@@ -19,7 +19,7 @@ helm repo update
 helm uninstall devops-mysql -n ${NS}
 
 pushd `pwd`
-cd /topzone/terraform-aws-eks/workspace/base
+cd /vagrant/terraform-aws-eks/workspace/base
 allowed_management_cidr_blocks=$(terraform output allowed_management_cidr_blocks)
 allowed_management_cidr_blocks=`echo ${allowed_management_cidr_blocks} | sed "s|, ]| ]|g" | tr "\n" " "`
 popd

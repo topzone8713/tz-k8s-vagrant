@@ -112,7 +112,7 @@ ansible-playbook -u root -i resource/kubespray/inventory.ini \
 
 sudo cp -Rf /root/.kube /home/topzone/
 sudo chown -Rf topzone:topzone /home/topzone/.kube
-sudo cp -Rf /root/.kube/config /topzone/.ssh/kubeconfig_tz-k8s-topzone
+sudo cp -Rf /root/.kube/config /vagrant/.ssh/kubeconfig_tz-k8s-topzone
 
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
 #exec bash

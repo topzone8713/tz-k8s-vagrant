@@ -5,18 +5,18 @@ cd /vagrant/tz-local/docker
 
 echo "vault_token: ${vault_token}"
 
-rm -Rf /topzone/info
+rm -Rf /vagrant/info
 
 export AWS_PROFILE=default
 function propProject {
-	grep "${1}" "/topzone/resources/project" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
+	grep "${1}" "/vagrant/resources/project" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
 }
 export k8s_project=$(propProject 'project')
 export aws_account_id=$(propProject 'aws_account_id')
-PROJECT_BASE='/topzone/terraform-aws-k8s/workspace/base'
+PROJECT_BASE='/vagrant/terraform-aws-k8s/workspace/base'
 
 function propConfig {
-  grep "${1}" "/topzone/resources/config" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
+  grep "${1}" "/vagrant/resources/config" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
 }
 aws_region=$(propConfig 'region')
 export AWS_DEFAULT_REGION="${aws_region}"
@@ -30,8 +30,8 @@ export AWS_DEFAULT_REGION=${aws_region}
 export VAULT_ADDR=https://vault.${k8s_domain}
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'
-alias base='cd /topzone/terraform-aws-k8s/workspace/base'
-alias scripts='cd /topzone/scripts'
+alias base='cd /vagrant/terraform-aws-k8s/workspace/base'
+alias scripts='cd /vagrant/scripts'
 alias tplan='terraform plan -var-file=".auto.tfvars"'
 alias tapply='terraform apply -var-file=".auto.tfvars" -auto-approve'
 alias ll='ls -al'
@@ -85,7 +85,7 @@ kubectl krew install neat
 #sudo dpkg -i Lens-4.1.5.amd64.deb
 
 export KUBECONFIG=`ls kubeconfig_${k8s_project}*`
-cp -Rf $KUBECONFIG /topzone/config_${k8s_project}
+cp -Rf $KUBECONFIG /vagrant/config_${k8s_project}
 sudo mkdir -p /root/.kube
 sudo cp -Rf $KUBECONFIG /root/.kube/config
 sudo chmod -Rf 600 /root/.kube/config
@@ -107,7 +107,7 @@ echo $s3_bucket_id > s3_bucket_id
 #master_ip=`terraform output | grep -A 2 "public_ip" | head -n 1 | awk '{print $3}'`
 #export master_ip=`echo $master_ip | sed -e 's/\"//g;s/ //;s/,//'`
 
-# bash /topzone/scripts/k8s_addtion.sh
+# bash /vagrant/scripts/k8s_addtion.sh
 
 #bastion_ip=$(terraform output | grep "bastion" | awk '{print $3}')
 #echo "
@@ -125,7 +125,7 @@ echo $s3_bucket_id > s3_bucket_id
 echo "
 ##[ Summary ]##########################################################
   - in VM
-    export KUBECONFIG='/topzone/config_${k8s_project}'
+    export KUBECONFIG='/vagrant/config_${k8s_project}'
 
   - outside of VM
     export KUBECONFIG='config_${k8s_project}'
@@ -139,8 +139,8 @@ echo "
 #  - secondary-az1: ssh -i /home/topzone/resources/${k8s_project} ubuntu@${secondary_az1_ip}
 
 #######################################################################
-" >> /topzone/info
-cat /topzone/info
+" >> /vagrant/info
+cat /vagrant/info
 
 sudo /usr/sbin/sshd -D
 

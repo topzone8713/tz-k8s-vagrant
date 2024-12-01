@@ -107,8 +107,8 @@ deleteall /brokers/topics/quickstart-events
 delete /admin/delete_topics/quickstart-events
 
 #######################################################################
-' >> /topzone/info
-cat /topzone/info
+' >> /vagrant/info
+cat /vagrant/info
 
 # 4: Scale Apache Kafka
 #k scale statefulset.apps/zookeeper --replicas=2 -n kafka
