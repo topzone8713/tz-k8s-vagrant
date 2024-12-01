@@ -4,8 +4,8 @@
 # https://guide.ncloud-docs.com/docs/k8s-k8sexamples-velero
 
 source /root/.bashrc
-#bash /topzone/tz-local/resource/velero/install.sh
-cd /topzone/tz-local/resource/velero
+#bash /vagrant/tz-local/resource/velero/install.sh
+cd /vagrant/tz-local/resource/velero
 
 #set -x
 shopt -s expand_aliases

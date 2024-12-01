@@ -2,8 +2,8 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/argocd/helm/install.sh
-cd /topzone/tz-local/resource/argocd/helm
+#bash /vagrant/tz-local/resource/argocd/helm/install.sh
+cd /vagrant/tz-local/resource/argocd/helm
 
 #set -x
 shopt -s expand_aliases
@@ -97,8 +97,8 @@ kubectl config get-contexts
 #          topzone-k8s   topzone-k8s   topzone-k8s
 argocd cluster add --yes topzone-k8s
 
-#bash /topzone/tz-local/resource/argocd/update.sh
-bash /topzone/tz-local/resource/argocd/update.sh
+#bash /vagrant/tz-local/resource/argocd/update.sh
+bash /vagrant/tz-local/resource/argocd/update.sh
 
 #################################################################################
 # 2) integrate with vault

@@ -32,15 +32,15 @@ helm repo update
 helm install my-confluent confluentinc/cp-helm-charts -f ./values.yaml
 
 # install kafka connector
-#k delete -f /topzone/tz-local/resource/kafka/connector/kafka-connector-source.yaml -n kafka
-k apply -f /topzone/tz-local/resource/kafka/connector/kafka-connector-source.yaml -n kafka
-#k delete -f /topzone/tz-local/resource/kafka/connector/kafka-connector-target.yaml -n kafka
-k apply -f /topzone/tz-local/resource/kafka/connector/kafka-connector-target.yaml -n kafka
+#k delete -f /vagrant/tz-local/resource/kafka/connector/kafka-connector-source.yaml -n kafka
+k apply -f /vagrant/tz-local/resource/kafka/connector/kafka-connector-source.yaml -n kafka
+#k delete -f /vagrant/tz-local/resource/kafka/connector/kafka-connector-target.yaml -n kafka
+k apply -f /vagrant/tz-local/resource/kafka/connector/kafka-connector-target.yaml -n kafka
 
-k get deployment.apps/my-connect-cp-kafka-connect -n kafka -o yaml > /topzone/tz-local/resource/kafka/connector/my-connect-cp-kafka-connect.yaml
-sudo sed -i "s|value: \"3\"|value: \"1\"|g" /topzone/tz-local/resource/kafka/connector/my-connect-cp-kafka-connect.yaml
+k get deployment.apps/my-connect-cp-kafka-connect -n kafka -o yaml > /vagrant/tz-local/resource/kafka/connector/my-connect-cp-kafka-connect.yaml
+sudo sed -i "s|value: \"3\"|value: \"1\"|g" /vagrant/tz-local/resource/kafka/connector/my-connect-cp-kafka-connect.yaml
 k delete deployment.apps/my-connect-cp-kafka-connect -n kafka
-k apply -f /topzone/tz-local/resource/kafka/connector/my-connect-cp-kafka-connect.yaml -n kafka
+k apply -f /vagrant/tz-local/resource/kafka/connector/my-connect-cp-kafka-connect.yaml -n kafka
 
 k get all -n kafka
 

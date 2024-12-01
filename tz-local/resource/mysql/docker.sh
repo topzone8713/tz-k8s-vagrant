@@ -1,6 +1,6 @@
 #https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-persistent-storage/
 
-cd /topzone/tz-local/resource/mysql
+cd /vagrant/tz-local/resource/mysql
 
 aws_access_key_id=$(prop 'credentials' 'aws_access_key_id')
 aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key')

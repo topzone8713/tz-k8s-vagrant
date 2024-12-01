@@ -37,6 +37,6 @@ docker push doohee323/tz-py-crawler:latest
 
 exit 0
 
-k delete -f /topzone/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
-k apply -f /topzone/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
+k delete -f /vagrant/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
+k apply -f /vagrant/tz-local/resource/test-app/python/tz-py-crawler_cronJob.yaml
 

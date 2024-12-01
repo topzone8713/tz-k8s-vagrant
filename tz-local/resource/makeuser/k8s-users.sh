@@ -5,8 +5,8 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/makeuser/eks-users.sh
-cd /topzone/tz-local/resource/makeuser
+#bash /vagrant/tz-local/resource/makeuser/eks-users.sh
+cd /vagrant/tz-local/resource/makeuser
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')

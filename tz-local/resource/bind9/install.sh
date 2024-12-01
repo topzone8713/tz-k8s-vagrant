@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-# bash /topzone/tz-local/resource/bind9/install.sh
-cd /topzone/tz-local/resource/bind9
+# bash /vagrant/tz-local/resource/bind9/install.sh
+cd /vagrant/tz-local/resource/bind9
 
 #set -x
 shopt -s expand_aliases

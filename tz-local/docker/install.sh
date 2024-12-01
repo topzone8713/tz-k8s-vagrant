@@ -19,6 +19,6 @@ docker-compose -f docker-compose.yml_bak up -d
 
 docker exec -it `docker ps | grep docker-${tz_project} | awk '{print $1}'` bash
 export k8s_project=hyper-k8s
-bash /topzone/tz-local/docker/init2.sh
+bash /vagrant/tz-local/docker/init2.sh
 
 exit 0

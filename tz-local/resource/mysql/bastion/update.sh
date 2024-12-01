@@ -2,10 +2,10 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/mysql/install.sh
-cd /topzone/tz-local/resource/mysql/bastion
+#bash /vagrant/tz-local/resource/mysql/install.sh
+cd /vagrant/tz-local/resource/mysql/bastion
 
-kubectl cp devops-dev/mysql-5d94bc4676-22xp9:tmp/myoutput1.txt /topzone/tz-local/resource/mysql/bastion/myoutput.txt
+kubectl cp devops-dev/mysql-5d94bc4676-22xp9:tmp/myoutput1.txt /vagrant/tz-local/resource/mysql/bastion/myoutput.txt
 
 #set -x
 shopt -s expand_aliases

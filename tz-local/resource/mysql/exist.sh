@@ -1,6 +1,6 @@
 #https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-persistent-storage/
 
-cd /topzone/tz-local/resource/mysql
+cd /vagrant/tz-local/resource/mysql
 
 AWS_REGION=$(prop 'config' 'region')
 k8s_project=$(prop 'project' 'project')

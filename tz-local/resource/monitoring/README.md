@@ -64,7 +64,7 @@ tz-eks-main/tz-local/resource/monitoring/prometheus/alertmanager.values
 
 ## 룰 적용 (DevOps가 수행)
 ```
-bash /topzone/tz-local/resource/monitoring/prometheus/update.sh
+bash /vagrant/tz-local/resource/monitoring/prometheus/update.sh
 
 update.sh에는 아래의 작업들이 포함되어 있습니다.
 export NS=monitoring

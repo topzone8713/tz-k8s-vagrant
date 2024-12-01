@@ -2,7 +2,7 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-cd /topzone/tz-local/resource/jenkins/helm
+cd /vagrant/tz-local/resource/jenkins/helm
 
 #set -x
 shopt -s expand_aliases

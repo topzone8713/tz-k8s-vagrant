@@ -3,8 +3,8 @@
 #set -x
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/vault/vault-injection/update.sh
-cd /topzone/tz-local/resource/vault/vault-injection
+#bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
+cd /vagrant/tz-local/resource/vault/vault-injection
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
@@ -16,7 +16,7 @@ vault login ${VAULT_TOKEN}
 
 vault list auth/kubernetes/role
 
-#bash /topzone/tz-local/resource/vault/vault-injection/cert.sh default
+#bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh default
 kubectl get csr -o name | xargs kubectl certificate approve
 
 PROJECTS=(argocd consul default devops devops-dev monitoring vault)
@@ -45,7 +45,7 @@ for item in "${PROJECTS[@]}"; do
 #  for value in "${namespaces[@]}"; do
 #     echo $value
 #  done
-  if [[ -f /topzone/tz-local/resource/vault/data/${project}.hcl ]]; then
+  if [[ -f /vagrant/tz-local/resource/vault/data/${project}.hcl ]]; then
     echo ${item} : ${item/*-dev/}
     echo project: ${project}
     vault write auth/kubernetes/role/${project} \
@@ -53,7 +53,7 @@ for item in "${PROJECTS[@]}"; do
             bound_service_account_namespaces=${namespaces} \
             policies=tz-vault-${project} \
             ttl=24h
-    vault policy write tz-vault-${project} /topzone/tz-local/resource/vault/data/${project}.hcl
+    vault policy write tz-vault-${project} /vagrant/tz-local/resource/vault/data/${project}.hcl
     vault kv put secret/${project}/dbinfo name='localhost' passwod=1111 ttl='30s'
     vault kv put secret/${project}/foo name='localhost' passwod=1111 ttl='30s'
     vault read auth/kubernetes/role/${project}
@@ -63,7 +63,7 @@ for item in "${PROJECTS[@]}"; do
               bound_service_account_namespaces=${namespaces} \
               policies=tz-vault-${project_stg} \
               ttl=24h
-      vault policy write tz-vault-${project_stg} /topzone/tz-local/resource/vault/data/${project_stg}.hcl
+      vault policy write tz-vault-${project_stg} /vagrant/tz-local/resource/vault/data/${project_stg}.hcl
       vault kv put secret/${project_stg}/dbinfo name='localhost' passwod=1111 ttl='30s'
       vault kv put secret/${project_stg}/foo name='localhost' passwod=1111 ttl='30s'
       vault read auth/kubernetes/role/${project_stg}

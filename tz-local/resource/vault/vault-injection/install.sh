@@ -2,8 +2,8 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/vault/vault-injection/install.sh
-cd /topzone/tz-local/resource/vault/vault-injection
+#bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
+cd /vagrant/tz-local/resource/vault/vault-injection
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
@@ -16,7 +16,7 @@ curl -s ${VAULT_ADDR}/v1/sys/seal-status | jq
 EXTERNAL_VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 echo $EXTERNAL_VAULT_ADDR
 
-bash /topzone/tz-local/resource/vault/vault-injection/cert.sh
+bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh
 kubectl get csr -o name | xargs kubectl certificate approve
 
 vault secrets enable -path=secret/ kv

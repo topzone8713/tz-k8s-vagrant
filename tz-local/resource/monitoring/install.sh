@@ -8,8 +8,8 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/monitoring/install.sh
-cd /topzone/tz-local/resource/monitoring
+#bash /vagrant/tz-local/resource/monitoring/install.sh
+cd /vagrant/tz-local/resource/monitoring
 
 #set -x
 shopt -s expand_aliases
@@ -195,17 +195,17 @@ kubectl exec -it ${grafana_pod} -n ${NS} \
 
 kubectl patch statefulset/alertmanager-prometheus-kube-prometheus-alertmanager -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n ${NS}
 
-cp -Rf /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
-sed -i "s/k8s_project/${k8s_project}/g" /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
-sed -i "s/k8s_domain/${k8s_domain}/g" /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
-sed -i "s/admin_password_var/${admin_password}/g" /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
-sed -i "s/s3_bucket_name_var/devops-grafana-${k8s_project}/g" /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
+cp -Rf /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
+sed -i "s/k8s_project/${k8s_project}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
+sed -i "s/k8s_domain/${k8s_domain}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
+sed -i "s/admin_password_var/${admin_password}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
+sed -i "s/s3_bucket_name_var/devops-grafana-${k8s_project}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
 
 grafana_token_var=$(curl -X POST -H "Content-Type: application/json" -d '{"name":"admin-key", "role": "Admin"}' "http://admin:${admin_password}@grafana.default.${k8s_project}.${k8s_domain}/api/auth/keys" | jq -r '.key')
 echo ${grafana_token_var} #
 sleep 5
 if [[ "${grafana_token_var}" != "" ]]; then
-  sed -i "s/grafana_token_var/${grafana_token_var}/g" /topzone/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
+  sed -i "s/grafana_token_var/${grafana_token_var}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
 fi
 
 #helm repo add fluent https://fluent.github.io/helm-charts

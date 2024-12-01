@@ -3,7 +3,7 @@
 #https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/
 
 source /root/.bashrc
-cd /topzone/tz-local/resource/nginx
+cd /vagrant/tz-local/resource/nginx
 
 NS=$1
 if [[ "${NS}" == "" ]]; then

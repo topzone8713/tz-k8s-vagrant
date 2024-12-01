@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /topzone/tz-local/resource/mysql
+cd /vagrant/tz-local/resource/mysql
 
 SELECT DISTINCT productcategory, productcode
 FROM aws_usage.aws_cost;
@@ -132,7 +132,7 @@ WHERE billingperiodenddate BETWEEN '2021-08-01 00:00:00' AND '2021-09-01 00:00:0
 399560
 
 # download output to local
-kubectl cp devops-dev/mysql-5d94bc4676-22xp9:tmp/myoutput3.txt /topzone/tz-local/resource/mysql/bastion/myoutput.txt
+kubectl cp devops-dev/mysql-5d94bc4676-22xp9:tmp/myoutput3.txt /vagrant/tz-local/resource/mysql/bastion/myoutput.txt
 
 exit 0
 

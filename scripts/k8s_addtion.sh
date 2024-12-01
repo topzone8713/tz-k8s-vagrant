@@ -5,21 +5,21 @@ function prop {
 }
 k8s_project=hyper-k8s  #$(prop 'project' 'project')
 
-bash /topzone/tz-local/resource/docker-repo/install.sh
-bash /topzone/tz-local/resource/ingress_nginx/install.sh
+bash /vagrant/tz-local/resource/docker-repo/install.sh
+bash /vagrant/tz-local/resource/ingress_nginx/install.sh
 
-bash /topzone/tz-local/resource/consul/install.sh
-bash /topzone/tz-local/resource/vault/helm/install.sh
-bash /topzone/tz-local/resource/vault/data/vault_user.sh
-bash /topzone/tz-local/resource/vault/vault-injection/install.sh
-bash /topzone/tz-local/resource/vault/vault-injection/update.sh
-bash /topzone/tz-local/resource/vault/external-secrets/install_vault.sh
+bash /vagrant/tz-local/resource/consul/install.sh
+bash /vagrant/tz-local/resource/vault/helm/install.sh
+bash /vagrant/tz-local/resource/vault/data/vault_user.sh
+bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
+bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
+bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
-bash /topzone/tz-local/resource/argocd/helm/install.sh
-bash /topzone/tz-local/resource/jenkins/helm/install.sh
+bash /vagrant/tz-local/resource/argocd/helm/install.sh
+bash /vagrant/tz-local/resource/jenkins/helm/install.sh
 
-bash /topzone/tz-local/resource/monitoring/install.sh
+bash /vagrant/tz-local/resource/monitoring/install.sh
 
 exit 0
 
-bash /topzone/tz-local/resource/vault/external-secrets/install.sh
+bash /vagrant/tz-local/resource/vault/external-secrets/install.sh

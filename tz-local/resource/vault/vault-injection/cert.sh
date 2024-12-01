@@ -4,8 +4,8 @@
 #https://www.vaultproject.io/docs/platform/k8s/helm/devops-devs/standalone-tls
 
 source /root/.bashrc
-#bash /topzone/tz-local/resource/vault/vault-injection/cert.sh mobile
-cd /topzone/tz-local/resource/vault/vault-injection
+#bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh mobile
+cd /vagrant/tz-local/resource/vault/vault-injection
 
 if [[ "$1" == "" ]]; then
   NAMESPACE=vault

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /topzone/tz-local/resource/jenkins/vault
+cd /vagrant/tz-local/resource/jenkins/vault
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')

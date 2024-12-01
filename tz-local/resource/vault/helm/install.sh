@@ -2,8 +2,8 @@
 
 source /root/.bashrc
 function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
-#bash /topzone/tz-local/resource/vault/helm/install.sh
-cd /topzone/tz-local/resource/vault/helm
+#bash /vagrant/tz-local/resource/vault/helm/install.sh
+cd /vagrant/tz-local/resource/vault/helm
 
 #set -x
 shopt -s expand_aliases
@@ -26,7 +26,7 @@ k create namespace vault
 #    --from-literal=AWS_ACCESS_KEY_ID="${aws_access_key_id}" \
 #    --from-literal=AWS_SECRET_ACCESS_KEY="${aws_secret_access_key}"
 
-bash /topzone/tz-local/resource/vault/vault-injection/cert.sh vault
+bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh vault
 
 #helm show values hashicorp/vault > values2.yaml
 cp -Rf values_cert.yaml values_cert.yaml_bak

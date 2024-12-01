@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # bash /init.sh
-cd /topzone/tz-local/docker
+cd /vagrant/tz-local/docker
 
 echo "vault_token: ${vault_token}"
 

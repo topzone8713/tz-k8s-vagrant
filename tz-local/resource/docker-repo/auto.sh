@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /topzone/tz-local/resource/docker-repo
+cd /vagrant/tz-local/resource/docker-repo
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
