@@ -12,12 +12,12 @@ echo "WORKING_DIR: ${WORKING_DIR}"
 PROVISION=''
 if [[ "$1" == "halt" ]]; then
   echo "Vagrant halt!"
-  topzone halt
+  vagrant halt
   exit 0
 elif [[ "$1" == "provision" ]]; then
   PROVISION='y'
 elif [[ "$1" == "remove" ]]; then
-  topzone destroy -f
+  vagrant destroy -f
   exit 0
 elif [[ "$1" == "docker" ]]; then
   DOCKER_NAME=`docker ps | grep docker-${tz_project} | awk '{print $1}'`
@@ -45,7 +45,7 @@ if [ ! -f .ssh/${MYKEY} ]; then
 fi
 
 cp -Rf Vagrantfile Vagrantfile.bak
-EVENT=`topzone status | grep -E 'kube-master|kube-slave-1' | grep 'not created'`
+EVENT=`vagrant status | grep -E 'kube-master|kube-slave-1' | grep 'not created'`
 if [[ "${EVENT}" != "" ]]; then
   EVENT='up'
 else
@@ -63,29 +63,29 @@ elif [[ "${A_ENV}" == "S" ]]; then
 fi
 
 if [[ "${EVENT}" == "up" ]]; then
-  topzone ${EVENT} --provider=virtualbox
+  vagrant ${EVENT} --provider=virtualbox
   if [[ "${A_ENV}" == "M" ]]; then
-    topzone ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+    vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
   fi
 else
   if [[ "${PROVISION}" == "y" ]]; then
     if [[ "${A_ENV}" == "M" ]]; then
-      echo topzone ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
-      topzone ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      echo vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
     fi
   else
-    topzone ${EVENT}
+    vagrant ${EVENT}
   fi
 fi
 
-#topzone kube-master -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'
+#vagrant kube-master -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'
 
 for item in "${PROJECTS[@]}"; do
-  IP=`topzone ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
+  IP=`vagrant ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
   echo ${item} ansible_host=${IP} ip=${IP} ansible_user=root ansible_ssh_private_key_file=/root/.ssh/tz_rsa ansible_ssh_extra_args='-o StrictHostKeyChecking=no' ansible_port=22 >> info
 done
 for item in "${PROJECTS[@]}"; do
-  IP=`topzone ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
+  IP=`vagrant ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
   echo ${IP}   ${item} >> info
 done
 
