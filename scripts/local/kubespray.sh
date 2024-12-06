@@ -143,20 +143,6 @@ k apply -f tz-local/resource/standard-storage.yaml
 k patch storageclass local-storage -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 k get storageclass,pv,pvc
 
-#helm repo add stable https://charts.helm.sh/stable
-#helm repo update
-#
-## nfs
-## 1. with helm
-#helm install my-release --set nfs.server=192.168.86.100 --set nfs.path=/srv/nfs/mydata stable/nfs-client-provisioner
-## 2. with manual
-#k apply -f tz-local/resource/dynamic-provisioning/nfs/static-nfs.yaml
-#k apply -f tz-local/resource/dynamic-provisioning/nfs/serviceaccount.yaml
-#k apply -f tz-local/resource/dynamic-provisioning/nfs/nfs.yaml
-#k apply -f tz-local/resource/dynamic-provisioning/nfs/nfs-claim.yaml
-
-#sleep 10
-
 #k get po -n kube-system
 
 exit 0
