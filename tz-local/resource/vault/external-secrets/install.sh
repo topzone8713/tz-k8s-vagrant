@@ -20,18 +20,6 @@ helm upgrade --debug --install external-secrets \
     --create-namespace \
     --set installCRDs=true
 
-#aws_access_key_id=$(prop 'credentials' 'aws_access_key_id' ${k8s_project})
-#aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key' ${k8s_project})
-aws_access_key_id=$(prop 'credentials' 'aws_access_key_id')
-aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key')
-
-echo -n ${aws_access_key_id} > ./access-key
-echo -n ${aws_secret_access_key} > ./secret-access-key
-kubectl -n ${NS} delete secret awssm-secret
-kubectl -n ${NS} create secret generic awssm-secret --from-file=./access-key  --from-file=./secret-access-key
-
-rm -Rf ./access-key ./secret-access-key
-
 #export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
 #vault login ${vault_token}
 #vault kv get secret/devops-prod/dbinfo

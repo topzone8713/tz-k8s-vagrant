@@ -15,7 +15,6 @@ export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
 echo ${VAULT_ADDR}
 vault login ${vault_token}
 
-vault secrets enable aws
 vault secrets enable consul
 vault auth enable kubernetes
 vault secrets enable database

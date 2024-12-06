@@ -9,7 +9,6 @@ cd /vagrant/tz-local/resource/vault/vault-injection
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 VAULT_TOKEN=$(prop 'project' 'vault')
-AWS_REGION=$(prop 'config' 'region')
 
 export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 vault login ${VAULT_TOKEN}

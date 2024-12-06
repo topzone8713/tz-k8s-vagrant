@@ -21,11 +21,7 @@ helm uninstall vault -n vault
 #k delete namespace vault
 k create namespace vault
 
-#kubectl -n vault delete secret generic eks-creds
-#kubectl -n vault create secret generic eks-creds \
-#    --from-literal=AWS_ACCESS_KEY_ID="${aws_access_key_id}" \
-#    --from-literal=AWS_SECRET_ACCESS_KEY="${aws_secret_access_key}"
-
+bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh vault
 bash /vagrant/tz-local/resource/vault/vault-injection/cert.sh vault
 
 #helm show values hashicorp/vault > values2.yaml
@@ -142,12 +138,6 @@ vault kv delete kv/tz-vault
 
 vault kv metadata get kv/tz-vault
 vault kv metadata delete kv/tz-vault
-
-
-# aws key
-vault secrets enable aws
-
-vault write aws/config/root
 
 #vault secrets enable -path=kv kv
 
