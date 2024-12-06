@@ -38,7 +38,7 @@ fi
 
 sudo rm -Rf kubespray
 #git clone --single-branch https://github.com/kubernetes-sigs/kubespray.git
-git clone https://github.com/kubernetes-sigs/kubespray.git --branch release-2.21
+git clone https://github.com/kubernetes-sigs/kubespray.git --branch release-2.26
 rm -Rf kubespray/inventory/test-cluster
 
 #echo -n "Did you fix ip address in resource/kubespray settings? (Y)"
@@ -60,6 +60,10 @@ sudo pip3 install -r requirements.txt
 cd ..
 
 #/etc/ansible/ansible.cfg
+cat <<EOF > /root/ansible.cfg
+[defaults]
+roles_path = /vagrant/kubespray/roles
+EOF
 
 ansible all -i resource/kubespray/inventory.ini -m ping -u root
 ansible all -i resource/kubespray/inventory.ini --list-hosts -u root
@@ -112,13 +116,24 @@ ansible-playbook -u root -i resource/kubespray/inventory.ini \
 
 sudo cp -Rf /root/.kube /home/topzone/
 sudo chown -Rf topzone:topzone /home/topzone/.kube
-sudo cp -Rf /root/.kube/config /vagrant/.ssh/kubeconfig_tz-k8s-topzone
+sudo cp -Rf /root/.kube/config /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
 
-#kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
-#exec bash
+sed -ie "s|127.0.0.1|192.168.86.100|g" /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
 
-kubectl get nodes
-kubectl cluster-info
+echo "## [ install kubectl ] ######################################################"
+sudo apt-get update && sudo apt-get install -y apt-transport-https gnupg2 curl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+echo "## [ install helm3 ] ######################################################"
+sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+sudo bash get_helm.sh
+sudo rm -Rf get_helm.sh
+
+kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
+
+#kubectl get nodes
+#kubectl cluster-info
 
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
@@ -131,30 +146,20 @@ k get storageclass,pv,pvc
 #helm repo add stable https://charts.helm.sh/stable
 #helm repo update
 #
-# nfs
-# 1. with helm
+## nfs
+## 1. with helm
 #helm install my-release --set nfs.server=192.168.86.100 --set nfs.path=/srv/nfs/mydata stable/nfs-client-provisioner
-# 2. with manual
+## 2. with manual
 #k apply -f tz-local/resource/dynamic-provisioning/nfs/static-nfs.yaml
 #k apply -f tz-local/resource/dynamic-provisioning/nfs/serviceaccount.yaml
 #k apply -f tz-local/resource/dynamic-provisioning/nfs/nfs.yaml
 #k apply -f tz-local/resource/dynamic-provisioning/nfs/nfs-claim.yaml
 
-#echo "## [ install kubectl ] ######################################################"
-#sudo apt-get update && sudo apt-get install -y apt-transport-https gnupg2 curl
-#curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-#sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-echo "## [ install helm3 ] ######################################################"
-sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-sudo bash get_helm.sh
-sudo rm -Rf get_helm.sh
-
 #sleep 10
 
 #k get po -n kube-system
 
-sudo rm -Rf info
+exit 0
 
 ##################################################################
 # call nfs dynamic-provisioning

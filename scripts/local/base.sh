@@ -42,7 +42,9 @@ sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 #sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 sudo apt-get update
-sudo apt install -y python3 python3-pip net-tools git
+sudo apt install -y python3 python3-pip net-tools git runc
+
+#sudo apt install --reinstall ca-certificates -y
 
 sudo tee /etc/modules-load.d/containerd.conf << EOF
 overlay

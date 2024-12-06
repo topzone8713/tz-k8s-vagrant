@@ -39,5 +39,6 @@ tz_rsa*
 *_bake
 /resources
 /kubespray
-kubeconfig_tz-k8s-topzone
+kubeconfig_tz-k8s-vagrant
 .ssh
+.vagrant

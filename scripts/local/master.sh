@@ -2,6 +2,15 @@
 
 #set -x
 
+echo "
+export ANSIBLE_CONFIG=/root/ansible.cfg
+alias k='kubectl'
+alias base='cd /vagrant/terraform-aws-k8s/workspace/base'
+alias ll='ls -al'
+alias KUBECONFIG='~/.kube/config'
+export PATH=\"/root/.krew/bin:$PATH\"
+" > /root/.bashrc
+
 echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
 echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
@@ -15,9 +24,11 @@ alias k='kubectl --kubeconfig ~/.kube/config'
 
 bash /vagrant/scripts/local/base.sh
 
-sudo apt-add-repository ppa:ansible/ansible
+sudo apt-add-repository ppa:ansible/ansible -y
 sudo apt update
 sudo apt install python3-pip ansible net-tools -y
+#sudo pip install --upgrade ansible
+#sudo ansible-galaxy install --force container-engine/runc
 
 cp -Rf scripts/local/config.cfg /root/.ssh/config
 
