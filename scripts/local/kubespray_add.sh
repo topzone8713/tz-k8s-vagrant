@@ -16,6 +16,6 @@ ansible all -i resource/kubespray/inventory_add.ini -m ping -u root
 #ansible-playbook -i inventory/test-cluster/hosts.yaml cluster.yml -b -become-user=root -l node3
 ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
-  kubespray/cluster.yml -b -l kube-slave-6
+  kubespray/cluster.yml -b -l kube-slave-4
 
 exit 0
