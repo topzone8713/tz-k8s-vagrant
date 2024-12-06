@@ -34,7 +34,7 @@ docker image build -t ${SNAPSHOT_IMG} .
 docker tag ${SNAPSHOT_IMG}:latest ${DOCKER_ID}/${SNAPSHOT_IMG}:${TAG}
 docker push ${DOCKER_ID}/${SNAPSHOT_IMG}:${TAG}
 
-export VAULT_ADDR="https://vault.default.${k8s_project}.${k8s_domain}"
+export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 echo $VAULT_ADDR
 vault login ${VAULT_TOKEN}
 

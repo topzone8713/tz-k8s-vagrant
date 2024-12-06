@@ -6,10 +6,10 @@
 ```
 
  - get jenkins url
-   => https://jenkins.default.topzone-k8s.topzone.me
+   => http://jenkins.default.topzone-k8s.topzone.me
 
  - setting kubernetes plugin
-    https://jenkins.default.topzone-k8s.topzone.me/configureClouds/
+    http://jenkins.default.topzone-k8s.topzone.me/configureClouds/
    - Name: topzone-k8s
    - Kubernetes URL: https://kubernetes.default
    - Kubernetes Namespace: jenkins

@@ -33,12 +33,12 @@ prometheus:
         static_configs:
 #            - https://devops-demo.devops-dev.k8s_project.k8s_domain
           - targets:
-            - https://jenkins.default.k8s_project.k8s_domain
-            - https://argocd.default.k8s_project.k8s_domain
+            - http://jenkins.default.k8s_project.k8s_domain
+            - http://argocd.default.k8s_project.k8s_domain
             - https://grafana.default.k8s_project.k8s_domain
             - https://prometheus.default.k8s_project.k8s_domain
             - https://alertmanager.default.k8s_project.k8s_domain
-            - https://vault.default.k8s_project.k8s_domain
+            - http://vault.default.k8s_project.k8s_domain
             - https://consul.default.k8s_project.k8s_domain
 #            - https://kiali.istio-system.k8s_project.k8s_domain
 #            - https://jaeger.istio-system.k8s_project.k8s_domain

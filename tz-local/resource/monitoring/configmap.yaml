@@ -27,7 +27,7 @@ data:
     [server]
     protocol = http
     domain = grafana.default.k8s_project.k8s_domain
-    root_url = https://grafana.default.k8s_project.k8s_domain
+    root_url = http://grafana.default.k8s_project.k8s_domain
     [users]
     viewers_can_edit = true
     [auth.google]

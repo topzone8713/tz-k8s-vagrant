@@ -27,7 +27,7 @@ echo "aws_account_id: ${aws_account_id}"
 
 echo "
 export AWS_DEFAULT_REGION=${aws_region}
-export VAULT_ADDR=https://vault.${k8s_domain}
+export VAULT_ADDR=http://vault.${k8s_domain}
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'
 alias base='cd /vagrant/terraform-aws-k8s/workspace/base'

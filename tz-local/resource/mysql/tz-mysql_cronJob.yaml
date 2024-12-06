@@ -58,9 +58,7 @@ spec:
 #    VOLUME_ID=$1
 #    DESC="aaa"
 #
-#    function prop {
-#        grep "${2}" "/home/topzone/.k8s/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
-#    }
+#    function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 #    export AWS_ACCESS_KEY_ID=$(prop 'config' 'AWS_ACCESS_KEY_ID')
 #    export AWS_SECRET_ACCESS_KEY=$(prop 'config' 'AWS_SECRET_ACCESS_KEY')
 #    export AWS_DEFAULT_REGION=$(prop 'config' 'AWS_DEFAULT_REGION')

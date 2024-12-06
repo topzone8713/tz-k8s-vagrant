@@ -41,4 +41,4 @@ tz_rsa*
 /kubespray
 kubeconfig_tz-k8s-vagrant
 .ssh
-.vagrant
+/.vagrant/

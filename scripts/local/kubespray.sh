@@ -147,31 +147,4 @@ k get storageclass,pv,pvc
 
 exit 0
 
-##################################################################
-# call nfs dynamic-provisioning
-##################################################################
-bash tz-local/resource/dynamic-provisioning/nfs/install.sh
-
-##################################################################
-# call dashboard install script
-##################################################################
-#bash tz-local/resource/dashboard/install.sh
-
-##################################################################
-# call monitoring install script
-##################################################################
-bash tz-local/resource/monitoring/install.sh
-
-##################################################################
-# call jenkins install script
-##################################################################
-#bash tz-local/resource/jenkins/install.sh
-
-##################################################################
-# call tz-py-crawler app in k8s
-##################################################################
-#bash tz-local/resource/tz-py-crawler/install.sh
-
-exit 0
-
-bash tz-local/resource/kafka/install.sh
+bash scripts/kubespray_add.sh

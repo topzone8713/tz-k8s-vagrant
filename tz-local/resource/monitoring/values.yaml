@@ -129,9 +129,9 @@ alertmanager:
       repository: prometheus/alertmanager
       tag: v0.25.0
 
-    externalUrl: https://alertmanager.default.k8s_project.k8s_domain
+    externalUrl: http://alertmanager.default.k8s_project.k8s_domain
     extraArgs:
-      web.external-url: https://alertmanager.default.k8s_project.k8s_domain
+      web.external-url: http://alertmanager.default.k8s_project.k8s_domain
       web.route-prefix: "/"
     replicas: 1
 #    nodeSelector:
@@ -201,7 +201,7 @@ prometheusOperator:
 prometheus:
   enabled: true
   prometheusSpec:
-    externalUrl: https://prometheus.default.k8s_project.k8s_domain
+    externalUrl: http://prometheus.default.k8s_project.k8s_domain
 #    nodeSelector:
 #      environment: monitoring
 #      team: devops
@@ -236,19 +236,19 @@ prometheus:
         params:
           module: [http_2xx]
         static_configs:
-#            - https://devops-demo.devops-dev.k8s_project.k8s_domain
+#            - http://devops-demo.devops-dev.k8s_project.k8s_domain
           - targets:
-            - https://jenkins.default.k8s_project.k8s_domain
-            - https://argocd.default.k8s_project.k8s_domain
-            - https://grafana.default.k8s_project.k8s_domain
-            - https://prometheus.default.k8s_project.k8s_domain
-            - https://alertmanager.default.k8s_project.k8s_domain
-            - https://vault.default.k8s_project.k8s_domain
-            - https://consul.default.k8s_project.k8s_domain
-            - https://sonarqube.default.k8s_project.k8s_domain
-#            - https://kiali.istio-system.k8s_project.k8s_domain
-#            - https://jaeger.istio-system.k8s_project.k8s_domain
-            - https://kibana.elk.k8s_project.k8s_domain
+            - http://jenkins.default.k8s_project.k8s_domain
+            - http://argocd.default.k8s_project.k8s_domain
+            - http://grafana.default.k8s_project.k8s_domain
+            - http://prometheus.default.k8s_project.k8s_domain
+            - http://alertmanager.default.k8s_project.k8s_domain
+            - http://vault.default.k8s_project.k8s_domain
+            - http://consul.default.k8s_project.k8s_domain
+            - http://sonarqube.default.k8s_project.k8s_domain
+#            - http://kiali.istio-system.k8s_project.k8s_domain
+#            - http://jaeger.istio-system.k8s_project.k8s_domain
+            - http://kibana.elk.k8s_project.k8s_domain
 
         relabel_configs:
           - source_labels: [__address__]

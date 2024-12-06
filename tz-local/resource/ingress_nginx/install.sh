@@ -32,15 +32,17 @@ helm uninstall ingress-nginx -n ${NS}
 helm upgrade --debug --install --reuse-values ingress-nginx ingress-nginx/ingress-nginx \
   -f values.yaml --version ${APP_VERSION} -n ${NS}
 
-kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+#kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 
 sleep 60
 DEVOPS_ELB=$(kubectl get svc | grep ingress-nginx-controller | grep LoadBalancer | head -n 1 | awk '{print $4}')
+echo "####################################################################################"
+echo " DEVOPS_ELB: ${DEVOPS_ELB}"
+echo "####################################################################################"
 if [[ "${DEVOPS_ELB}" == "" ]]; then
   echo "No elb! check nginx-ingress-controller with LoadBalancer type!"
   exit 1
 fi
-sleep 20
 cp -Rf nginx-ingress.yaml nginx-ingress.yaml_bak
 sed -i "s|NS|${NS}|g" nginx-ingress.yaml_bak
 sed -i "s/k8s_project/${k8s_project}/g" nginx-ingress.yaml_bak
@@ -53,6 +55,8 @@ echo curl http://test.${NS}.${k8s_project}.${k8s_domain}
 sleep 30
 curl -v http://test.${NS}.${k8s_project}.${k8s_domain}
 #k delete -f nginx-ingress.yaml_bak
+
+exit 0
 
 #### https ####
 helm repo add jetstack https://charts.jetstack.io

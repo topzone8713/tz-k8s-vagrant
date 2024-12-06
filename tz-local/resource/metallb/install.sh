@@ -31,6 +31,8 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manif
 
 #kubectl apply -f metallb.yaml -n ${NS}
 
+sleep 60
+
 # On first install only
 k create secret generic -n ${NS} memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 k get pods -n ${NS}

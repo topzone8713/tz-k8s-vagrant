@@ -66,7 +66,7 @@ helm upgrade --debug --install --reuse-values prometheus prometheus-community/ku
     -n ${NS} \
     --version ${STACK_VERSION} \
     -f values.yaml_bak \
-    --set alertmanager.baseURL=https://alertmanager.default.${k8s_project}.${k8s_domain}
+    --set alertmanager.baseURL=http://alertmanager.default.${k8s_project}.${k8s_domain}
 
 #k patch deployment/prometheus-kube-state-metrics -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops"}}}}}' -n ${NS}
 #k patch deployment/prometheus-kube-state-metrics -p '{"spec": {"template": {"spec": {"nodeSelector": {"environment": "monitoring"}}}}}' -n ${NS}
@@ -218,7 +218,7 @@ fi
 PROJECTS=(KubeSchedulerDown KubeletTooManyPods TargetDown Watchdog InfoInhibitor KubePodNotReady AlertmanagerClusterFailedToSendAlerts AlertmanagerFailedToSendAlerts KubeDaemonSetRolloutStuck)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
-curl https://alertmanager.default.${k8s_project}.${k8s_domain}/api/v1/silences -d '{
+curl http://alertmanager.default.${k8s_project}.${k8s_domain}/api/v1/silences -d '{
       "matchers": [
         {
           "name": "alertname",
@@ -275,7 +275,7 @@ binding
 prometheus-kube-prometheus-prometheus
 
 
-https://alertmanager.default.${k8s_project}.${k8s_domain}/#/alerts
+http://alertmanager.default.${k8s_project}.${k8s_domain}/#/alerts
 
 #          "value": "Watchdog",
 #          "isRegex": true

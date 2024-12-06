@@ -20,7 +20,7 @@ function propConfig {
 echo "k8s_project: ${k8s_project}"
 
 echo "
-export VAULT_ADDR=https://vault.${k8s_domain}
+export VAULT_ADDR=http://vault.${k8s_domain}
 export KUBE_CONFIG_PATH='~/.kube/config'
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'

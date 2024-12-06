@@ -5,9 +5,9 @@
 echo "
 export ANSIBLE_CONFIG=/root/ansible.cfg
 alias k='kubectl'
-alias base='cd /vagrant/terraform-aws-k8s/workspace/base'
 alias ll='ls -al'
 alias KUBECONFIG='~/.kube/config'
+alias base='cd /vagrant'
 export PATH=\"/root/.krew/bin:$PATH\"
 " > /root/.bashrc
 
@@ -31,6 +31,9 @@ sudo apt install python3-pip ansible net-tools -y
 #sudo ansible-galaxy install --force container-engine/runc
 
 cp -Rf scripts/local/config.cfg /root/.ssh/config
+
+sudo rm -Rf /root/.k8s
+sudo cp -Rf /vagrant/resources /root/.k8s
 
 #sudo bash scripts/local/kubespray.sh
 
