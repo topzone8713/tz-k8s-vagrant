@@ -25,7 +25,7 @@ tz-eks-main/tz-local/resource/monitoring/prometheus/prometheus-values.yaml
 ```
   grafana에서 할당된 팀별 폴더에서 Dashboard 및 pannel을 정의하면서 alert을 정의할 수 있습니다.
   예시)
-  http://grafana.default.eks-main.k8s_domain/d/v1XzetqGz/devops-demo?orgId=1
+  https://grafana.default.eks-main.k8s_domain/d/v1XzetqGz/devops-demo?orgId=1
 
   "0. 모니터링할 http url 등록"에서 수집된 url별로, http, https의 에러 코드별로 쿼리하고
   alert 정의를 통해서 담당자에게 메일 발송을 정의합니다.

@@ -6,10 +6,10 @@
 ```
 
  - get jenkins url
-   => http://jenkins.default.topzone-k8s.topzone.me
+   => https://jenkins.default.topzone-k8s.topzone.me
 
  - setting kubernetes plugin
-    http://jenkins.default.topzone-k8s.topzone.me/configureClouds/
+    https://jenkins.default.topzone-k8s.topzone.me/configureClouds/
    - Name: topzone-k8s
    - Kubernetes URL: https://kubernetes.default
    - Kubernetes Namespace: jenkins
@@ -21,7 +21,7 @@
     - github-token
       1. get github's personal access token:
         https://github.com/settings/tokens
-      2. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
+      2. https://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
         Kind: Username with password
         Username: ex) topzone8713@gmail.com
         Password: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
@@ -29,7 +29,7 @@
 
     - GITHUP_TOKEN
       1. get github's personal access token:
-      2. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
+      2. https://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
         Kind: Secret text
         Secret: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
         ID: GITHUP_TOKEN

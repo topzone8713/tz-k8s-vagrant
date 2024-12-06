@@ -108,6 +108,11 @@ k -n vault get pods -l app.kubernetes.io/name=vault
 
 #curl http://dooheehong323:31700/ui/vault/secrets
 
+wget https://releases.hashicorp.com/vault/1.3.1/vault_1.3.1_linux_amd64.zip && \
+    unzip vault_1.3.1_linux_amd64.zip && \
+    rm -Rf vault_1.3.1_linux_amd64.zip && \
+    mv vault /usr/local/bin/
+
 #VAULT_VERSION="1.3.1"
 #curl -sO https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
 #unzip vault_${VAULT_VERSION}_linux_amd64.zip

@@ -50,8 +50,14 @@ k apply -f consul-ingress.yaml_bak -n consul
 
 sleep 60
 
-export CONSUL_HTTP_ADDR="consul.default.${k8s_project}.${k8s_domain}"
-echo http://$CONSUL_HTTP_ADDR
+export CONSUL_HTTP_ADDR="https://consul.default.${k8s_project}.${k8s_domain}"
+echo https://$CONSUL_HTTP_ADDR
+
+wget https://releases.hashicorp.com/consul/1.8.4/consul_1.8.4_linux_amd64.zip && \
+    unzip consul_1.8.4_linux_amd64.zip && \
+    rm -Rf consul_1.8.4_linux_amd64.zip && \
+    mv consul /usr/local/bin/
+
 consul members
 
 exit 0

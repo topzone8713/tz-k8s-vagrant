@@ -238,9 +238,9 @@ prometheus:
         static_configs:
 #            - http://devops-demo.devops-dev.k8s_project.k8s_domain
           - targets:
-            - http://jenkins.default.k8s_project.k8s_domain
-            - http://argocd.default.k8s_project.k8s_domain
-            - http://grafana.default.k8s_project.k8s_domain
+            - https://jenkins.default.k8s_project.k8s_domain
+            - https://argocd.default.k8s_project.k8s_domain
+            - https://grafana.default.k8s_project.k8s_domain
             - http://prometheus.default.k8s_project.k8s_domain
             - http://alertmanager.default.k8s_project.k8s_domain
             - http://vault.default.k8s_project.k8s_domain

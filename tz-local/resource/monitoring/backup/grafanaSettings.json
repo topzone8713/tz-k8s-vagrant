@@ -7,7 +7,7 @@
     "pretty_print": false
   },
   "grafana": {
-    "url": "http://grafana.default.k8s_project.k8s_domain",
+    "url": "https://grafana.default.k8s_project.k8s_domain",
     "token": "grafana_token_var",
     "search_api_limit": 5000,
     "default_password": "00000000",

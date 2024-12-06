@@ -68,7 +68,7 @@ kubectl -n jenkins create secret generic aws-secret \
 
 echo "
 ##[ Jenkins ]##########################################################
-#  - URL: http://jenkins.default.${k8s_project}.${k8s_domain}
+#  - URL: https://jenkins.default.${k8s_project}.${k8s_domain}
 #
 #  - ID: admin
 #  - Password:

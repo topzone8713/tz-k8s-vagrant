@@ -19,10 +19,10 @@ data:
       type: oidc
       id: google
       name: Google
-      url: http://argocd.default.topzone-k8s.topzone.me
+      url: https://argocd.default.topzone-k8s.topzone.me
   exec.enabled: 'false'
   server.rbac.log.enforce.enable: 'false'
   timeout.hard.reconciliation: 0s
   timeout.reconciliation: 180s
-  url: http://argocd.default.k8s_project.k8s_domain
+  url: https://argocd.default.k8s_project.k8s_domain
   accounts.tz-admin: apiKey, login

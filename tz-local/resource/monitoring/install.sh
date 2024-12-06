@@ -109,7 +109,7 @@ sed -i "s/smtp_password/${smtp_password}/g" configmap.yaml_bak
 k -n ${NS} apply -f configmap.yaml_bak
 #curl -X POST http://prometheus.default.${k8s_project}.${k8s_domain}/-/reload
 
-#curl http://grafana.default.${k8s_project}.${k8s_domain}
+#curl https://grafana.default.${k8s_project}.${k8s_domain}
 #admin / prom-operator
 #grafana_pod=$(kubectl -n ${NS} get pod | grep prometheus-grafana | awk '{print $1}')
 #kubectl exec -it ${grafana_pod} \
@@ -239,7 +239,7 @@ done
 exit 0
 
 1. aws datasource setting
-  Data Sources / CloudWatch: http://grafana.default.${k8s_project}.${k8s_domain}/datasources/edit/2/
+  Data Sources / CloudWatch: https://grafana.default.${k8s_project}.${k8s_domain}/datasources/edit/2/
   #  Assess and secret key for "grafana" user
   #  Attach existing policies directly
   #CloudWatchReadOnlyAccess
