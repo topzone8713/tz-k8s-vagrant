@@ -40,3 +40,4 @@ tz_rsa*
 /resources
 /kubespray
 kubeconfig_tz-k8s-topzone
+.ssh

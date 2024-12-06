@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 cd /vagrant/tz-local/resource/docker-repo
 
 #set -x
@@ -14,18 +14,21 @@ dockerhub_id=$(prop 'project' 'dockerhub_id')
 dockerhub_password=$(prop 'project' 'dockerhub_password')
 docker_url=$(prop 'project' 'docker_url')
 
-apt-get update -y
-apt-get -y install docker.io jq
+#apt-get update -y
+#apt-get -y install docker.io jq
 usermod -G docker topzone
 chown -Rf topzone:topzone /var/run/docker.sock
 
 mkdir -p ~/.docker
-docker login -u="${dockerhub_id}" -p="${dockerhub_password}" ${docker_url}
+docker login -u="${dockerhub_id}" # -p="${dockerhub_password}" ${docker_url}
 
-sleep 2
+exit 0
 
+cp ~/.docker/config.json /vagrant/resources
 cat ~/.docker/config.json
-#{"auths":{"https://index.docker.io/v1/":{"username":"devops","password":"devops!323","email":"topzone8713@gmail.com","auth":"ZGV2b3BzOmRldm9wcyEzMjM="}}}
+# e.g. {"auths":{"https://index.docker.io/v1/":{"username":"devops","password":"devops!323","email":"topzone8713@gmail.com","auth":"ZGV2b3BzOmRldm9wcyEzMjM="}}}
+cp /vagrant/resources/config.json ~/.docker/config.json
+
 mkdir -p /home/topzone/.docker
 cp -Rf ~/.docker/config.json /home/topzone/.docker/config.json
 chown -Rf topzone:topzone /home/topzone/.docker
@@ -63,6 +66,7 @@ PROJECTS=(argocd consul jenkins default devops devops-dev monitoring vault)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     echo "===================== ${item}"
+    kubectl create namespace ${item}
     kubectl delete secret tz-registrykey -n ${item}
     kubectl create secret generic tz-registrykey \
       -n ${item} \

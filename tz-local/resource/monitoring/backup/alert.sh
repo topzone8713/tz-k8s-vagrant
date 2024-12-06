@@ -8,9 +8,9 @@ WORKING_HOME=/var/lib/jenkins
 
 function prop {
   if [[ "${3}" == "" ]]; then
-    grep "${2}" "${WORKING_HOME}/.aws/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
+    grep "${2}" "${WORKING_HOME}/.k8s/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
   else
-    grep "${3}" "${WORKING_HOME}/.aws/${1}" -A 10 | grep "${2}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g'
+    grep "${3}" "${WORKING_HOME}/.k8s/${1}" -A 10 | grep "${2}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g'
   fi
 }
 

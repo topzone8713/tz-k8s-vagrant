@@ -6,22 +6,32 @@
 # k8s base
 ##################################################################
 
-if [ -d /topzone ]; then
-  cd /topzone
+if [ -d /vagrant ]; then
+  cd /vagrant
 fi
+
+sudo groupadd topzone
+sudo useradd -g topzone -d /home/topzone -s /bin/bash -m topzone
+cat <<EOF > pass.txt
+topzone:topzone
+EOF
+sudo chpasswd < pass.txt
+sudo mkdir -p /home/topzone/.ssh &&
+  sudo chown -Rf topzone:topzone /home/topzone
 
 MYKEY=tz_rsa
 cp -Rf /vagrant/.ssh/${MYKEY} /root/.ssh/${MYKEY}
 cp -Rf /vagrant/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
-cp /home/vagrant/.ssh/authorized_keys /root/.ssh/authorized_keys
+touch /home/topzone/.ssh/authorized_keys
+cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
 cat /root/.ssh/${MYKEY}.pub >> /root/.ssh/authorized_keys
 chown -R root:root /root/.ssh \
   chmod -Rf 400 /root/.ssh
-rm -Rf /home/vagrant/.ssh \
-  && cp -Rf /root/.ssh /home/vagrant/.ssh \
-  && chown -Rf topzone:topzone /home/vagrant/.ssh \
-  && chmod -Rf 700 /home/vagrant/.ssh \
-  && chmod -Rf 600 /home/vagrant/.ssh/*
+rm -Rf /home/topzone/.ssh \
+  && cp -Rf /root/.ssh /home/topzone/.ssh \
+  && chown -Rf topzone:topzone /home/topzone/.ssh \
+  && chmod -Rf 700 /home/topzone/.ssh \
+  && chmod -Rf 600 /home/topzone/.ssh/*
 
 cat <<EOF >> /etc/resolv.conf
 nameserver 1.1.1.1 #cloudflare DNS
@@ -54,12 +64,25 @@ sudo sysctl --system
 #sudo ufw allow 6443
 sudo ufw disable
 
-sudo groupadd topzone
-sudo useradd -g topzone -d /home/topzone -s /bin/bash -m topzone
-cat <<EOF > pass.txt
-topzone:topzone
+apt update
+apt install -y nfs-server nfs-common
+mkdir /srv/nfs
+sudo chown nobody:nogroup /srv/nfs
+sudo chmod 0777 /srv/nfs
+cat << EOF >> /etc/exports
+/srv/nfs 192.168.86.0/24(rw,no_subtree_check,no_root_squash)
 EOF
-sudo chpasswd < pass.txt
+systemctl enable --now nfs-server
+exportfs -ar
+
+apt install ntp -y
+systemctl start ntp
+systemctl enable ntp
+#ntpdate pool.ntp.org
+
+# manual test
+#sudo mount -t nfs 192.168.86.100:/srv/nfs /mnt
+## done
 
 cat <<EOF >> /etc/hosts
 192.168.86.100   kube-master

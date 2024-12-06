@@ -5,8 +5,8 @@
 
 #set -x
 
-if [ -d /topzone ]; then
-  cd /topzone
+if [ -d /vagrant ]; then
+  cd /vagrant
 fi
 
 cd kubespray

@@ -8,7 +8,7 @@ cd /vagrant/tz-local/resource/metallb
 shopt -s expand_aliases
 
 NS=metallb-system
-alias k="kubectl -n ${NS} --kubeconfig ~/.kube/kubespray_topzone"
+alias k="kubectl -n ${NS} --kubeconfig ~/.kube/config"
 
 kubectl get configmap kube-proxy -n kube-system -o yaml | \
 sed -e "s/strictARP: false/strictARP: true/" | \
@@ -35,11 +35,11 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manif
 k create secret generic -n ${NS} memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 k get pods -n ${NS}
 
-k delete -f /vagrant/tz-local/resource/metallb/layer2-config.yaml
-k apply -f /vagrant/tz-local/resource/metallb/layer2-config.yaml
-
+k delete -f layer2-config.yaml -n ${NS}
 k apply -f layer2-config.yaml -n ${NS}
 
 k logs -l component=speaker -n ${NS}
 
+k apply -f test.yaml -n ${NS}
+k delete -f test.yaml -n ${NS}
 exit 0

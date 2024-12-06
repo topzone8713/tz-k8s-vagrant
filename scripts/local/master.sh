@@ -6,8 +6,8 @@ echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
 echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
 
-if [ -d /topzone ]; then
-  cd /topzone
+if [ -d /vagrant ]; then
+  cd /vagrant
 fi
 
 shopt -s expand_aliases
@@ -25,7 +25,7 @@ cp -Rf scripts/local/config.cfg /root/.ssh/config
 
 exit 0
 
-sudo sed -i "s/\$KUBELET_EXTRA_ARGS/\$KUBELET_EXTRA_ARGS --node-ip=192.168.86.90/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sudo sed -i "s/\$KUBELET_EXTRA_ARGS/\$KUBELET_EXTRA_ARGS --node-ip=192.168.86.100/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 systemctl daemon-reload && systemctl restart kubelet
 kubectl get nodes -o wide
 
@@ -40,10 +40,10 @@ exportfs -a
 systemctl stop nfs-kernel-server
 systemctl start nfs-kernel-server
 #service nfs-kernel-server status
-showmount -e 192.168.86.90
+showmount -e 192.168.86.100
 #sudo mkdir /data
-#mount -t nfs -vvvv 192.168.86.90:/homedata /data
-#echo '192.168.86.90:/homedata /data  nfs      defaults    0       0' >> /etc/fstab
+#mount -t nfs -vvvv 192.168.86.100:/homedata /data
+#echo '192.168.86.100:/homedata /data  nfs      defaults    0       0' >> /etc/fstab
 #sudo mount -t nfs -o resvport,rw 192.168.3.1:/Volumes/workspace/etc /Volumes/sambashare
 
 k patch storageclass nfs-storageclass -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'

@@ -59,7 +59,7 @@ spec:
 #    DESC="aaa"
 #
 #    function prop {
-#        grep "${2}" "/home/topzone/.aws/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
+#        grep "${2}" "/home/topzone/.k8s/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
 #    }
 #    export AWS_ACCESS_KEY_ID=$(prop 'config' 'AWS_ACCESS_KEY_ID')
 #    export AWS_SECRET_ACCESS_KEY=$(prop 'config' 'AWS_SECRET_ACCESS_KEY')

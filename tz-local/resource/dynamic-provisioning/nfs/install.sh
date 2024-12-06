@@ -9,36 +9,31 @@ alias k='kubectl --kubeconfig ~/.kube/config'
 # install NFS in k8s
 #https://github.com/kubernetes-csi/csi-driver-nfs/blob/master/deploy/example/nfs-provisioner/README.md
 
-apt update
-apt install -y nfs-server nfs-common
-mkdir /srv/nfs
-sudo chown nobody:nogroup /srv/nfs
-sudo chmod 0777 /srv/nfs
-cat << EOF >> /etc/exports
-/srv/nfs 192.168.0.0/24(rw,no_subtree_check,no_root_squash)
-EOF
-systemctl enable --now nfs-server
-exportfs -ar
-
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
-helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+#helm show values nfs-subdir-external-provisioner/nfs-subdir-external-provisioner > values.yaml
+
+#--reuse-values
+helm uninstall nfs-subdir-external-provisioner -n nfs-provisioner
+helm upgrade --debug --install --reuse-values nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
   --create-namespace \
   --namespace nfs-provisioner \
-  --set nfs.server=192.168.86.90 \
+  --set nfs.server=192.168.86.100 \
   --set nfs.path=/srv/nfs
 
 ## 1. Install NFS CSI driver master version on a kubernetes cluster
-#curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/deploy/install-driver.sh | bash -s master --
-#k -n kube-system get pod -o wide -l app=csi-nfs-controller
-#k -n kube-system get pod -o wide -l app=csi-nfs-node
+curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v4.9.0/deploy/install-driver.sh | bash -s v4.9.0 --
+sleep 60
+
+k -n kube-system get pod -o wide -l app=csi-nfs-controller
+k -n kube-system get pod -o wide -l app=csi-nfs-node
 
 ## 3. Verifying a driver installation
-#k get csinodes \
-#-o jsonpath='{range .items[*]} {.metadata.name}{": "} {range .spec.drivers[*]} {.name}{"\n"} {end}{end}'
+k get csinodes \
+-o jsonpath='{range .items[*]} {.metadata.name}{": "} {range .spec.drivers[*]} {.name}{"\n"} {end}{end}'
 
-#k create -f https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/deploy/example/nfs-provisioner/nginx-pod.yaml
-#k exec nginx-nfs-example -n default -- bash -c "findmnt /var/www -o TARGET,SOURCE,FSTYPE"
-#k delete -f https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/deploy/example/nfs-provisioner/nginx-pod.yaml
+k apply -f nginx-pod.yaml
+k exec nginx-nfs2-example -n default -- bash -c "findmnt /var/www -o TARGET,SOURCE,FSTYPE"
+k delete -f nginx-pod.yaml
 
 cd /vagrant/tz-local/resource/dynamic-provisioning/nfs
 ###############################################################

@@ -2,11 +2,17 @@
 
 cd tz-local/docker
 
-export docker_user="doohee323"
-export k8s_project=home-k8s
-#export k8s_project=hyper-k8s
-export k8s_domain=shoptoolstest.co.kr
-export tz_project=devops-utils
+export docker_user="topzone8713"
+export k8s_project=topzone-k8s
+export k8s_domain=topzone.me
+export tz_project=devops-utils2
+
+dockerhub_id=${docker_user}
+#dockerhub_id=$(prop 'project' 'dockerhub_id')
+dockerhub_password=$(prop 'project' 'dockerhub_password')
+docker_url=$(prop 'project' 'docker_url')
+#docker_url=index.docker.io
+docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
 
 TAG=${docker_user}/${tz_project}:latest
 
@@ -18,7 +24,7 @@ docker-compose -f docker-compose.yml_bak up -d
 #docker-compose -f docker-compose.yml_bak down
 
 docker exec -it `docker ps | grep docker-${tz_project} | awk '{print $1}'` bash
-export k8s_project=hyper-k8s
+export k8s_project=topzone-k8s
 bash /vagrant/tz-local/docker/init2.sh
 
 exit 0

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
-function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); echo "$rslt"; }
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 cd /vagrant/tz-local/resource/ingress_nginx
 
 NS=$1
@@ -67,7 +67,7 @@ k create namespace cert-manager
 # Install needed CRDs
 k apply --validate=false -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.crds.yaml
 # --reuse-values
-helm upgrade --debug --install --reuse-values \
+helm upgrade --debug --install \
   cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
@@ -138,4 +138,4 @@ spec:
   logSeverityScreen: Info
   nodeToNodeMeshEnabled: false
   serviceClusterIPs:
-  - cidr: 192.168.0.0/12
+  - cidr: 192.168.86.0/12

@@ -12,7 +12,7 @@ spec:
           serviceAccountName: jenkins
           containers:
           - name: tz-py-crawler-job
-            image: doohee323/tz-py-crawler:35
+            image: topzone8713/tz-py-crawler:35
 #            image: ${REPOSITORY_TAG}
             imagePullPolicy: IfNotPresent
             args:

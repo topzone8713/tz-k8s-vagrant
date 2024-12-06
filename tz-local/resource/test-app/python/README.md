@@ -3,17 +3,17 @@
 ## jenkins setting
 http://dooheehong323:31000/configure
 Global properties > Environment variables > Add
-ORGANIZATION_NAME: doohee323
-YOUR_DOCKERHUB_USERNAME: doohee323
+ORGANIZATION_NAME: topzone8713
+YOUR_DOCKERHUB_USERNAME: topzone8713
 
 ## git clone a test project
 mkdir -p tz-k8s-topzone/projects
-git clone https://github.com/doohee323/tz-py-crawlery.git
+git clone https://github.com/topzone8713/tz-py-crawlery.git
 
 ## Add a Credentials for Github
  http://98.234.161.130:31000/credentials/store/system/domain/_/newCredentials
- ex) Jenkins	(global)	dockerhub	doohee323/****** (GitHub)
-    Username: doohee323 # github id
+ ex) Jenkins	(global)	dockerhub	topzone8713/****** (GitHub)
+    Username: topzone8713 # github id
     Password: xxxx
     ID: GitHub
     Owener: top-zone
@@ -22,7 +22,7 @@ git clone https://github.com/doohee323/tz-py-crawlery.git
 
 ## Add a Credentials for dockerhub
  http://98.234.161.130:31000/credentials/store/system/domain/_/newCredentials
- ex) Jenkins	(global)	dockerhub	doohee323/****** (dockerhub)
+ ex) Jenkins	(global)	dockerhub	topzone8713/****** (dockerhub)
     registryCredential = 'dockerhub'
 
 ## make a project in Jenkins
@@ -32,9 +32,9 @@ type: multibranch Pipeline
 Display Name: tz-py-crawler
 Branch Sources: GitHub
     Credential: Jenkins
-        Username: doohee323 # github id
+        Username: topzone8713 # github id
     
-Repository HTTPS URL: https://github.com/doohee323/tz-py-crawler.git
+Repository HTTPS URL: https://github.com/topzone8713/tz-py-crawler.git
 
 
 

@@ -192,7 +192,7 @@ nodelocaldns_health_port: 9254
 # - zones:
 #   - https://mycompany.local:4453
 #   nameservers:
-#   - 192.168.0.53
+#   - 192.168.86.53
 #   cache: 0
 # - zones:
 #   - mydomain.tld

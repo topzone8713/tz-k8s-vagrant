@@ -27,7 +27,7 @@ to project root directory.
 
 ## -. Refer to README.md for each version.
 ```
-    cf) my topzone's host server priavte ip: 192.168.0.143
+    cf) my topzone's host server priavte ip: 192.168.86.143
 
     - build a K8S in local topzone VMs
         topzone -> VMs -> k8s -> monitoring -> jenkins -> teat-app build

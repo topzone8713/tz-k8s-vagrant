@@ -7,7 +7,7 @@
 echo "
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'
-alias base='cd /topzone'
+alias base='cd /vagrant'
 alias ll='ls -al'
 " >> /root/.bashrc
 
@@ -32,8 +32,8 @@ function prop {
 }
 EOF
 
-if [ -d /topzone ]; then
-  cd /topzone
+if [ -d /vagrant ]; then
+  cd /vagrant
 fi
 
 sudo rm -Rf kubespray
@@ -82,7 +82,7 @@ iptables -t mangle -X
 rm -Rf $HOME/.kube
 #sudo reboot
 
-#declare -a IPS=(192.168.86.90 192.168.86.91 192.168.86.92)
+#declare -a IPS=(192.168.86.100 192.168.86.91 192.168.86.92)
 #CONFIG_FILE=inventory/test-cluster/inventory.ini python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 
 #cat inventory/test-cluster/group_vars/all/all.yml
@@ -133,7 +133,7 @@ k get storageclass,pv,pvc
 #
 # nfs
 # 1. with helm
-#helm install my-release --set nfs.server=192.168.86.90 --set nfs.path=/srv/nfs/mydata stable/nfs-client-provisioner
+#helm install my-release --set nfs.server=192.168.86.100 --set nfs.path=/srv/nfs/mydata stable/nfs-client-provisioner
 # 2. with manual
 #k apply -f tz-local/resource/dynamic-provisioning/nfs/static-nfs.yaml
 #k apply -f tz-local/resource/dynamic-provisioning/nfs/serviceaccount.yaml
@@ -145,10 +145,10 @@ k get storageclass,pv,pvc
 #curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 #sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-#echo "## [ install helm3 ] ######################################################"
-#sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-#sudo bash get_helm.sh
-#sudo rm -Rf get_helm.sh
+echo "## [ install helm3 ] ######################################################"
+sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+sudo bash get_helm.sh
+sudo rm -Rf get_helm.sh
 
 #sleep 10
 

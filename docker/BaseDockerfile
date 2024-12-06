@@ -1,0 +1,129 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y openssh-server \
+    iputils-ping vim net-tools curl wget sudo git software-properties-common \
+    apt-transport-https gnupg2
+
+RUN groupadd topzone && useradd topzone -s /bin/bash -d /home/topzone -g topzone
+RUN echo "topzone ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN mkdir /home/topzone && chown -Rf topzone:topzone /home/topzone
+
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+RUN apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+RUN apt-get update -y && apt purge terraform -y && \
+    apt install terraform=1.1.7 && apt install jq unzip ntp python3-pip gettext -y
+RUN systemctl enable ntp
+RUN pip3 install jc
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install --update
+
+RUN curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64 && \
+    chmod +x aws-iam-authenticator && \
+    mv aws-iam-authenticator /usr/local/bin
+
+RUN wget --no-verbose --output-document=- https://apt.releases.hashicorp.com/gpg | gpg --dearmor --output=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release --codename --short) main" | tee /etc/apt/sources.list.d/hashicorp.list
+RUN apt-get update
+
+RUN chown -Rf topzone:topzone /home/topzone
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/linux/amd64/kubectl && \
+    chmod 777 kubectl && \
+    mv kubectl /usr/bin/kubectl
+
+RUN wget "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz"
+RUN tar xvfz "eksctl_$(uname -s)_amd64.tar.gz" && \
+    rm -Rf "eksctl_$(uname -s)_amd64.tar.gz" && \
+    mv eksctl /usr/local/bin
+
+##  echo "## [ install helm3 ] ######################################################"
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
+    chmod 700 get_helm.sh && \
+    ./get_helm.sh && rm -Rf get_helm.sh
+
+RUN helm repo add stable https://charts.helm.sh/stable && \
+    helm repo update
+
+RUN curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb && \
+    apt install ./keybase_amd64.deb -y && \
+    rm -Rf keybase_amd64.deb
+
+RUN wget https://github.com/ahmetb/kubectx/releases/download/v0.9.3/kubectx && \
+    mv kubectx /usr/sbin && \
+    chmod +x /usr/sbin/kubectx
+
+RUN wget https://github.com/ahmetb/kubectx/releases/download/v0.9.3/kubens && \
+    mv kubens /usr/sbin && \
+    chmod +x /usr/sbin/kubens
+
+RUN wget https://releases.hashicorp.com/consul/1.8.4/consul_1.8.4_linux_amd64.zip && \
+    unzip consul_1.8.4_linux_amd64.zip && \
+    rm -Rf consul_1.8.4_linux_amd64.zip && \
+    mv consul /usr/local/bin/
+
+RUN wget https://releases.hashicorp.com/vault/1.3.1/vault_1.3.1_linux_amd64.zip && \
+    unzip vault_1.3.1_linux_amd64.zip && \
+    rm -Rf vault_1.3.1_linux_amd64.zip && \
+    mv vault /usr/local/bin/
+
+RUN mkdir /var/run/sshd
+RUN echo 'root:root' | chpasswd
+RUN echo 'topzone:topzone' | chpasswd
+RUN sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN mkdir /root/.ssh
+
+RUN apt-get update && \
+    apt-get -qy full-upgrade && \
+    apt-get install -qy curl docker-compose && \
+    apt-get install -qy --no-install-recommends apt-utils && \
+    curl -sSL https://get.docker.com/ | sh
+
+RUN wget https://github.com/argoproj/argo-cd/releases/download/v2.6.7/argocd-linux-amd64 && \
+  mv argocd-linux-amd64 /usr/local/bin/argocd && \
+  chmod +x /usr/local/bin/argocd
+
+RUN wget https://github.com/mikefarah/yq/releases/download/v4.30.8/yq_linux_amd64 -O /usr/bin/yq && \
+  chmod +x /usr/bin/yq
+
+RUN wget https://github.com/vmware-tanzu/velero/releases/download/v1.9.3/velero-v1.9.3-linux-amd64.tar.gz && \
+  tar -xvzf velero-v1.9.3-linux-amd64.tar.gz && \
+  cp -Rf velero-v1.9.3-linux-amd64/velero /usr/local/bin/velero && \
+  rm -Rf velero-v1.9.3-linux-amd64.tar.gz && \
+  rm -Rf velero-v1.9.3-linux-amd64
+
+RUN usermod -G docker topzone
+#RUN chown -Rf topzone:topzone /var/run/docker.sock
+
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+ENV NVM_DIR /usr/local/nvm
+RUN mkdir -p ${NVM_DIR}
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+ENV NODE_VERSION 16
+RUN source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+ARG k8s_project=xxxxx
+ENV k8s_project=${k8s_project}
+
+ARG k8s_domain=xxxxx
+ENV k8s_domain=${k8s_domain}
+
+ARG vault_token=xxxxx
+ENV vault_token=${vault_token}
+
+EXPOSE 22
+
+COPY k8s.sh /k8s.sh
+RUN chmod +x /k8s.sh
+
+COPY vault.sh /vault.sh
+RUN chmod +x /vault.sh
+
+COPY init.sh /init.sh
+RUN chmod +x /init.sh
+CMD /bin/bash -c "/init.sh"

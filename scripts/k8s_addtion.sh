@@ -6,6 +6,8 @@ function prop {
 k8s_project=hyper-k8s  #$(prop 'project' 'project')
 
 bash /vagrant/tz-local/resource/docker-repo/install.sh
+bash /vagrant/tz-local/resource/dynamic-provisioning/nfs/install.sh
+bash /vagrant/tz-local/resource/metallb/install.sh
 bash /vagrant/tz-local/resource/ingress_nginx/install.sh
 
 bash /vagrant/tz-local/resource/consul/install.sh

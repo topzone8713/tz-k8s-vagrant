@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export MSYS_NO_PATHCONV=1
+export tz_project=devops-utils
+
 #set -x
 
 WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -16,6 +19,19 @@ elif [[ "$1" == "provision" ]]; then
 elif [[ "$1" == "remove" ]]; then
   topzone destroy -f
   exit 0
+elif [[ "$1" == "docker" ]]; then
+  DOCKER_NAME=`docker ps | grep docker-${tz_project} | awk '{print $1}'`
+  echo "======= DOCKER_NAME: ${DOCKER_NAME}"
+  if [[ "${DOCKER_NAME}" == "" ]]; then
+    bash tz-local/docker/install.sh
+  fi
+  if [[ "$1" == "sh" ]]; then
+    docker exec -it `docker ps | grep docker-${tz_project} | awk '{print $1}'` bash
+    exit 0
+  fi
+
+#  echo docker exec -it ${DOCKER_NAME} bash /vagrant/tz-local/docker/init2.sh
+#  docker exec -it ${DOCKER_NAME} bash /vagrant/tz-local/docker/init2.sh
 fi
 
 echo -n "Do you want to make a jenkins on k8s in Vagrant Master / Slave? (M/S) "
@@ -75,17 +91,13 @@ done
 
 exit 0
 
-topzone status
-topzone snapshot list
+# install in docker
+export docker_user="topzone8713"
+bash /vagrant/tz-local/docker/init2.sh
 
-topzone ssh kube-master
-topzone ssh kube-node-1
-topzone ssh kube-node-2
+# remove all resources
+docker exec -it ${DOCKER_NAME} bash
+bash /vagrant/scripts/k8s_remove_all.sh
+bash /vagrant/scripts/k8s_remove_all.sh cleanTfFiles
 
-topzone ssh kube-slave-1
-topzone ssh kube-slave-2
-topzone ssh kube-slave-3
-
-topzone reload
-topzone snapshot save kube-master kube-master_python --force
-
+#docker container stop $(docker container ls -a -q) && docker system prune -a -f --volumes
