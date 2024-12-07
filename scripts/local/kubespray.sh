@@ -13,22 +13,10 @@ alias ll='ls -al'
 
 cat >> /root/.bashrc <<EOF
 function prop {
-  key="\${2}="
-  rslt=""
-  if [[ "\${3}" == "" ]]; then
-    rslt=\$(grep "\${key}" "/root/.k8s/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    if [[ "\${rslt}" == "" ]]; then
-      key="\${2} = "
-      rslt=\$(grep "\${key}" "/root/.k8s/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    fi
-  else
-    rslt=\$(grep "\${3}" "/root/.k8s/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    if [[ "\${rslt}" == "" ]]; then
-      key="\${2} = "
-      rslt=\$(grep "\${3}" "/root/.k8s/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    fi
-  fi
-  echo \${rslt}
+  key="\${2}=" file="/root/.k8s/\${1}" rslt=\$(grep "\${3:-}" "\$file" -A 10 | grep "\$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
+  [[ -z "\$rslt" ]] && key="\${2} = " && rslt=\$(grep "\${3:-}" "\$file" -A 10 | grep "\$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
+  rslt=\$(echo "\$rslt" | tr -d '\n' | tr -d '\r')
+  echo "\$rslt"
 }
 EOF
 
@@ -148,6 +136,10 @@ k get storageclass,pv,pvc
 
 #k get po -n kube-system
 
+echo "##########################################"
+echo "Next step !!!"
+echo "bash scripts/local/kubespray_add.sh"
+echo "##########################################"
+
 exit 0
 
-bash scripts/kubespray_add.sh

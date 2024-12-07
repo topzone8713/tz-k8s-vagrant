@@ -26,4 +26,10 @@ ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
 #=>
 #validate_certs: false
 
+echo "##########################################"
+echo "Next step !!!"
+echo "bash scripts/k8s_addtion.sh"
+echo "##########################################"
+
 exit 0
+

@@ -35,7 +35,7 @@ cp -Rf scripts/local/config.cfg /root/.ssh/config
 sudo rm -Rf /root/.k8s
 sudo cp -Rf /vagrant/resources /root/.k8s
 
-#sudo bash scripts/local/kubespray.sh
+sudo bash scripts/local/kubespray.sh
 
 exit 0
 

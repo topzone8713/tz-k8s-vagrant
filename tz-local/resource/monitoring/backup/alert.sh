@@ -6,13 +6,7 @@ shopt -s expand_aliases
 WORKING_HOME=/var/lib/jenkins
 #WORKING_HOME=/home/topzone
 
-function prop {
-  if [[ "${3}" == "" ]]; then
-    grep "${2}" "${WORKING_HOME}/.k8s/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
-  else
-    grep "${3}" "${WORKING_HOME}/.k8s/${1}" -A 10 | grep "${2}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g'
-  fi
-}
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 
 CMD=$1
 CLUSTER_NAME=$2
