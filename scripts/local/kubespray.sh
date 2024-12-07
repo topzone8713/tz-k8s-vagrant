@@ -81,8 +81,8 @@ rm -Rf $HOME/.kube
 #cat inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
 
 #cd resource/kubespray
-#scp doohee323@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml .
-#scp k8s-cluster.yml doohee323@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
+#scp topzone8713@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml .
+#scp k8s-cluster.yml topzone8713@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
 #scp master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml k8s-cluster.yml
 #scp master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/addons.yml addons.yml
 

@@ -102,7 +102,7 @@ sleep 30
 # to NodePort
 k -n vault get pods -l app.kubernetes.io/name=vault
 
-#curl http://dooheehong323:31700/ui/vault/secrets
+#curl http://topzone8713:31700/ui/vault/secrets
 
 wget https://releases.hashicorp.com/vault/1.3.1/vault_1.3.1_linux_amd64.zip && \
     unzip vault_1.3.1_linux_amd64.zip && \

@@ -8,18 +8,18 @@ to project root directory.
 ## -. Features 
 ```
     -. Prep a build environment
-    -. install k8s master (kubespray.sh)
-    -. add k8s slave nodes (kubespray_add.sh)
-    -. install other applications (k8s_addtion.sh)
-    -. setup jenkins
-    -. build a demo application in jenkins
-    -. deploy the app to k8s 
+    -. Install k8s master (kubespray.sh)
+    -. Add k8s slave nodes (kubespray_add.sh)
+    -. Install other applications (k8s_addtion.sh)
+    -. Setup jenkins
+    -. Build a demo application in jenkins
+    -. Deploy the app to k8s 
 ```
 
-## -. Prep 
+## -. Prep a build environment
 ```
     -. checkout codes
-       git clone https://dooheehong@github.com/topzone8713/tz-k8s-vagrant.git
+       git clone https://github.com/topzone8713/tz-k8s-vagrant.git
        cd tz-k8s-vagrant
 
     -. copy resources like this,
@@ -60,16 +60,69 @@ to project root directory.
         }
 ```
 
-## -. Install / Reload VMs with k8s 
+## -. Install k8s master (kubespray.sh) on master machine
 ``` 
     bash bootstrap.sh M     # master machine
-    or
-    bash bootstrap.sh S     # slave machine
-    or
-    bash bootstrap.sh remove
+    # bash bootstrap.sh remove
+    
+    -. After installing k8s on master machine, check k8s master
+        cd tz-k8s-vagrant
+        vagrant status
+        vagrant ssh kube-master
+        sudo su
+        kubectl get node
 ``` 
 
-## -. Refer to README.md for each version.
+## -. Add k8s slave nodes (kubespray_add.sh)
+``` 
+    Copy master machine's .ssh folder to each slave machines for ssh key files
+    - From: master machine
+        tz-k8s-vagrant/.ssh
+    - To: slave machines
+        tz-k8s-vagrant/.ssh
+    
+    bash bootstrap.sh S     # slave machine
+    # bash bootstrap.sh remove
+    
+    When slave nodes (Vagrant VMs) are up, run kubespray_add.sh on master machine.
+    -. Check slave nodes' IPs
+        cat tz-k8s-vagrant/info
+    -. Add slave nodes' IPs on inventory_add.ini of master machine.
+        tz-k8s-vagrant/resource/kubespray/inventory_add.ini
+    -. Check network access on master machine.
+        vagrant ssh kube-master
+        sudo su
+        cd /vagrant
+        ansible all -i resource/kubespray/inventory_add.ini -m ping -u root    
+        It should be like this,
+        kube-slave-1 | SUCCESS => {
+            "changed": false,
+            "ping": "pong"
+        }    
+        ...
+    -. Add k8s slave nodes on Master Node
+        bash /vagrant/scripts/local/kubespray_add.sh
+``` 
+
+## -. Install other applications (k8s_addtion.sh)
+``` 
+    -. Set temporary domains
+        vagrant ssh kube-master
+        sudo su
+        vi /etc/hosts
+        ex) 192.168.86.200 is my ingress-nginx's EXTERNAL-IP
+            kubectl get svc -n default | grep ingress-nginx-controller        
+        
+            192.168.86.200   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
+            192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
+            192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.default.topzone-k8s.topzone.me
+            192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+
+    -. After installing k8s on all machines,
+        bash /vagrant/scripts/k8s_addtion.sh
+``` 
+
+## -. Build Demo app
 ```
     cf) my topzone's host server ip: 192.168.86.143
 

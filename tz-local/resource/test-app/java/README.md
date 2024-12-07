@@ -1,7 +1,7 @@
 # tz-jenkins
 
 ## jenkins setting
-http://dooheehong323:31000/configure
+http://topzone8713:31000/configure
 Global properties > Environment variables > Add
 ORGANIZATION_NAME: my-fleetman-organization
 YOUR_DOCKERHUB_USERNAME: topzone8713
