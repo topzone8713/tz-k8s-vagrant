@@ -135,6 +135,9 @@ kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
 #kubectl get nodes
 #kubectl cluster-info
 
+kubectl create namespace devops-dev
+kubectl create namespace devops
+
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 

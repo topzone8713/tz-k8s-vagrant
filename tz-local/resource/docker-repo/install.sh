@@ -14,28 +14,13 @@ dockerhub_id=$(prop 'project' 'dockerhub_id')
 dockerhub_password=$(prop 'project' 'dockerhub_password')
 docker_url=$(prop 'project' 'docker_url')
 
-#apt-get update -y
-#apt-get -y install docker.io jq
-usermod -G docker topzone
-chown -Rf topzone:topzone /var/run/docker.sock
-
-mkdir -p ~/.docker
-docker login -u="${dockerhub_id}" # -p="${dockerhub_password}" ${docker_url}
-
-exit 0
-
-cp ~/.docker/config.json /vagrant/resources
-cat ~/.docker/config.json
-# e.g. {"auths":{"https://index.docker.io/v1/":{"username":"devops","password":"devops!323","email":"topzone8713@gmail.com","auth":"ZGV2b3BzOmRldm9wcyEzMjM="}}}
-cp /vagrant/resources/config.json ~/.docker/config.json
-
-mkdir -p /home/topzone/.docker
-cp -Rf ~/.docker/config.json /home/topzone/.docker/config.json
-chown -Rf topzone:topzone /home/topzone/.docker
+mkdir -p /root/.docker
+cp -Rf /vagrant/resources/config.json /root/.docker/config.json
+chown -Rf topzone:topzone /root/.docker
 
 kubectl delete secret tz-registrykey -n kube-system
 kubectl create secret generic tz-registrykey -n kube-system \
-    --from-file=.dockerconfigjson=/home/topzone/.docker/config.json \
+    --from-file=.dockerconfigjson=/root/.docker/config.json \
     --type=kubernetes.io/dockerconfigjson
 
 #  --docker-server=https://nexus.topzone-k8s.topzone.me:5000/v2/ \
@@ -51,7 +36,7 @@ kubectl create secret generic tz-registrykey -n kube-system \
 #type: kubernetes.io/dockerconfigjson
 #" > docker-config.yaml
 #
-DOCKER_CONFIG=$(cat /home/topzone/.docker/config.json | base64 | tr -d '\r')
+DOCKER_CONFIG=$(cat /root/.docker/config.json | base64 | tr -d '\r')
 DOCKER_CONFIG=$(echo $DOCKER_CONFIG | sed 's/ //g')
 echo "${DOCKER_CONFIG}"
 cp docker-config.yaml docker-config.yaml_bak
@@ -70,7 +55,7 @@ for item in "${PROJECTS[@]}"; do
     kubectl delete secret tz-registrykey -n ${item}
     kubectl create secret generic tz-registrykey \
       -n ${item} \
-      --from-file=.dockerconfigjson=/home/topzone/.docker/config.json \
+      --from-file=.dockerconfigjson=/root/.docker/config.json \
       --type=kubernetes.io/dockerconfigjson
   fi
 done
@@ -78,7 +63,7 @@ done
 kubectl delete secret docker-config -n jenkins
 kubectl create secret generic docker-config \
      -n jenkins \
-    --from-file=config.json=/home/topzone/.docker/config.json
+    --from-file=config.json=/root/.docker/config.json
 
 kubectl get secret tz-registrykey --output=yaml
 kubectl get secret tz-registrykey -n vault --output=yaml

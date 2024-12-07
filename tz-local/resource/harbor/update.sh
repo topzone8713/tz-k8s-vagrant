@@ -22,7 +22,7 @@ STAGING="dev"
 #REPO_HOST="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 #IMAGE_TAG="${DOCKER_NAME}:${TAG_ID}"
 #IMAGE_TAG_NGINX="${DOCKER_NAME_NGINX}:${TAG_ID}"
-REPO_HOST="harbor.devops.topzone-k8s.topzone.me"
+REPO_HOST="harbor.default.topzone-k8s.topzone.me"
 IMAGE_TAG="${DOCKER_NAME}/repository:${TAG_ID}"
 IMAGE_TAG_NGINX="${DOCKER_NAME_NGINX}/repository:${TAG_ID}"
 REPOSITORY_TAG="${REPO_HOST}/${IMAGE_TAG}"
@@ -41,12 +41,12 @@ sudo chown -Rf topzone:topzone /var/run/docker.sock
 
 sudo vi /etc/docker/daemon.json
 {
-  "insecure-registries":["harbor.devops.${k8s_project}.${k8s_domain}"]
+  "insecure-registries":["harbor.default.${k8s_project}.${k8s_domain}"]
 }
 sudo systemctl restart docker
 
 admin_password=Harbor12345
-docker login harbor.devops.${k8s_project}.${k8s_domain} -u="admin" -p="${admin_password}"
+docker login harbor.default.${k8s_project}.${k8s_domain} -u="admin" -p="${admin_password}"
 
 #docker container stop $(docker container ls -a -q) && docker system prune -a -f --volumes
 docker build -f docker/local/tgdBase.Dockerfile -t ${REPO_HOST}/tgd-web-phpbase/repository:latest .

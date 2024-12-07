@@ -11,6 +11,7 @@ shopt -s expand_aliases
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
+github_id=$(prop 'project' 'github_id')
 github_token=$(prop 'project' 'github_token')
 basic_password=$(prop 'project' 'basic_password')
 
@@ -52,12 +53,11 @@ echo "############################################"
 echo "TMP_PASSWORD: ${TMP_PASSWORD}"
 echo "############################################"
 
-#VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-#sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
-#sudo chmod +x /usr/local/bin/argocd
+VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+sudo chmod +x /usr/local/bin/argocd
 #brew tap argoproj/tap
 #brew install argoproj/tap/argocd
-#argocd
 
 argocd login `k get service -n argocd | grep -w "argocd-server " | awk '{print $4}'` --username admin --password ${TMP_PASSWORD} --insecure
 argocd account update-password --account admin --current-password ${TMP_PASSWORD} --new-password ${admin_password}
@@ -88,16 +88,15 @@ k apply -f ingress-argocd.yaml_bak -n argocd
 #k patch deploy/argocd-redis -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n argocd
 
 argocd login `k get service -n argocd | grep argocd-server | awk '{print $4}' | head -n 1` --username admin --password ${admin_password} --insecure
-argocd repo add https://github.com/topzone8713/tz-argocd-repo \
-  --username topzone8713 --password ${github_token}
+argocd repo add https://github.com/${github_id}/tz-argocd-repo \
+  --username ${github_id} --password ${github_token}
 
-sleep 120
 kubectl config get-contexts
 #CURRENT   NAME             CLUSTER          AUTHINFO         NAMESPACE
 #          topzone-k8s   topzone-k8s   topzone-k8s
-argocd cluster add --yes topzone-k8s
+argocd cluster add --yes ${project}
 
-#bash /vagrant/tz-local/resource/argocd/update.sh
+bash /vagrant/tz-local/resource/argocd/update.sh
 bash /vagrant/tz-local/resource/argocd/update.sh
 
 #################################################################################
@@ -182,7 +181,7 @@ argocd app list
 argocd app delete devops-tz-demo-app -y
 argocd app create devops-tz-demo-app \
     --project devops \
-    --repo https://github.com/topzone8713/tz-argocd-repo.git \
+    --repo https://github.com/${github_id}/tz-argocd-repo.git \
     --path devops-tz-demo-app/prod --dest-namespace devops \
     --dest-server https://kubernetes.default.svc \
     --directory-recurse --upsert --grpc-web --sync-policy automated

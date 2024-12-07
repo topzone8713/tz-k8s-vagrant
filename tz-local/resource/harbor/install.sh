@@ -23,9 +23,9 @@ helm uninstall harbor-release
 cp -Rf values.yaml values.yaml_bak
 sed -i "s/k8s_project/${k8s_project}/g" values.yaml_bak
 sed -i "s/k8s_domain/${k8s_domain}/g" values.yaml_bak
-sed -i "s|NS|devops|g" values.yaml_bak
+sed -i "s|NS|default|g" values.yaml_bak
 #--reuse-values
-helm upgrade --debug --install --reuse-values harbor-release harbor/harbor -f values.yaml_bak
+helm upgrade --debug --install harbor-release harbor/harbor -f values.yaml_bak
 
 sleep 30
 
@@ -36,7 +36,7 @@ sleep 30
 #k delete -f harbor-ingress.yaml_bak
 #k apply -f harbor-ingress.yaml_bak
 
-echo https://harbor.devops.${k8s_project}.${k8s_domain}
+echo https://harbor.default.${k8s_project}.${k8s_domain}
 echo admin / Harbor12345
 
 #new project: ks-devops-harbor
@@ -51,10 +51,10 @@ echo admin / Harbor12345
 
 #vi /etc/docker/daemon.json
 #{
-#  "insecure-registries":["harbor.devops.topzone-k8s.topzone.me"]
+#  "insecure-registries":["harbor.default.topzone-k8s.topzone.me"]
 #}
 #systemctl restart docker
 #
-#docker login harbor.devops.topzone-k8s.topzone.me
+#docker login harbor.default.topzone-k8s.topzone.me
 #admin / ${admin_password}
 

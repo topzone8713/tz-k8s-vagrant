@@ -43,28 +43,15 @@ k apply -f jenkins-ingress.yaml_bak -n jenkins
 echo "waiting for starting a jenkins server!"
 sleep 60
 
-#--profile ${k8s_project}
-#
-#aws ecr get-login-password --region ${AWS_REGION} \
-#      | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com
-
-#ECR_REGISTRY="${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 mkdir -p /root/.docker
-echo "{\"credHelpers\":{\"$ECR_REGISTRY\":\"ecr-login\"}}" > /root/.docker/config2.json
+cp -Rf /vagrant/resources/config.json /root/.docker/config.json
 kubectl -n jenkins delete configmap docker-config
-kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/config2.json
-
-kubectl -n jenkins delete secret aws-secret
-kubectl -n jenkins create secret generic aws-secret \
-  --from-file=/root/.k8s/credentials
+kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/config.json
 
 #kubectl cp plugin.txt jenkins/jenkins-0:/tmp/plugin.txt
 #kubectl -n jenkins exec -it jenkins-0 /bin/bash
 # jenkins-plugin-cli --list
 #jenkins-plugin-cli --plugin-file /tmp/plugin.txt --plugins delivery-pipeline-plugin:1.3.2 deployit-plugin
-
-#aws ecr create-repository --repository-name tz-devops-admin --region ${AWS_REGION}
-#aws ecr delete-repository --repository-name tz-devops-admin --force --region ${AWS_REGION}
 
 echo "
 ##[ Jenkins ]##########################################################
