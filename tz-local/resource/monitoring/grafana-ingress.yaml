@@ -4,9 +4,9 @@ metadata:
   name: ingress-grafana
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-#    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     kubernetes.io/ingress.class: "nginx"
-#    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/auth-snippet: |
       proxy_set_header Host $http_host;
     nginx.ingress.kubernetes.io/auth-type: basic
@@ -31,8 +31,8 @@ spec:
             name: prometheus-grafana
             port:
               number: 3000
-#  tls:
-#    - hosts:
-##        - grafana.k8s_domain
-#        - grafana.default.k8s_project.k8s_domain
-#      secretName: ingress-grafana-tls
+  tls:
+    - hosts:
+#        - grafana.k8s_domain
+        - grafana.default.k8s_project.k8s_domain
+      secretName: ingress-grafana-tls

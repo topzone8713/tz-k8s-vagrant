@@ -28,11 +28,12 @@ helm repo update
 APP_VERSION=4.0.13
 #helm search repo nginx-ingress
 helm uninstall ingress-nginx -n ${NS}
-
-helm upgrade --debug --install --reuse-values ingress-nginx ingress-nginx/ingress-nginx \
+#--reuse-values
+helm upgrade --debug --install ingress-nginx ingress-nginx/ingress-nginx \
   -f values.yaml --version ${APP_VERSION} -n ${NS}
 
-#kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+# kubectl get -A ValidatingWebhookConfiguration ingress-nginx-admission
+kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 
 sleep 60
 DEVOPS_ELB=$(kubectl get svc | grep ingress-nginx-controller | grep LoadBalancer | head -n 1 | awk '{print $4}')
@@ -55,8 +56,6 @@ echo curl http://test.${NS}.${k8s_project}.${k8s_domain}
 sleep 30
 curl -v http://test.${NS}.${k8s_project}.${k8s_domain}
 #k delete -f nginx-ingress.yaml_bak
-
-exit 0
 
 #### https ####
 helm repo add jetstack https://charts.jetstack.io
