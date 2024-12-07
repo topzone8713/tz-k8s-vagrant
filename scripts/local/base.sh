@@ -82,6 +82,11 @@ systemctl start ntp
 systemctl enable ntp
 #ntpdate pool.ntp.org
 
+echo "##############################################"
+echo "Ready to be added to k8s"
+echo "##############################################"
+cat  /vagrant/info
+
 # manual test
 #sudo mount -t nfs 192.168.86.100:/srv/nfs /mnt
 ## done
