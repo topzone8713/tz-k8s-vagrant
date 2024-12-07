@@ -23,13 +23,13 @@ smtp_password=$(prop 'project' 'smtp_password')
 STACK_VERSION=44.3.0
 NS=monitoring
 
-cp -Rf storage_loki.yaml storage_loki.yaml_bak
-sed -i "s/k8s_project/${k8s_project}/g" storage_loki.yaml_bak
+cp -Rf loki_storage.yaml loki_storage.yaml_bak
+sed -i "s/k8s_project/${k8s_project}/g" loki_storage.yaml_bak
 
-storage_loki=$(cat storage_loki.yaml_bak | base64 -w0)
-cp storage_loki-secret.yaml storage_loki-secret.yaml_bak
-sed -i "s|LOKI_ENCODE|${storage_loki}|g" storage_loki-secret.yaml_bak
-kubectl -n ${NS} apply -f storage_loki-secret.yaml_bak
+loki_storage=$(cat loki_storage.yaml_bak | base64 -w0)
+cp loki_storage-secret.yaml loki_storage-secret.yaml_bak
+sed -i "s|LOKI_ENCODE|${loki_storage}|g" loki_storage-secret.yaml_bak
+kubectl -n ${NS} apply -f loki_storage-secret.yaml_bak
 kubectl rollout restart statefulset.apps/loki -n ${NS}
 
 # retention
