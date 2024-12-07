@@ -16,6 +16,7 @@ bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
+bash /vagrant/tz-local/resource/harbor/install.sh
 bash /vagrant/tz-local/resource/argocd/helm/install.sh
 bash /vagrant/tz-local/resource/jenkins/helm/install.sh
 

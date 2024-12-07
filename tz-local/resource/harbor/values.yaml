@@ -211,24 +211,24 @@ persistence:
       # Specify the "storageClass" used to provision the volume. Or the default
       # StorageClass will be used (the default).
       # Set it to "-" to disable dynamic provisioning
-      #storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 500Gi
+      size: 10Gi
       annotations: {}
     jobservice:
       jobLog:
         existingClaim: ""
-        #storageClass: ""
+        storageClass: "nfs-client"
         subPath: ""
         accessMode: ReadWriteOnce
-        size: 50Gi
+        size: 10Gi
         annotations: {}
     # If external database is used, the following settings for database will
     # be ignored
     database:
       existingClaim: ""
-      #storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 10Gi
@@ -237,17 +237,17 @@ persistence:
     # be ignored
     redis:
       existingClaim: ""
-      #storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 50Gi
+      size: 10Gi
       annotations: {}
     trivy:
       existingClaim: ""
-      #storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 80Gi
+      size: 10Gi
       annotations: {}
   # Define which storage backend is used for registry to store
   # images and charts. Refer to

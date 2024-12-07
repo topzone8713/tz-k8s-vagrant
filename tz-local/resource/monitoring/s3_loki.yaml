@@ -1,6 +1,7 @@
 auth_enabled: false
 compactor:
-  shared_store: s3
+#  shared_store: s3
+  shared_store: filesystem
   working_directory: /data/loki/boltdb-shipper-compactor
   compaction_interval: 10m
   retention_enabled: true
@@ -41,7 +42,8 @@ storage_config:
     active_index_directory: /data/loki/boltdb-shipper-active
     cache_location: /data/loki/boltdb-shipper-cache
     cache_ttl: 84h
-    shared_store: s3
+    shared_store: filesystem
+#    shared_store: s3
 #  aws:
 #    s3: s3://aws_access_key_id:aws_secret_access_key@AWS_REGION/devops-loki-k8s_project
 #    s3forcepathstyle: true

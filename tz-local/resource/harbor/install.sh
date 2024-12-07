@@ -21,27 +21,28 @@ helm repo add harbor https://helm.goharbor.io
 helm uninstall harbor-release
 #helm show values harbor/harbor > values.yaml
 cp -Rf values.yaml values.yaml_bak
-sed -i "s/k8s_project/${k8s_project}/g" values.yaml_bak
-sed -i "s/k8s_domain/${k8s_domain}/g" values.yaml_bak
-sed -i "s|NS|default|g" values.yaml_bak
+sed -ie "s|k8s_project|${k8s_project}|g" values.yaml_bak
+sed -ie "s|k8s_domain|${k8s_domain}|g" values.yaml_bak
+sed -ie "s|NS|default|g" values.yaml_bak
 #--reuse-values
 helm upgrade --debug --install harbor-release harbor/harbor -f values.yaml_bak
 
-sleep 30
+sleep 300
 
 #cp -Rf harbor-ingress.yaml harbor-ingress.yaml_bak
-#sed -i "s/k8s_project/${k8s_project}/g" harbor-ingress.yaml_bak
-#sed -i "s/k8s_domain/${k8s_domain}/g" harbor-ingress.yaml_bak
-#sed -i "s|NS|devops|g" harbor-ingress.yaml_bak
-#k delete -f harbor-ingress.yaml_bak
-#k apply -f harbor-ingress.yaml_bak
+#sed -ie "s/k8s_project/${k8s_project}/g" harbor-ingress.yaml_bak
+#sed -ie "s/k8s_domain/${k8s_domain}/g" harbor-ingress.yaml_bak
+#sed -ie "s|NS|devops|g" harbor-ingress.yaml_bak
+#kubectl delete -f harbor-ingress.yaml_bak
+#kubectl apply -f harbor-ingress.yaml_bak
 
-echo https://harbor.default.${k8s_project}.${k8s_domain}
+#echo https://harbor.default.${k8s_project}.${k8s_domain}
 echo admin / Harbor12345
 
 #new project: ks-devops-harbor
 #NEW ROBOT ACCOUNT in Robot Accounts.
-#robot account: robot-test
+# robot account: robot-test
+# robot$ks-devops-harbor+robot-test / yhPjAlYZNceJItf1xKGK11Gg2beQfacd
 
 #      tolerations: []
 #    enabled: false

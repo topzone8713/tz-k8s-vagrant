@@ -34,6 +34,13 @@ server:
   image:
     repository: "hashicorp/vault"
     tag: "1.9.0"
+#  extraSecretEnvironmentVars:
+#    - envName: AWS_ACCESS_KEY_ID
+#      secretName: eks-creds
+#      secretKey: AWS_ACCESS_KEY_ID
+#    - envName: AWS_SECRET_ACCESS_KEY
+#      secretName: eks-creds
+#      secretKey: AWS_SECRET_ACCESS_KEY
 
   resources:
     requests:
@@ -94,6 +101,10 @@ server:
       address = "consul-server.consul.svc.cluster.local:8500"
     }
     service_registration "kubernetes" {}
+#    seal "awskms" {
+#      region     = "AWS_REGION"
+#      kms_key_id = "VAULT_KMS_KEY"
+#    }
 
 ui:
   enabled: true

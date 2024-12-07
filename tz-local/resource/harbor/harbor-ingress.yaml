@@ -17,21 +17,10 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: harbor
+            name: harbor-release-portal
             port:
               number: 80
-  - host: notary.default.k8s_project.k8s_domain
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: harbor-release-notary-server
-            port:
-              number: 4443
   tls:
     - hosts:
         - harbor.default.k8s_project.k8s_domain
-        - notary.default.k8s_project.k8s_domain
       secretName: ingress-harbor-tls
