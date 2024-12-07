@@ -25,7 +25,7 @@ helm upgrade --debug --install external-secrets \
 #vault kv get secret/devops-prod/dbinfo
 vault_token_en=`echo -n ${vault_token} | openssl base64 -A`
 
-#PROJECTS=(devops-dev)
+#PROJECTS=(devops devops-dev)
 PROJECTS=(default argocd devops devops-dev)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
@@ -42,6 +42,13 @@ for item in "${PROJECTS[@]}"; do
     fi
     echo "=====================STAGING: ${STAGING}"
 echo '
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: PROJECT-svcaccount
+  namespace: "NAMESPACE"
+---
+
 apiVersion: external-secrets.io/v1beta1
 kind: SecretStore
 metadata:
@@ -50,7 +57,7 @@ metadata:
 spec:
   provider:
     vault:
-      server: "http://vault.default.k8s_project.k8s_domain"
+      server: "http://vault.vault.svc.cluster.local:8200"
       path: "secret"
       version: "v2"
       auth:

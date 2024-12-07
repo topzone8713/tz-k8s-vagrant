@@ -200,7 +200,7 @@ sed -i "s/k8s_project/${k8s_project}/g" /vagrant/tz-local/resource/monitoring/ba
 sed -i "s/k8s_domain/${k8s_domain}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
 sed -i "s/admin_password_var/${admin_password}/g" /vagrant/tz-local/resource/monitoring/backup/grafanaSettings.json_bak
 
-grafana_token_var=$(curl -X POST -H "Content-Type: application/json" -d '{"name":"admin-key", "role": "Admin"}' "http://admin:${admin_password}@grafana.default.${k8s_project}.${k8s_domain}/api/auth/keys" | jq -r '.key')
+grafana_token_var=$(curl -k -X POST -H "Content-Type: application/json" -d '{"name":"admin-key", "role": "Admin"}' "http://admin:${admin_password}@grafana.default.${k8s_project}.${k8s_domain}/api/auth/keys" | jq -r '.key')
 echo ${grafana_token_var} #
 sleep 5
 if [[ "${grafana_token_var}" != "" ]]; then

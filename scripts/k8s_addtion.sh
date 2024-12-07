@@ -9,19 +9,20 @@ bash /vagrant/tz-local/resource/dynamic-provisioning/nfs/install.sh
 bash /vagrant/tz-local/resource/metallb/install.sh
 bash /vagrant/tz-local/resource/ingress_nginx/install.sh
 
+bash /vagrant/tz-local/resource/monitoring/install.sh
+bash /topzone/tz-local/resource/monitoring/rules/update.sh
+
 bash /vagrant/tz-local/resource/consul/install.sh
 bash /vagrant/tz-local/resource/vault/helm/install.sh
 bash /vagrant/tz-local/resource/vault/data/vault_user.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
+bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
 bash /vagrant/tz-local/resource/harbor/install.sh
 bash /vagrant/tz-local/resource/argocd/helm/install.sh
 bash /vagrant/tz-local/resource/jenkins/helm/install.sh
 
-bash /vagrant/tz-local/resource/monitoring/install.sh
 
 exit 0
-
-bash /vagrant/tz-local/resource/vault/external-secrets/install.sh

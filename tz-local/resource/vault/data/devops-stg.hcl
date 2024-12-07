@@ -2,19 +2,19 @@
 path "secret/*" {
   capabilities = ["list"]
 }
-path "secret/data/devops-qa/*" {
+path "secret/data/devops-stg/*" {
   capabilities = ["create", "update", "read"]
 }
-path "secret/delete/devops-qa/*" {
+path "secret/delete/devops-stg/*" {
   capabilities = ["delete", "update"]
 }
-path "secret/undelete/devops-qa/*" {
+path "secret/undelete/devops-stg/*" {
   capabilities = ["update"]
 }
-path "secret/destroy/devops-qa/*" {
+path "secret/destroy/devops-stg/*" {
   capabilities = ["update"]
 }
-path "secret/metadata/devops-qa/*" {
+path "secret/metadata/devops-stg/*" {
   capabilities = ["list", "read", "delete"]
 }
 path "secret/data/shared/*" {

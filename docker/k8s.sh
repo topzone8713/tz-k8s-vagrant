@@ -6,7 +6,7 @@ alias trace_on='set -x'
 alias trace_off='{ set +x; } 2>/dev/null'
 
 WORKING_HOME=/var/lib/jenkins
-#WORKING_HOME=/home/topzone
+#WORKING_HOME=/home/vagrant
 
 if [[ "${CLUSTER_NAME}" == "" ]]; then
     CLUSTER_NAME="topzone-k8s"
@@ -156,9 +156,9 @@ else
       if [[ "${STAGING}" == "staging" ]]; then
         APP_NAME=${ORI_APP_NAME}-staging
         SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-staging.yaml
-      elif [[ "${STAGING}" == "qa" ]]; then
-        APP_NAME=${ORI_APP_NAME}-qa
-        SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-qa.yaml
+      elif [[ "${STAGING}" == "stg" ]]; then
+        APP_NAME=${ORI_APP_NAME}-stg
+        SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-stg.yaml
       else
         APP_NAME=${ORI_APP_NAME}-${GIT_BRANCH}
         SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-dev.yaml
@@ -169,8 +169,8 @@ else
     if [[ "${K8S_DIR}" != "" ]]; then
       if [[ "${STAGING}" == "staging" ]]; then
         SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-staging.yaml
-      elif [[ "${STAGING}" == "qa" ]]; then
-        SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-qa.yaml
+      elif [[ "${STAGING}" == "stg" ]]; then
+        SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s-stg.yaml
       else
         SOURCE_K8S_FILE=${WORKSPACE}/${K8S_DIR}/k8s.yaml
       fi
@@ -179,7 +179,7 @@ else
 fi
 echo "ORI_APP_NAME: ${ORI_APP_NAME}"
 echo "APP_NAME: ${APP_NAME}"
-if [[ "${STAGING}" == "prod" || "${STAGING}" == "staging" || "${STAGING}" == "qa" ]]; then
+if [[ "${STAGING}" == "prod" || "${STAGING}" == "staging" || "${STAGING}" == "stg" || "${STAGING}" == "qa" ]]; then
   NAMESPACE=${NAMESPACE/-dev/}
   NAMESPACE=${NAMESPACE/-prod/}
   PROJECT=${NAMESPACE}
