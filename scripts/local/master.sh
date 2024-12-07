@@ -2,6 +2,7 @@
 
 #set -x
 
+export ANSIBLE_CONFIG=/root/ansible.cfg
 echo "
 export ANSIBLE_CONFIG=/root/ansible.cfg
 alias k='kubectl'

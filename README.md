@@ -58,12 +58,52 @@ to project root directory.
                 }
             }
         }
+        
+    -. DHCP IP address check
+       Each VMs are supposed to get IP from DHCP server as public_ip in your network area.
+       And your master machine and other slave machines should be in the same network area.
+       
+       vi scripts/local/Vagrantfile
+       
+          config.vm.define "kube-master" do |master|
+            master.vm.box = IMAGE_NAME
+            master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.100"        => This should be changed to your network
+            master.vm.hostname = "kube-master"
+            master.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/master.sh"), :args => master.vm.hostname
+          end
+        
+          (1..COUNTER).each do |i|
+            config.vm.define "kube-node-#{i}" do |node|
+                node.vm.box = IMAGE_NAME
+                node.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.10#{i}"  => This should be changed to your network
+                
+       vi scripts/local/Vagrantfile_slave
+          config.vm.define "kube-slave-1" do |slave|
+            slave.vm.box = IMAGE_NAME
+            slave.vm.network "public_network", xip: "192.168.86.110"        => This should be changed to your network
+            slave.vm.hostname = "kube-slave"
+            slave.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/node.sh"), :args => slave.vm.hostname
+          end
+        
+          (2..COUNTER).each do |i|
+            config.vm.define "kube-slave-#{i}" do |node|
+                node.vm.box = IMAGE_NAME
+                node.vm.network "public_network", ip: "192.168.86.11#{i}"   => This should be changed to your network
+                node.vm.hostname = "kube-slave-#{i}"
+                node.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/node.sh"), :args => node.vm.hostname
+            end
+          end      
+          
 ```
 
 ## -. Install k8s master (kubespray.sh) on master machine
 ``` 
-    bash bootstrap.sh M     # master machine
-    # bash bootstrap.sh remove
+    -. Update IPs on inventory.ini for your master machine
+        resource/kubespray/inventory.ini           
+
+    -. Install k8s master node        
+        bash bootstrap.sh M     # master machine
+        # bash bootstrap.sh remove
     
     -. After installing k8s on master machine, check k8s master
         cd tz-k8s-vagrant
@@ -81,8 +121,12 @@ to project root directory.
     - To: slave machines
         tz-k8s-vagrant/.ssh
     
-    bash bootstrap.sh S     # slave machine
-    # bash bootstrap.sh remove
+    -. Update IPs on inventory.ini for your slave machine
+        resource/kubespray/inventory_add.ini           
+
+    -. Install k8s slave node        
+        bash bootstrap.sh S     # slave machine
+        # bash bootstrap.sh remove
     
     When slave nodes (Vagrant VMs) are up, run kubespray_add.sh on master machine.
     -. Check slave nodes' IPs
@@ -129,6 +173,12 @@ to project root directory.
     - build a K8S in local topzone VMs
         topzone -> VMs -> k8s -> monitoring -> jenkins -> demo-app build
         scripts/local/README.md
+```
+
+## -. Remove VMs
+```
+    cd tz-k8s-vagrant
+    bash bootstrap.sh remove
 ```
 
 ## * install kubectl in macbook 
