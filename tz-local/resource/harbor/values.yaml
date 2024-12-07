@@ -211,7 +211,7 @@ persistence:
       # Specify the "storageClass" used to provision the volume. Or the default
       # StorageClass will be used (the default).
       # Set it to "-" to disable dynamic provisioning
-      storageClass: "nfs-client"
+      storageClass: "local-storage"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 500Gi
@@ -219,7 +219,7 @@ persistence:
     jobservice:
       jobLog:
         existingClaim: ""
-        storageClass: "nfs-client"
+        storageClass: "local-storage"
         subPath: ""
         accessMode: ReadWriteOnce
         size: 50Gi
@@ -228,7 +228,7 @@ persistence:
     # be ignored
     database:
       existingClaim: ""
-      storageClass: "nfs-client"
+      storageClass: "local-storage"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 10Gi
@@ -237,14 +237,14 @@ persistence:
     # be ignored
     redis:
       existingClaim: ""
-      storageClass: "nfs-client"
+      storageClass: "local-storage"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 50Gi
       annotations: {}
     trivy:
       existingClaim: ""
-      storageClass: "nfs-client"
+      storageClass: "local-storage"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 80Gi
