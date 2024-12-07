@@ -4,8 +4,10 @@
 
 #set -x
 
+export ANSIBLE_CONFIG=/root/ansible.cfg
 echo "
 alias k='kubectl'
+export ANSIBLE_CONFIG=/root/ansible.cfg
 alias KUBECONFIG='~/.kube/config'
 alias base='cd /vagrant'
 alias ll='ls -al'
