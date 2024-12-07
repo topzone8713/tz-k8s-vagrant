@@ -97,7 +97,7 @@ k patch statefulset/loki -p '{"spec": {"template": {"spec": {"imagePullSecrets":
 k patch daemonset/loki-promtail -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n ${NS}
 # loki datasource: http://loki.monitoring.svc.cluster.local:3100/
 
-bash s3.sh
+bash storage.sh
 
 cp -Rf configmap.yaml configmap.yaml_bak
 sed -i "s/admin_password/${admin_password}/g" configmap.yaml_bak

@@ -31,7 +31,8 @@ schema_config:
     index:
       period: 24h
       prefix: index_
-    object_store: s3
+#    object_store: s3
+    object_store: filesystem
     schema: v11
     store: boltdb-shipper
 server:
