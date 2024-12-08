@@ -5,14 +5,10 @@
 
 #set -x
 
-if [ -d /vagrant ]; then
-  cd /vagrant
-fi
+#ansible all -i /vagrant/resource/kubespray/inventory.ini -m ping -u root
+ansible all -i /vagrant/resource/kubespray/inventory_add.ini -m ping -u root
 
-#ansible all -i resource/kubespray/inventory.ini -m ping -u root
-ansible all -i resource/kubespray/inventory_add.ini -m ping -u root
-
-ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
+ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
   kubespray/cluster.yml
 
@@ -24,11 +20,11 @@ echo "##########################################"
 exit 0
 
 #ansible-playbook -i inventory/test-cluster/hosts.yaml cluster.yml -b -become-user=root -l node3
-ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
+ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
   kubespray/cluster.yml -b -l kube-slave-4
 
-#ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
+#ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
 #  --private-key .ssh/tz_rsa --become --become-user=root \
 #    kubespray/reset.yml -b -l kube-slave-4 --extra-vars "reset_confirmation=yes"
 
