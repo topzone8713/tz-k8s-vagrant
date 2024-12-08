@@ -10,7 +10,7 @@ ansible all -i /vagrant/resource/kubespray/inventory_add.ini -m ping -u root
 
 ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
-  kubespray/cluster.yml
+  /vagrant/kubespray/cluster.yml
 
 echo "##########################################"
 echo "Next step !!!"
@@ -22,11 +22,11 @@ exit 0
 #ansible-playbook -i inventory/test-cluster/hosts.yaml cluster.yml -b -become-user=root -l node3
 ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
-  kubespray/cluster.yml -b -l kube-slave-4
+  /vagrant/kubespray/cluster.yml -b -l kube-slave-4
 
 #ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
 #  --private-key .ssh/tz_rsa --become --become-user=root \
-#    kubespray/reset.yml -b -l kube-slave-4 --extra-vars "reset_confirmation=yes"
+#    /vagrant/kubespray/cluster.yml -b -l kube-slave-4 --extra-vars "reset_confirmation=yes"
 
 #validate_certs: true
 #=>
