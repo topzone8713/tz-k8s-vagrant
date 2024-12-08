@@ -14,7 +14,7 @@ ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
 
 echo "##########################################"
 echo "Next step !!!"
-echo "bash bash /vagrant/scripts/k8s_addtion.sh"
+echo "bash /vagrant/scripts/k8s_addtion.sh"
 echo "##########################################"
 
 exit 0
