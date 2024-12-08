@@ -145,7 +145,7 @@ bash /vagrant/tz-local/resource/ingress_nginx/install.sh
 
 echo "##########################################"
 echo "Next step !!!"
-echo "bash scripts/local/kubespray_add.sh"
+echo "bash /vagrant/scripts/local/kubespray_add.sh"
 echo "##########################################"
 
 exit 0

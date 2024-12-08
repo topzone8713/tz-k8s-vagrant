@@ -9,7 +9,6 @@ if [ -d /vagrant ]; then
   cd /vagrant
 fi
 
-cd kubespray
 #ansible all -i resource/kubespray/inventory.ini -m ping -u root
 ansible all -i resource/kubespray/inventory_add.ini -m ping -u root
 
@@ -19,7 +18,7 @@ ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
 
 echo "##########################################"
 echo "Next step !!!"
-echo "bash scripts/k8s_addtion.sh"
+echo "bash bash /vagrant/scripts/k8s_addtion.sh"
 echo "##########################################"
 
 exit 0
