@@ -12,10 +12,7 @@ ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
   /vagrant/kubespray/cluster.yml
 
-echo "##########################################"
-echo "Next step !!!"
-echo "bash /vagrant/scripts/k8s_addtion.sh"
-echo "##########################################"
+bash /vagrant/scripts/k8s_addtion.sh
 
 exit 0
 

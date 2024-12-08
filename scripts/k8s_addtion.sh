@@ -4,29 +4,18 @@ function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" 
 
 k8s_project=$(prop 'project' 'project')
 
-bash /vagrant/tz-local/resource/monitoring/install.sh
-bash /topzone/tz-local/resource/monitoring/rules/update.sh
-
-bash /vagrant/tz-local/resource/harbor/install.sh
-
-bash /vagrant/tz-local/resource/consul/install.sh
-bash /vagrant/tz-local/resource/vault/helm/install.sh
-
-exit 0
-
-# Need to unseal vault manually !!!!
-vagrant ssh kube-master
-# Go to /vagrant/tz-local/resource/vault/helm/install.sh again
-cat /vagrant/resources/unseal.txt
-
 bash /vagrant/tz-local/resource/vault/data/vault_user.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
 #bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
 #bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
+bash /vagrant/tz-local/resource/monitoring/install.sh
+bash /topzone/tz-local/resource/monitoring/rules/update.sh
+
+bash /vagrant/tz-local/resource/harbor/install.sh
+
 bash /vagrant/tz-local/resource/argocd/helm/install.sh
 bash /vagrant/tz-local/resource/jenkins/helm/install.sh
-
 
 exit 0

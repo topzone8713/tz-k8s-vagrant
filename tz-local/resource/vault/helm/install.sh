@@ -61,6 +61,10 @@ sleep 60
 export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 echo $VAULT_ADDR
 
+k scale statefulset.apps/vault --replicas=0 -n vault
+sleep 30
+k scale statefulset.apps/vault --replicas=2 -n vault
+
 echo "#######################################################"
 echo "Initial Root Token vault!!!"
 echo "#######################################################"

@@ -143,9 +143,16 @@ bash /vagrant/tz-local/resource/dynamic-provisioning/nfs/install.sh
 bash /vagrant/tz-local/resource/metallb/install.sh
 bash /vagrant/tz-local/resource/ingress_nginx/install.sh
 
+bash /vagrant/tz-local/resource/consul/install.sh
+bash /vagrant/tz-local/resource/vault/helm/install.sh
+
+# Need to unseal vault manually !!!!
+vagrant ssh kube-master
+# Go to /vagrant/tz-local/resource/vault/helm/install.sh again
+
 echo "##########################################"
-echo "Next step !!!"
-echo "bash /vagrant/scripts/local/kubespray_add.sh"
+echo "Need to unseal vault manually !!!!"
+cat /vagrant/resources/unseal.txt
 echo "##########################################"
 
 exit 0
