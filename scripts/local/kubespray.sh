@@ -138,6 +138,11 @@ k get storageclass,pv,pvc
 
 #k get po -n kube-system
 
+bash /vagrant/tz-local/resource/docker-repo/install.sh
+bash /vagrant/tz-local/resource/dynamic-provisioning/nfs/install.sh
+bash /vagrant/tz-local/resource/metallb/install.sh
+bash /vagrant/tz-local/resource/ingress_nginx/install.sh
+
 echo "##########################################"
 echo "Next step !!!"
 echo "bash scripts/local/kubespray_add.sh"

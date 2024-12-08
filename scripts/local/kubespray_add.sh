@@ -13,6 +13,17 @@ cd kubespray
 #ansible all -i resource/kubespray/inventory.ini -m ping -u root
 ansible all -i resource/kubespray/inventory_add.ini -m ping -u root
 
+ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
+  --private-key .ssh/tz_rsa --become --become-user=root \
+  kubespray/cluster.yml
+
+echo "##########################################"
+echo "Next step !!!"
+echo "bash scripts/k8s_addtion.sh"
+echo "##########################################"
+
+exit 0
+
 #ansible-playbook -i inventory/test-cluster/hosts.yaml cluster.yml -b -become-user=root -l node3
 ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
@@ -25,11 +36,4 @@ ansible-playbook -u root -i resource/kubespray/inventory_add.ini \
 #validate_certs: true
 #=>
 #validate_certs: false
-
-echo "##########################################"
-echo "Next step !!!"
-echo "bash scripts/k8s_addtion.sh"
-echo "##########################################"
-
-exit 0
 

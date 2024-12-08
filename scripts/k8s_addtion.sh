@@ -4,11 +4,6 @@ function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" 
 
 k8s_project=$(prop 'project' 'project')
 
-bash /vagrant/tz-local/resource/docker-repo/install.sh
-bash /vagrant/tz-local/resource/dynamic-provisioning/nfs/install.sh
-bash /vagrant/tz-local/resource/metallb/install.sh
-bash /vagrant/tz-local/resource/ingress_nginx/install.sh
-
 bash /vagrant/tz-local/resource/monitoring/install.sh
 bash /topzone/tz-local/resource/monitoring/rules/update.sh
 
