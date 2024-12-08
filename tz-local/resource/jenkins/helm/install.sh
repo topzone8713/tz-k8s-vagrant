@@ -21,6 +21,7 @@ k apply -f jenkins.yaml
 
 cp -Rf values.yaml values.yaml_bak
 sed -i "s|k8s_project|${k8s_project}|g" values.yaml_bak
+sed -i "s|tz-registrykey|registry-creds|g" values.yaml_bak
 
 #helm delete jenkins -n jenkins
 #helm show values jenkins/jenkins > values.yaml
@@ -55,7 +56,7 @@ kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/conf
 
 echo "
 ##[ Jenkins ]##########################################################
-#  - URL: https://jenkins.default.${k8s_project}.${k8s_domain}
+#  - URL: http://jenkins.default.${k8s_project}.${k8s_domain}
 #
 #  - ID: admin
 #  - Password:
