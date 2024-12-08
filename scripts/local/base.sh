@@ -91,16 +91,19 @@ cat  /vagrant/info
 #sudo mount -t nfs 192.168.86.100:/srv/nfs /mnt
 ## done
 
+check_host=`cat /etc/hosts | grep 'kube-master'`
+if [[ "${check_host}" == "" ]]; then
 cat <<EOF >> /etc/hosts
-192.168.86.100   kube-master
-192.168.86.101   kube-node-1
-192.168.86.102   kube-node-2
+  192.168.86.100   kube-master
+  192.168.86.101   kube-node-1
+  192.168.86.102   kube-node-2
 
-192.168.86.97   kube-slave-1
-192.168.86.98   kube-slave-2
-192.168.86.99   kube-slave-3
+  192.168.86.97   kube-slave-1
+  192.168.86.98   kube-slave-2
+  192.168.86.99   kube-slave-3
 
-192.168.86.94   kube-slave-4
-192.168.86.95   kube-slave-5
-192.168.86.99   kube-slave-6
+  192.168.86.94   kube-slave-4
+  192.168.86.95   kube-slave-5
+  192.168.86.99   kube-slave-6
 EOF
+fi

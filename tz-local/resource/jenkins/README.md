@@ -6,10 +6,10 @@
 ```
 
  - get jenkins url
-   => https://jenkins.default.topzone-k8s.topzone.me
+   => http://jenkins.default.topzone-k8s.topzone.me
 
  - setting kubernetes plugin
-    https://jenkins.default.topzone-k8s.topzone.me/configureClouds/
+    http://jenkins.default.topzone-k8s.topzone.me/configureClouds/
    - Name: topzone-k8s
    - Kubernetes URL: https://kubernetes.default
    - Kubernetes Namespace: jenkins
@@ -23,7 +23,7 @@
         https://github.com/settings/tokens
       2. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
         Kind: Username with password
-        Username: ex) topzone8713@gmail.com
+        Username: ex) doogee323@gmail.com
         Password: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
         ID: github-token
 
@@ -34,18 +34,30 @@
         Secret: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
         ID: GITHUP_TOKEN
 
+    - DOCKER_PASSWORD
+      1. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
+        Kind: Secret text
+        Secret: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
+        ID: DOCKER_PASSWORD
+        
+    - vault_token
+      1. http://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
+        Kind: Secret text
+        Secret: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
+        ID: vault_token
+
  - email settings
-    http://localhost:53053/manage/configure
+    http://jenkins.default.topzone-k8s.topzone.me/manage/configure
     Git plugin
         Global Config user.name Value: 
         Global Config user.email Value: 
 
-    - E-mail
+    - E-mail Notification
         SMTP Server: smtp.gmail.com
         Use SMTP Authentication
-        Username: topzone8713@gmail.com
+        User Name: doogee323@gmail.com
         Password: xxxxx  => Google "App password"
-        Use SSL: false
+        Use SSL: no
         Use TLS: yes
         SMTP Port: 587
         Test configuration by sending test e-mail
@@ -63,14 +75,14 @@
 ## build a demo app
 ###################################################
 
-github fork: https://github.com/topzone8713/tz-devops-admin.git
-https://github.com/aaaaa/tz-devops-admin.git
+github fork: https://github.com/doogee323/tz-devops-admin.git
+https://github.com/doogee323/tz-devops-admin.git
 
 new project
 Name: tz-devops-admin
 Pipeline: Pipeline script from SCM
     SCM: Git
-    Repository URL: https://github.com/aaaaa/tz-devops-admin.git
+    Repository URL: https://github.com/doogee323/tz-devops-admin.git
     credentials: github-token
     branch: devops
 Script Path: k8s/Jenkinsfile
@@ -78,10 +90,10 @@ Script Path: k8s/Jenkinsfile
 tz-devops-admin/k8s/Jenkinsfile
 
     environment {
-        GITHUP_ID = "topzone8713"               =>
+        GITHUP_ID = "doogee323"               =>
         GIT_URL = "https://github.com/${GITHUP_ID}/tz-devops-admin.git"
         GIT_BRANCH = "devops"                   =>
-        GIT_COMMITTER_EMAIL = "topzone8713@gmail.com"   =>
+        GIT_COMMITTER_EMAIL = "doogee323@gmail.com"   =>
 
         DOMAIN = "topzone.me"                   =>
         CLUSTER_NAME = "topzone-k8s"

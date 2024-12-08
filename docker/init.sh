@@ -125,7 +125,7 @@ TAG=latest
 #  DOCKER_URL=${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
 
 DOCKER_URL=index.docker.io
-dockerhub_id=topzone8713
+dockerhub_id=doogee323
 dockerhub_password=''
 echo $dockerhub_password | docker login -u ${dockerhub_id} --password-stdin ${DOCKER_URL}
 
@@ -139,5 +139,5 @@ docker push ${dockerhub_id}/${SNAPSHOT_IMG}:${TAG}
 #docker tag ${DOCKER_URL}/${SNAPSHOT_IMG}:${TAG} ${DOCKER_URL}/devops-utils2:latest
 #docker push ${DOCKER_URL}/devops-utils2:latest
 
-docker tag ${SNAPSHOT_IMG}:latest topzone8713/${SNAPSHOT_IMG}:${TAG}
-docker push topzone8713/${SNAPSHOT_IMG}:${TAG}
+docker tag ${SNAPSHOT_IMG}:latest doogee323/${SNAPSHOT_IMG}:${TAG}
+docker push doogee323/${SNAPSHOT_IMG}:${TAG}

@@ -108,6 +108,17 @@ kubectl describe certificate nginx-test-tls -n ${NS}
 kubectl get secrets --all-namespaces | grep nginx-test-tls
 kubectl get certificates --all-namespaces | grep nginx-test-tls
 
+check_host=`cat /etc/hosts | grep 'jenkins'`
+if [[ "${check_host}" == "" ]]; then
+LB=`kubectl get svc | grep ingress-nginx-controller | grep LoadBalancer | awk '{print $4}'`
+cat <<EOF >> /etc/hosts
+${LB}   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
+${LB}   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
+${LB}   jenkins.default.topzone-k8s.topzone.me harbor.default.topzone-k8s.topzone.me
+${LB}   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+EOF
+fi
+
 #PROJECTS=(default)
 PROJECTS=(default devops devops-dev argocd consul vault)
 for item in "${PROJECTS[@]}"; do
