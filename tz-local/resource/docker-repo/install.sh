@@ -39,15 +39,14 @@ data:
 kubectl -n kube-system rollout restart deployment coredns
 
 
-
-mkdir -p /root/.docker
-cp -Rf /vagrant/resources/config.json /root/.docker/config.json
-chown -Rf topzone:topzone /root/.docker
+#mkdir -p /root/.docker
+#cp -Rf /vagrant/resources/config.json /root/.docker/config.json
+#chown -Rf topzone:topzone /root/.docker
 
 kubectl delete secret tz-registrykey -n kube-system
-kubectl create secret generic tz-registrykey -n kube-system \
-    --from-file=.dockerconfigjson=/root/.docker/config.json \
-    --type=kubernetes.io/dockerconfigjson
+kubectl create secret generic tz-registrykey \
+    --from-file=.dockerconfigjson=config.json \
+    --type=kubernetes.io/dockerconfigjson -n kube-system
 
 #  --docker-server=https://nexus.topzone-k8s.topzone.me:5000/v2/ \
 #kubectl get secret tz-registrykey --output=yaml

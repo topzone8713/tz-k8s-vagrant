@@ -94,10 +94,6 @@ data:
     .:53 {
         errors
         cache 30
-        hosts {
-            192.168.86.200 harbor.default.topzone-k8s.topzone.me
-            fallthrough
-        }
         reload
         loop
         bind 169.254.25.10 __PILLAR__DNS__SERVER__

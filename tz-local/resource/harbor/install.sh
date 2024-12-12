@@ -59,3 +59,6 @@ echo admin / Harbor12345
 #docker login harbor.default.topzone-k8s.topzone.me
 #admin / ${admin_password}
 
+kubectl create secret generic harbor-registry-secret \
+    --from-file=.dockerconfigjson=config.json \
+    --type=kubernetes.io/dockerconfigjson -n jenkins
