@@ -14,6 +14,7 @@ admin_password=$(prop 'project' 'admin_password')
 github_id=$(prop 'project' 'github_id')
 github_token=$(prop 'project' 'github_token')
 basic_password=$(prop 'project' 'basic_password')
+VAULT_TOKEN=$(prop 'project' 'vault')
 
 alias k='kubectl --kubeconfig ~/.kube/config'
 #alias k="kubectl --kubeconfig ~/.kube/kubeconfig_${k8s_project}"
@@ -94,7 +95,8 @@ argocd repo add https://github.com/${github_id}/tz-argocd-repo \
 kubectl config get-contexts
 #CURRENT   NAME             CLUSTER          AUTHINFO         NAMESPACE
 #          topzone-k8s   topzone-k8s   topzone-k8s
-argocd cluster add --yes ${project}
+#project=`kubectl config get-contexts | tail -n 1 | awk '{print $3}'`
+#argocd cluster add --yes ${project}
 
 bash /vagrant/tz-local/resource/argocd/update.sh
 bash /vagrant/tz-local/resource/argocd/update.sh

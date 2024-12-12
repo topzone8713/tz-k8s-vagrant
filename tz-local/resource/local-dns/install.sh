@@ -22,5 +22,5 @@ kubectl apply -f nodelocaldns.yaml_bak
 
 #prometheus-kube-prometheus-operator.monitoring.svc.cluster.local
 
-
+kubectl apply -f ubuntu.yaml -n devops-dev
 
