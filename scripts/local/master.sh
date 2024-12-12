@@ -31,6 +31,12 @@ sudo apt install python3-pip ansible net-tools jq -y
 #sudo pip install --upgrade ansible
 #sudo ansible-galaxy install --force container-engine/runc
 
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y
+sudo apt-get update -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+
 cp -Rf scripts/local/config.cfg /root/.ssh/config
 
 sudo rm -Rf /root/.k8s

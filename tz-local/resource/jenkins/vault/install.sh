@@ -58,3 +58,6 @@ vault kv delete secret/devops-dev/dbinfo
 vault kv get secret/devops-dev/dbinfo
 
 exit 0
+
+
+kubectl -n jenkins apply -f ubuntu.yaml
