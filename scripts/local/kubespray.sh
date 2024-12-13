@@ -44,8 +44,8 @@ ansible all -i resource/kubespray/inventory.ini --list-hosts -u root
 
 # to reset on each node.
 #kubeadm reset
-ansible-playbook -u root -i resource/kubespray/inventory.ini kubespray/reset.yml \
-  --become --become-user=root --extra-vars "reset_confirmation=yes"
+#ansible-playbook -u root -i resource/kubespray/inventory.ini kubespray/reset.yml \
+#  --become --become-user=root --extra-vars "reset_confirmation=yes"
 
 iptables --policy INPUT   ACCEPT
 iptables --policy OUTPUT  ACCEPT

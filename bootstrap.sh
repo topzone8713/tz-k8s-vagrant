@@ -103,7 +103,7 @@ else
       echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
       echo "##################################################################################"
       sleep 5
-      #vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
       echo "##################################################################################"
       echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"'
       echo "##################################################################################"
