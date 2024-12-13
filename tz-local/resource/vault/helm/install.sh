@@ -64,11 +64,12 @@ echo $VAULT_ADDR
 k scale statefulset.apps/vault --replicas=0 -n vault
 sleep 30
 k scale statefulset.apps/vault --replicas=2 -n vault
+sleep 30
 
 echo "#######################################################"
 echo "Initial Root Token vault!!!"
 echo "#######################################################"
-k -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /vagrant/resources/unseal.txt
+kubectl -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /vagrant/resources/unseal.txt
 sleep 20
 vault_token_new=$(cat /vagrant/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
 echo "#######################################################"

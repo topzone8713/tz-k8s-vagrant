@@ -14,34 +14,33 @@ dockerhub_id=$(prop 'project' 'dockerhub_id')
 dockerhub_password=$(prop 'project' 'dockerhub_password')
 docker_url=$(prop 'project' 'docker_url')
 
+#kubectl -n kube-system edit configmap coredns
 
-kubectl -n kube-system edit configmap coredns
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: coredns
-  namespace: kube-system
-data:
-  Corefile: |
-    .:53 {
-    errors {
-    }
-    health {
-        lameduck 5s
-    }
-    hosts {
-        192.168.86.200 harbor.default.topzone-k8s.topzone.me
-        fallthrough
-    }
-    ready
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: coredns
+#  namespace: kube-system
+#data:
+#  Corefile: |
+#    .:53 {
+#    errors {
+#    }
+#    health {
+#        lameduck 5s
+#    }
+#    hosts {
+#        192.168.86.200 harbor.default.topzone-k8s.topzone.me
+#        fallthrough
+#    }
+#    ready
 
 kubectl -n kube-system rollout restart deployment coredns
 
 
-#mkdir -p /root/.docker
-#cp -Rf /vagrant/resources/config.json /root/.docker/config.json
-#chown -Rf topzone:topzone /root/.docker
+mkdir -p /root/.docker
+cp -Rf /vagrant/resources/config.json /root/.docker/config.json
+chown -Rf topzone:topzone /root/.docker
 
 kubectl delete secret tz-registrykey -n kube-system
 kubectl create secret generic tz-registrykey \

@@ -19,7 +19,7 @@ exit 0
 #ansible-playbook -i inventory/test-cluster/hosts.yaml cluster.yml -b -become-user=root -l node3
 ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
-  /vagrant/kubespray/cluster.yml -b -l kube-slave-4
+  /vagrant/kubespray/cluster.yml -b -l kube-slave-1
 
 #ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
 #  --private-key .ssh/tz_rsa --become --become-user=root \

@@ -42,8 +42,6 @@ cp -Rf scripts/local/config.cfg /root/.ssh/config
 sudo rm -Rf /root/.k8s
 sudo cp -Rf /vagrant/resources /root/.k8s
 
-sudo bash scripts/local/kubespray.sh
-
 exit 0
 
 sudo sed -i "s/\$KUBELET_EXTRA_ARGS/\$KUBELET_EXTRA_ARGS --node-ip=192.168.86.100/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf

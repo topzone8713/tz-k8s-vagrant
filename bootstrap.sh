@@ -9,6 +9,22 @@ WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd ${WORKING_DIR}
 echo "WORKING_DIR: ${WORKING_DIR}"
 
+if [[ "$1" == "help" || "$1" == "-h" || "$1" == "/help" ]]; then
+cat <<EOF
+  - bash bootstrap.sh
+      If it's from scratch, it means "vagrant up" else "vagrant reload"
+  - bash bootstrap.sh halt
+      "vagrant halt"
+  - bash bootstrap.sh reload
+      "vagrant reload"
+  - bash bootstrap.sh provision
+      "run kubespray.sh and other scripts"
+  - bash bootstrap.sh remove
+      "vagrant destroy -f"
+EOF
+exit 0
+fi
+
 PROVISION=''
 if [[ "$1" == "halt" ]]; then
   echo "Vagrant halt!"
@@ -63,17 +79,42 @@ elif [[ "${A_ENV}" == "S" ]]; then
 fi
 
 if [[ "${EVENT}" == "up" ]]; then
+  echo "##################################################################################"
+  echo 'vagrant ${EVENT} --provider=virtualbox'
+  echo "##################################################################################"
+  sleep 5
   vagrant ${EVENT} --provider=virtualbox
   if [[ "${A_ENV}" == "M" ]]; then
+    echo "##################################################################################"
+    echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
+    echo "##################################################################################"
+    sleep 5
     vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+    echo "##################################################################################"
+    echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"'
+    echo "##################################################################################"
+    sleep 5
+    vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"
   fi
 else
   if [[ "${PROVISION}" == "y" ]]; then
     if [[ "${A_ENV}" == "M" ]]; then
-      echo vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
-      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      echo "##################################################################################"
+      echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
+      echo "##################################################################################"
+      sleep 5
+      #vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      echo "##################################################################################"
+      echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"'
+      echo "##################################################################################"
+      sleep 5
+      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"
     fi
   else
+    sleep 5
+    echo "##################################################################################"
+    echo "vagrant ${EVENT}"
+    echo "##################################################################################"
     vagrant ${EVENT}
   fi
 fi
@@ -88,6 +129,8 @@ for item in "${PROJECTS[@]}"; do
   IP=`vagrant ssh ${item} -c "ifconfig" | grep eth1 -A 1 | tail -n 1 | awk '{print $2}'`
   echo ${IP}   ${item} >> info
 done
+
+cat info
 
 exit 0
 
