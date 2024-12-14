@@ -59,6 +59,8 @@ bash /vagrant/tz-local/resource/vault/helm/install.sh
 echo "##########################################"
 echo "Need to unseal vault manually !!!!"
 cat /vagrant/resources/unseal.txt
+echo "After that, "
+echo "bash /vagrant/scripts/k8s_addtion.sh"
 echo "##########################################"
 
 exit 0

@@ -83,6 +83,7 @@ if [[ "${vault_token_new}" != "" ]]; then
   cp -Rf /vagrant/resources/project /home/topzone/.k8s/project
 fi
 
+echo "run it in vault pods!: vault operator unseal"
 exit 0
 
 # Need to unseal vault manually !!!!
