@@ -65,7 +65,7 @@ helm repo update
 helm uninstall cert-manager -n cert-manager
 k delete -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.crds.yaml
 kubectl get customresourcedefinition | grep cert-manager | awk '{print $1}' | xargs -I {} kubectl delete customresourcedefinition {}
-k delete namespace cert-manager
+#k delete namespace cert-manager
 k create namespace cert-manager
 # Install needed CRDs
 k apply --validate=false -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.crds.yaml
