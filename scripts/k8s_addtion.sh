@@ -7,7 +7,7 @@ k8s_project=$(prop 'project' 'project')
 bash /vagrant/tz-local/resource/vault/data/vault_user.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
-#bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
+bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
 bash /vagrant/tz-local/resource/monitoring/install.sh

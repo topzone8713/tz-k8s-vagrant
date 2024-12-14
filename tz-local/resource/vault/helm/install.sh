@@ -83,6 +83,13 @@ if [[ "${vault_token_new}" != "" ]]; then
   cp -Rf /vagrant/resources/project /home/topzone/.k8s/project
 fi
 
+VAULT_VERSION="1.3.1"
+curl -sO https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
+unzip vault_${VAULT_VERSION}_linux_amd64.zip
+rm -Rf vault_${VAULT_VERSION}_linux_amd64.zip
+mv vault /usr/local/bin/
+vault --version
+
 echo "run it in vault pods!: vault operator unseal"
 exit 0
 
@@ -98,13 +105,6 @@ exit 0
 #echo k -n vault exec -ti vault-2 -- vault operator unseal
 #k -n vault exec -ti vault-2 -- vault operator unseal # ... Unseal Key 1
 #k -n vault exec -ti vault-2 -- vault operator unseal # ... Unseal Key 2,3,4,5
-
-#VAULT_VERSION="1.3.1"
-#curl -sO https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
-#unzip vault_${VAULT_VERSION}_linux_amd64.zip
-#rm -Rf vault_${VAULT_VERSION}_linux_amd64.zip
-#mv vault /usr/local/bin/
-#vault --version
 
 #vault -autocomplete-install
 #complete -C /usr/local/bin/vault vault
