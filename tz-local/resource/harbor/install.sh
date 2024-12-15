@@ -54,11 +54,11 @@ echo admin / Harbor12345
 
 #vi /etc/docker/daemon.json
 #{
-#  "insecure-registries":["harbor.default.topzone-k8s.topzone.me"]
+#  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
 #}
 #systemctl restart docker
 #
-#docker login harbor.default.topzone-k8s.topzone.me
+#docker login harbor.harbor.topzone-k8s.topzone.me
 #admin / ${admin_password}
 
 kubectl create secret generic harbor-registry-secret \

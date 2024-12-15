@@ -114,7 +114,7 @@ LB=`kubectl get svc | grep ingress-nginx-controller | grep LoadBalancer | awk '{
 cat <<EOF >> /etc/hosts
 ${LB}   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
 ${LB}   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
-${LB}   jenkins.default.topzone-k8s.topzone.me harbor.default.topzone-k8s.topzone.me
+${LB}   jenkins.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
 ${LB}   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
 EOF
 fi
