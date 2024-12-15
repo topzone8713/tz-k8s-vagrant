@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "kube-master" do |master|
     master.vm.box = IMAGE_NAME
     master.vm.provider "virtualbox" do |vb|
-      vb.memory = 4096
+      vb.memory = 5096
       vb.cpus = 3
     end
     master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.100"

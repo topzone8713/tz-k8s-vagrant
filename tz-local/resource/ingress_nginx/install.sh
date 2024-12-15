@@ -119,15 +119,15 @@ ${LB}   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.to
 EOF
 fi
 
-#PROJECTS=(default)
-PROJECTS=(default devops devops-dev argocd consul vault)
-for item in "${PROJECTS[@]}"; do
-  if [[ "${item}" != "NAME" ]]; then
-    echo "====================="
-    echo ${item}
-    bash /vagrant/tz-local/resource/ingress_nginx/update.sh ${item} ${k8s_project} ${k8s_domain}
-  fi
-done
+##PROJECTS=(default)
+#PROJECTS=(default devops devops-dev argocd consul vault)
+#for item in "${PROJECTS[@]}"; do
+#  if [[ "${item}" != "NAME" ]]; then
+#    echo "====================="
+#    echo ${item}
+#    bash /vagrant/tz-local/resource/ingress_nginx/update.sh ${item} ${k8s_project} ${k8s_domain}
+#  fi
+#done
 
 exit 0
 

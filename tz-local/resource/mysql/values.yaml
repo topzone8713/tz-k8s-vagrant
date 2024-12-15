@@ -71,9 +71,9 @@ extraInitContainers: |
 
 ## Node selector
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
-nodeSelector:
-  team: devops
-  environment: dev
+#nodeSelector:
+#  team: devops
+#  environment: dev
 
 ## Affinity
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
@@ -108,9 +108,9 @@ persistence:
   ##   set, choosing the default provisioner.  (nfs-client on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: "mysql-sc"
+  storageClass: "nfs-client"
   accessMode: ReadWriteOnce
-  size: 50Gi
+  size: 1Gi
   annotations: {}
 
 ## Use an alternate scheduler, e.g. "stork".

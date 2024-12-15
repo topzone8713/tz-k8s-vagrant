@@ -11,7 +11,7 @@ bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
 bash /vagrant/tz-local/resource/monitoring/install.sh
-bash /topzone/tz-local/resource/monitoring/rules/update.sh
+bash /vagrant/tz-local/resource/monitoring/rules/update.sh
 
 bash /vagrant/tz-local/resource/harbor/install.sh
 

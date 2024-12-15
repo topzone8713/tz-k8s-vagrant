@@ -28,7 +28,8 @@ expose:
       secretName: ""
   ingress:
     hosts:
-      core: core.harbor.domain
+      core: harbor.NS.k8s_project.k8s_domain
+      notary: notary.NS.k8s_project.k8s_domain
     # set to the type of ingress controller if it has specific requirements.
     # leave as `default` for most ingress controllers.
     # set to `gce` if using the GCE ingress controller
@@ -42,10 +43,12 @@ expose:
     annotations:
       # note different ingress controllers may require a different ssl-redirect annotation
       # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
-      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/ssl-redirect: "false"
       ingress.kubernetes.io/proxy-body-size: "0"
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      kubernetes.io/ingress.class: "nginx"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # ingress-specific labels
     labels: {}
   clusterIP:
@@ -109,7 +112,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://core.harbor.domain
+externalURL: https://harbor.NS.k8s_project.k8s_domain
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -133,15 +136,15 @@ persistence:
       # Specify the "storageClass" used to provision the volume. Or the default
       # StorageClass will be used (the default).
       # Set it to "-" to disable dynamic provisioning
-      storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 5Gi
+      size: 1Gi
       annotations: {}
     jobservice:
       jobLog:
         existingClaim: ""
-        storageClass: ""
+        storageClass: "nfs-client"
         subPath: ""
         accessMode: ReadWriteOnce
         size: 1Gi
@@ -150,7 +153,7 @@ persistence:
     # be ignored
     database:
       existingClaim: ""
-      storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 1Gi
@@ -159,14 +162,14 @@ persistence:
     # be ignored
     redis:
       existingClaim: ""
-      storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 1Gi
       annotations: {}
     trivy:
       existingClaim: ""
-      storageClass: ""
+      storageClass: "nfs-client"
       subPath: ""
       accessMode: ReadWriteOnce
       size: 5Gi
@@ -215,7 +218,7 @@ persistence:
       # Set an existing secret for S3 accesskey and secretkey
       # keys in the secret should be REGISTRY_STORAGE_S3_ACCESSKEY and REGISTRY_STORAGE_S3_SECRETKEY for registry
       #existingSecret: ""
-      region: us-west-1
+      region: ap-northeast-2
       bucket: bucketname
       #accesskey: awsaccesskey
       #secretkey: awssecretkey
@@ -341,6 +344,7 @@ imagePullPolicy: IfNotPresent
 
 # Use this set to assign a list of default pullSecrets
 imagePullSecrets:
+  - name: "tz-registrykey"
 #  - name: docker-registry-secret
 #  - name: internal-registry-secret
 
@@ -933,7 +937,7 @@ database:
       #    memory: 128Mi
       #    cpu: 100m
   external:
-    host: "192.168.0.1"
+    host: "my-postgres-postgresql.default.svc.cluster.local"
     port: "5432"
     username: "user"
     password: "password"

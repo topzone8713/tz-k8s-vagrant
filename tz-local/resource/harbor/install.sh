@@ -15,17 +15,19 @@ k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
 basic_password=$(prop 'project' 'basic_password')
-NS=default
+NS=harbor
 
+kubectl delete ns ${NS}
+kubectl create ns ${NS}
 helm repo add harbor https://helm.goharbor.io
-helm uninstall harbor-release
+helm uninstall harbor-release -n ${NS}
 #helm show values harbor/harbor > values.yaml
 cp -Rf values.yaml values.yaml_bak
 sed -ie "s|k8s_project|${k8s_project}|g" values.yaml_bak
 sed -ie "s|k8s_domain|${k8s_domain}|g" values.yaml_bak
-sed -ie "s|NS|default|g" values.yaml_bak
+sed -ie "s|NS|${NS}|g" values.yaml_bak
 #--reuse-values
-helm upgrade --debug --install harbor-release harbor/harbor -f values.yaml_bak
+helm upgrade -n ${NS} --debug --install harbor-release harbor/harbor -f values.yaml_bak
 
 sleep 300
 

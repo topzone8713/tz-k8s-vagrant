@@ -12,7 +12,7 @@ alias k='kubectl --kubeconfig ~/.kube/config'
 k8s_project=$(prop 'project' 'project')
 NS=devops-dev
 
-k apply -f storageclass.yaml -n ${NS}
+#k apply -f storageclass.yaml -n ${NS}
 
 helm repo add stable https://charts.helm.sh/stable
 helm repo update
