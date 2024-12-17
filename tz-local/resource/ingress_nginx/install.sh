@@ -129,6 +129,8 @@ fi
 #  fi
 #done
 
+bash /vagrant/tz-local/resource/ingress_nginx/self-signed/install.sh
+
 exit 0
 
 
