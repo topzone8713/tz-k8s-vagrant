@@ -5,6 +5,7 @@
 #set -x
 
 export ANSIBLE_CONFIG=/root/ansible.cfg
+export DEBIAN_FRONTEND=noninteractive
 echo "
 alias k='kubectl'
 export ANSIBLE_CONFIG=/root/ansible.cfg
