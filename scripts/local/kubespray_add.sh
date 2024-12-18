@@ -8,6 +8,9 @@
 #ansible all -i /vagrant/resource/kubespray/inventory.ini -m ping -u root
 ansible all -i /vagrant/resource/kubespray/inventory_add.ini -m ping -u root
 
+#ansible-playbook -u root -i resource/kubespray/inventory_add.ini kubespray/reset.yml \
+#  --become --become-user=root --extra-vars "reset_confirmation=yes"
+
 ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
   /vagrant/kubespray/cluster.yml
