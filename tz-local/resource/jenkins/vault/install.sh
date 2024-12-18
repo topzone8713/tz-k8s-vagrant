@@ -4,7 +4,7 @@ cd /vagrant/tz-local/resource/jenkins/vault
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 
 #set -x
 vault -autocomplete-install
@@ -12,7 +12,7 @@ complete -C /usr/local/bin/vault vault
 #vault -h
 
 export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-vault login ${vault_token}
+vault login ${VAULT_TOKEN}
 
 vault auth enable approle
 vault secrets enable kv-v2

@@ -27,8 +27,9 @@ spec:
     - consul-server.default.topzone-k8s.topzone.me
     - argocd.default.topzone-k8s.topzone.me
     - jenkins.default.topzone-k8s.topzone.me
-    - harbor.default.topzone-k8s.topzone.me
+    - harbor.harbor.topzone-k8s.topzone.me
     - grafana.default.topzone-k8s.topzone.me
     - prometheus.default.topzone-k8s.topzone.me
     - alertmanager.default.topzone-k8s.topzone.me
+    - vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
 

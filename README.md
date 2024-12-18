@@ -161,6 +161,7 @@ to project root directory.
             192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
             192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
             192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+            192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
 
     -. After installing k8s on all machines,
         bash /vagrant/scripts/k8s_addtion.sh

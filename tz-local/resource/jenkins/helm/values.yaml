@@ -540,7 +540,7 @@ controller:
     other: []
     ## The example below runs the client for https://smee.io as sidecar container next to Jenkins,
     ## that allows to trigger build behind a secure firewall.
-    ## http://jenkins.io/blog/2019/01/07/webhook-firewalls/#triggering-builds-with-webhooks-behind-a-secure-firewall
+    ## https://jenkins.io/blog/2019/01/07/webhook-firewalls/#triggering-builds-with-webhooks-behind-a-secure-firewall
     ##
     ## Note: To use it you should go to https://smee.io/new and update the url to the generete one.
     # - name: smee

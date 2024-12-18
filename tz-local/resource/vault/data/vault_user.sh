@@ -9,11 +9,11 @@ cd /vagrant/tz-local/resource/vault/data
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 
 export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
 echo ${VAULT_ADDR}
-vault login ${vault_token}
+vault login ${VAULT_TOKEN}
 
 vault secrets enable consul
 vault auth enable kubernetes

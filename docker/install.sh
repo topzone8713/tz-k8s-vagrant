@@ -30,7 +30,7 @@ sed -ie "s|\${k8s_project}|${k8s_project}|g" docker-compose.yml_bak
 sed -ie "s|\${k8s_domain}|${k8s_domain}|g" docker-compose.yml_bak
 sed -ie "s|\${tz_project}|${tz_project}|g" docker-compose.yml_bak
 sed -ie "s|\${aws_account_id}|${aws_account_id}|g" docker-compose.yml_bak
-#sed -ie "s|\${vault_token}|${vault_token}|g" docker-compose.yml_bak
+#sed -ie "s|\${VAULT_TOKEN}|${VAULT_TOKEN}|g" docker-compose.yml_bak
 
 # --no-cache
 docker-compose -f docker-compose.yml_bak build

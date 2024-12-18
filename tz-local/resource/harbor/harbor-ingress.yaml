@@ -10,7 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "100g"
 spec:
   rules:
-  - host: harbor.default.k8s_project.k8s_domain
+  - host: harbor.harbor.k8s_project.k8s_domain
     http:
       paths:
       - path: /
@@ -22,5 +22,5 @@ spec:
               number: 80
   tls:
     - hosts:
-        - harbor.default.k8s_project.k8s_domain
+        - harbor.harbor.k8s_project.k8s_domain
       secretName: ingress-harbor-tls

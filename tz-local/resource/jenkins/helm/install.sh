@@ -45,9 +45,9 @@ echo "waiting for starting a jenkins server!"
 sleep 60
 
 mkdir -p /root/.docker
-cp -Rf /vagrant/resources/config.json /root/.docker/config.json
+cp -Rf /vagrant/resources/config.json /root/.docker/config2.json
 kubectl -n jenkins delete configmap docker-config
-kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/config.json
+kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/config2.json
 
 #kubectl cp plugin.txt jenkins/jenkins-0:/tmp/plugin.txt
 #kubectl -n jenkins exec -it jenkins-0 /bin/bash
@@ -56,7 +56,7 @@ kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/conf
 
 echo "
 ##[ Jenkins ]##########################################################
-#  - URL: http://jenkins.default.${k8s_project}.${k8s_domain}
+#  - URL: https://jenkins.default.${k8s_project}.${k8s_domain}
 #
 #  - ID: admin
 #  - Password:

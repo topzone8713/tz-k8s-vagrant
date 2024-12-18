@@ -42,7 +42,7 @@ fi
 
 if [[ "${ACTION}" == "vault" ]]; then
   export VAULT_ADDR=http://vault.default.${CLUSTER_NAME}.${DOMAIN}
-  login_out=$(vault login ${vault_token})
+  login_out=$(vault login ${VAULT_TOKEN})
   vault_secret_key=$2
   fields=($(echo "$3" | tr ',' '\n'))
   for item in "${fields[@]}"; do
@@ -54,7 +54,7 @@ fi
 
 if [[ "${ACTION}" == "vault_config" ]]; then
   export VAULT_ADDR=http://vault.default.${CLUSTER_NAME}.${DOMAIN}
-  login_out=$(vault login ${vault_token})
+  login_out=$(vault login ${VAULT_TOKEN})
   vault_secret_key=$2
   vault_secret_key2=$3
   tmp=tmp_$(shuf -i 0-1000 -n 1)
@@ -547,7 +547,7 @@ export VAULT_ADDR=http://vault.vault.svc.cluster.local:8200
 CLUSTER_NAME=topzone-k8s
 k8s_domain=default.topzone-k8s.topzone.me
 export VAULT_ADDR=http://vault.default.${CLUSTER_NAME}.${k8s_domain}
-login_out=$(vault login ${vault_token})
+login_out=$(vault login ${VAULT_TOKEN})
 
 tmp=tmp_$(shuf -i 0-1000 -n 1)
 echo "" > .env

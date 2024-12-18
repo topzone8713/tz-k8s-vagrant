@@ -6,8 +6,8 @@ ENV k8s_project=${k8s_project}
 ARG k8s_domain=xxxxx
 ENV k8s_domain=${k8s_domain}
 
-ARG vault_token=xxxxx
-ENV vault_token=${vault_token}
+ARG VAULT_TOKEN=xxxxx
+ENV VAULT_TOKEN=${VAULT_TOKEN}
 
 EXPOSE 22
 

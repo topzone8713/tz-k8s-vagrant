@@ -55,6 +55,7 @@ bash /vagrant/tz-local/resource/vault/helm/install.sh
 # Need to unseal vault manually !!!!
 # vagrant ssh kube-master
 # Go to /vagrant/tz-local/resource/vault/helm/install.sh again
+# vault operator unseal
 
 echo "##########################################"
 echo "Need to unseal vault manually !!!!"

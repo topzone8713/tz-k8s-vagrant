@@ -23,5 +23,6 @@ kubectl apply -f nodelocaldns.yaml_bak
 
 #prometheus-kube-prometheus-operator.monitoring.svc.cluster.local
 
+kubectl delete -f ubuntu.yaml -n devops-dev
 kubectl apply -f ubuntu.yaml -n devops-dev
 

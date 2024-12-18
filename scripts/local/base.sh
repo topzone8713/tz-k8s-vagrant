@@ -105,5 +105,14 @@ cat <<EOF >> /etc/hosts
 192.168.86.94   kube-slave-4
 192.168.86.95   kube-slave-5
 192.168.86.99   kube-slave-6
+
+192.168.86.200   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
+192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
+192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
+192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
+
 EOF
 fi
+

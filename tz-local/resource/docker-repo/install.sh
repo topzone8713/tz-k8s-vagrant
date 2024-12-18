@@ -41,24 +41,22 @@ docker_url=$(prop 'project' 'docker_url')
 
 apt-get update -y
 apt-get -y install docker.io jq
-usermod -G docker ubuntu
-chown -Rf ubuntu:ubuntu /var/run/docker.sock
 
-mkdir -p ~/.docker
-docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
-echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+#mkdir -p ~/.docker
+#docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
+#echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
 
-sleep 2
+mkdir -p /root/.docker
+cp -Rf /vagrant/resources/config.json /root/.docker/config.json
+chown -Rf topzone:topzone /root/.docker
 
-cat ~/.docker/config.json
-
-kubectl delete secret tz-registrykey
+kubectl delete secret tz-registrykey -n kube-system
 kubectl create secret generic tz-registrykey \
-    --from-file=.dockerconfigjson=/root/.docker/config.json \
-    --type=kubernetes.io/dockerconfigjson
+    --from-file=.dockerconfigjson=config.json \
+    --type=kubernetes.io/dockerconfigjson -n kube-system
 
 #PROJECTS=(default)
-PROJECTS=(argocd consul jenkins default devops devops-dev monitoring vault)
+PROJECTS=(argocd consul harbor jenkins default devops devops-dev monitoring vault)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     echo "===================== ${item}"
@@ -66,7 +64,7 @@ for item in "${PROJECTS[@]}"; do
     kubectl delete secret tz-registrykey -n ${item}
     kubectl create secret generic tz-registrykey \
       -n ${item} \
-      --from-file=.dockerconfigjson=/root/.docker/config.json \
+      --from-file=.dockerconfigjson=config.json \
       --type=kubernetes.io/dockerconfigjson
   fi
 done
@@ -78,12 +76,17 @@ kubectl get secret tz-registrykey --output="jsonpath={.data.\.dockerconfigjson}"
 
 exit 0
 
-spec:
-  containers:
-  - name: private-reg-container
-    image: <your-private-image>
-  imagePullSecrets:
-    - name: tz-registrykey
 
-docker login index.docker.io
-docker pull index.docker.io/devops-utils2:latest
+sudo vi /etc/containerd/config.toml
+
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["https://registry-1.docker.io", "https://harbor.harbor.topzone-k8s.topzone.me"]
+
+    [plugins."io.containerd.grpc.v1.cri".registry.configs]
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.topzone-k8s.topzone.me".auth]
+          username = "admin"
+          password = "Harbor12345"
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.topzone-k8s.topzone.me".tls]
+          insecure_skip_verify = true

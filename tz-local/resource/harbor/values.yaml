@@ -896,10 +896,13 @@ database:
     serviceAccountName: ""
     # mount the service account token
     automountServiceAccountToken: false
-    # resources:
-    #  requests:
-    #    memory: 256Mi
-    #    cpu: 100m
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 250m
+      limits:
+        memory: 1Gi
+        cpu: 500m
     # The timeout used in livenessProbe; 1 to 5 seconds
     livenessProbe:
       timeoutSeconds: 1

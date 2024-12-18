@@ -41,12 +41,12 @@ sudo chown -Rf topzone:topzone /var/run/docker.sock
 
 sudo vi /etc/docker/daemon.json
 {
-  "insecure-registries":["harbor.default.${k8s_project}.${k8s_domain}"]
+  "insecure-registries":["harbor.harbor.${k8s_project}.${k8s_domain}"]
 }
 sudo systemctl restart docker
 
 admin_password=Harbor12345
-docker login harbor.default.${k8s_project}.${k8s_domain} -u="admin" -p="${admin_password}"
+docker login harbor.harbor.${k8s_project}.${k8s_domain} -u="admin" -p="${admin_password}"
 
 #docker container stop $(docker container ls -a -q) && docker system prune -a -f --volumes
 docker build -f docker/local/tgdBase.Dockerfile -t ${REPO_HOST}/tgd-web-phpbase/repository:latest .

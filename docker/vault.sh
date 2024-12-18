@@ -23,7 +23,7 @@ fi
 
 if [ "$1" == "help" ]; then
   echo "##[help] #########################################################################################"
-  echo " export vault_token=xxxxxxxxxx"
+  echo " export VAULT_TOKEN=xxxxxxxxxx"
   echo " bash /vagrant/tz-local/docker/vault.sh put devops-prod devops-utils resources"
   echo " bash /vagrant/tz-local/docker/vault.sh get devops-prod devops-utils"
   echo " bash /vagrant/tz-local/docker/vault.sh delete devops-prod devops-utils"
@@ -55,13 +55,13 @@ if [ "$3" == "" ]; then
 fi
 secret_name=$3
 
-if [ "${vault_token}" == "" ]; then
-  echo "vault_token is required in ENV!"
+if [ "${VAULT_TOKEN}" == "" ]; then
+  echo "VAULT_TOKEN is required in ENV!"
   exit 1
 fi
 
 export VAULT_ADDR=http://vault.${k8s_domain}
-vault login ${vault_token}
+vault login ${VAULT_TOKEN}
 
 echo "k8s_project: ${k8s_project}"
 echo "k8s_domain: ${k8s_domain}"
@@ -99,7 +99,7 @@ if [[ "$1" == "put" || "$1" == "fput" ]]; then
   rm -Rf payload.json
 
   curl \
-      --header "X-Vault-Token: ${vault_token}" \
+      --header "X-Vault-Token: ${VAULT_TOKEN}" \
       --request POST \
       --data @payload2.json \
       "http://vault.${k8s_domain}/v1/secret/data/${bucket_name}/${secret_name}"
@@ -107,7 +107,7 @@ if [[ "$1" == "put" || "$1" == "fput" ]]; then
 elif [[ "$1" == "get" || "$1" == "fget" ]]; then
   #echo "http://vault.${k8s_domain}/v1/secret/data/${bucket_name}/${secret_name}"
   curl \
-      --header "X-Vault-Token: ${vault_token}" \
+      --header "X-Vault-Token: ${VAULT_TOKEN}" \
       "http://vault.${k8s_domain}/v1/secret/data/${bucket_name}/${secret_name}" | jq '.data | map(.resources)[0]' \
       | sed -e 's|"||g' > payload3.json
   if [ "$1" == "get" ]; then
@@ -120,7 +120,7 @@ elif [[ "$1" == "get" || "$1" == "fget" ]]; then
   rm -Rf payload3.json
 elif [ "$1" == "delete" ]; then
   curl \
-      --header "X-Vault-Token: ${vault_token}" \
+      --header "X-Vault-Token: ${VAULT_TOKEN}" \
       --request DELETE \
       "http://vault.${k8s_domain}/v1/secret/data/${bucket_name}/${secret_name}"
 fi

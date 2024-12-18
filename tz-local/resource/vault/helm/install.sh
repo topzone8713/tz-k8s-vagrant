@@ -11,7 +11,7 @@ alias k='kubectl --kubeconfig ~/.kube/config'
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 NS=vault
 
 helm repo add hashicorp https://helm.releases.hashicorp.com
@@ -71,13 +71,13 @@ echo "Initial Root Token vault!!!"
 echo "#######################################################"
 kubectl -n vault exec -ti vault-0 -- vault operator init -key-shares=3 -key-threshold=2 | sed 's/\x1b\[[0-9;]*m//g' > /vagrant/resources/unseal.txt
 sleep 20
-vault_token_new=$(cat /vagrant/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
+VAULT_TOKEN_NEW=$(cat /vagrant/resources/unseal.txt | grep "Initial Root Token:" | tail -n 1 | awk '{print $4}')
 echo "#######################################################"
-echo "vault_token_new: ${vault_token_new}"
+echo "VAULT_TOKEN_NEW: ${VAULT_TOKEN_NEW}"
 echo "#######################################################"
-if [[ "${vault_token_new}" != "" ]]; then
+if [[ "${VAULT_TOKEN_NEW}" != "" ]]; then
   awk '!/vault=/' /vagrant/resources/project > tmpfile && mv tmpfile /vagrant/resources/project
-  echo "vault=${vault_token_new}" >> /vagrant/resources/project
+  echo "vault=${VAULT_TOKEN_NEW}" >> /vagrant/resources/project
   cp -Rf /vagrant/resources/project ~/.k8s/project
   mkdir -p /home/topzone/.k8s
   cp -Rf /vagrant/resources/project /home/topzone/.k8s/project
@@ -113,7 +113,7 @@ exit 0
 echo "
 ##[ Vault ]##########################################################
 export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-vault login ${vault_token_new}
+vault login ${VAULT_TOKEN_NEW}
 
 vault secrets list -detailed
 

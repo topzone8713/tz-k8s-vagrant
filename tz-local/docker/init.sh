@@ -3,7 +3,7 @@
 # bash /init.sh
 cd /vagrant/tz-local/docker
 
-echo "vault_token: ${vault_token}"
+echo "VAULT_TOKEN: ${VAULT_TOKEN}"
 
 rm -Rf /vagrant/info
 

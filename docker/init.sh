@@ -4,7 +4,7 @@
 cd /vagrant/tz-local/docker
 export KUBE_CONFIG_PATH=/root/.kube/config
 
-echo "vault_token: ${vault_token}"
+echo "VAULT_TOKEN: ${VAULT_TOKEN}"
 
 rm -Rf /vagrant/info
 

@@ -38,9 +38,6 @@ sleep 300
 #kubectl delete -f harbor-ingress.yaml_bak
 #kubectl apply -f harbor-ingress.yaml_bak
 
-#echo https://harbor.default.${k8s_project}.${k8s_domain}
-echo admin / Harbor12345
-
 #new project: ks-devops-harbor
 #NEW ROBOT ACCOUNT in Robot Accounts.
 # robot account: robot-test
@@ -52,15 +49,17 @@ echo admin / Harbor12345
 #  logging:
 #    enabled: false
 
-#vi /etc/docker/daemon.json
-#{
-#  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
-#}
-#systemctl restart docker
-#
-#docker login harbor.harbor.topzone-k8s.topzone.me
-#admin / ${admin_password}
+cat <<EOF > /etc/docker/daemon.json
+{
+  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
+}
+EOF
 
+echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+
+kubectl delete secret harbor-registry-secret -n jenkins
 kubectl create secret generic harbor-registry-secret \
-    --from-file=.dockerconfigjson=config.json \
+    --from-file=.dockerconfigjson=/root/.docker/config.json \
     --type=kubernetes.io/dockerconfigjson -n jenkins
+
+exit 0

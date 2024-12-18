@@ -20,4 +20,4 @@ services:
       - "k8s_domain=${k8s_domain}"
       - "tz_project=${tz_project}"
       - "docker_user=${docker_user}"
-      - "vault_token=${vault_token}"
+      - "VAULT_TOKEN=${VAULT_TOKEN}"
