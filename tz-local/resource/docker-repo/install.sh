@@ -14,61 +14,48 @@ dockerhub_id=$(prop 'project' 'dockerhub_id')
 dockerhub_password=$(prop 'project' 'dockerhub_password')
 docker_url=$(prop 'project' 'docker_url')
 
-#kubectl -n kube-system edit configmap coredns
-
-#apiVersion: v1
-#kind: ConfigMap
-#metadata:
-#  name: coredns
-#  namespace: kube-system
+#kubectl describe cm/coredns -n kube-system > coredns.yqml
+#kubectl edit cm/coredns -n kube-system
+#
 #data:
 #  Corefile: |
 #    .:53 {
-#    errors {
+#        errors {
+#        }
+#        health {
+#            lameduck 5s
+#        }
+#        ready
+#        ~~~~
 #    }
-#    health {
-#        lameduck 5s
+#    harbor.harbor.topzone-k8s.topzone.me:53 {
+#        hosts {
+#            192.168.86.200    harbor.harbor.topzone-k8s.topzone.me
+#        }
 #    }
-#    hosts {
-#        192.168.86.200 harbor.harbor.topzone-k8s.topzone.me
-#        fallthrough
-#    }
-#    ready
 
-kubectl -n kube-system rollout restart deployment coredns
+#kubectl -n kube-system rollout restart deployment coredns
 
+# apt-get update && apt-get install dnsutils -y
+# nslookup harbor.harbor.topzone-k8s.topzone.me
 
-mkdir -p /root/.docker
-cp -Rf /vagrant/resources/config.json /root/.docker/config.json
-chown -Rf topzone:topzone /root/.docker
+apt-get update -y
+apt-get -y install docker.io jq
+usermod -G docker ubuntu
+chown -Rf ubuntu:ubuntu /var/run/docker.sock
 
-kubectl delete secret tz-registrykey -n kube-system
+mkdir -p ~/.docker
+docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
+echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+
+sleep 2
+
+cat ~/.docker/config.json
+
+kubectl delete secret tz-registrykey
 kubectl create secret generic tz-registrykey \
-    --from-file=.dockerconfigjson=config.json \
-    --type=kubernetes.io/dockerconfigjson -n kube-system
-
-#  --docker-server=https://nexus.topzone-k8s.topzone.me:5000/v2/ \
-#kubectl get secret tz-registrykey --output=yaml
-
-#echo "
-#apiVersion: v1
-#kind: Secret
-#metadata:
-#  name: tz-registrykey
-#data:
-#  .dockerconfigjson: docker-config
-#type: kubernetes.io/dockerconfigjson
-#" > docker-config.yaml
-#
-DOCKER_CONFIG=$(cat /root/.docker/config.json | base64 | tr -d '\r')
-DOCKER_CONFIG=$(echo $DOCKER_CONFIG | sed 's/ //g')
-echo "${DOCKER_CONFIG}"
-cp docker-config.yaml docker-config.yaml_bak
-sed -i "s/DOCKER_CONFIG/${DOCKER_CONFIG}/g" docker-config.yaml_bak
-kubectl apply -f docker-config.yaml_bak
-
-#kubectl delete -f clusterPullSecret.yaml
-#kubectl apply -f clusterPullSecret.yaml
+    --from-file=.dockerconfigjson=/root/.docker/config.json \
+    --type=kubernetes.io/dockerconfigjson
 
 #PROJECTS=(default)
 PROJECTS=(argocd consul jenkins default devops devops-dev monitoring vault)
@@ -83,11 +70,6 @@ for item in "${PROJECTS[@]}"; do
       --type=kubernetes.io/dockerconfigjson
   fi
 done
-
-kubectl delete secret docker-config -n jenkins
-kubectl create secret generic docker-config \
-     -n jenkins \
-    --from-file=config.json=/root/.docker/config.json
 
 kubectl get secret tz-registrykey --output=yaml
 kubectl get secret tz-registrykey -n vault --output=yaml
