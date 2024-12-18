@@ -15,9 +15,13 @@ ansible-playbook -u root -i /vagrant/resource/kubespray/inventory_add.ini \
   --private-key .ssh/tz_rsa --become --become-user=root \
   /vagrant/kubespray/cluster.yml
 
-cp -Rf resource/kubespray/containerd.yml /Volumes/workspace/tz/tz-k8s-vagrant/kubespray/playbooks
-ansible-playbook -u root -i resource/kubespray/inventory_add.ini kubespray/containerd.yml \
+cp -Rf resource/kubespray/config.toml /vagrant/kubespray/playbooks/config.toml
+cp -Rf resource/kubespray/containerd.yml /vagrant/kubespray/playbooks/containerd.yml
+ansible-playbook -u root -i resource/kubespray/inventory_add.ini kubespray/playbooks/containerd.yml \
   --become --become-user=root
+
+#ansible-playbook -u root -i resource/kubespray/inventory_add.ini kubespray/playbooks/containerd.yml \
+#  --become --become-user=root -b -l kube-master
 
 bash /vagrant/scripts/k8s_addtion.sh
 
