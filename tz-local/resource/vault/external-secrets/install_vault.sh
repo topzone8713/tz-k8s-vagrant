@@ -7,7 +7,7 @@ cd /vagrant/tz-local/resource/vault/external-secrets
 
 k8s_domain=$(prop 'project' 'domain')
 k8s_project=$(prop 'project' 'project')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 NS=external-secrets
 
 helm repo add external-secrets https://charts.external-secrets.io
@@ -21,9 +21,9 @@ helm upgrade --debug --install external-secrets \
     --set installCRDs=true
 
 #export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-#vault login ${vault_token}
+#vault login ${VAULT_TOKEN}
 #vault kv get secret/devops-prod/dbinfo
-vault_token_en=`echo -n ${vault_token} | openssl base64 -A`
+VAULT_TOKEN_EN=`echo -n ${VAULT_TOKEN} | openssl base64 -A`
 
 #PROJECTS=(devops devops-dev)
 PROJECTS=(default argocd devops devops-dev)
@@ -78,7 +78,7 @@ data:
     cp secret.yaml secret.yaml_bak
     sed -i "s|PROJECT|${project}|g" secret.yaml_bak
     sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
-    sed -i "s|VAULT_TOKEN|${vault_token_en}|g" secret.yaml_bak
+    sed -i "s|VAULT_TOKEN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
     sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
     sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
     kubectl delete -f secret.yaml_bak
@@ -102,7 +102,7 @@ metadata:
       cp secret.yaml secret.yaml_bak
       sed -i "s|PROJECT|${project_stg}|g" secret.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
-      sed -i "s|VAULT_TOKEN|${vault_token_en}|g" secret.yaml_bak
+      sed -i "s|VAULT_TOKEN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
       sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
       sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
       kubectl delete -f secret.yaml_bak

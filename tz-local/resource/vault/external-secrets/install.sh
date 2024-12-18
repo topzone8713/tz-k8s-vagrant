@@ -7,7 +7,7 @@ cd /vagrant/tz-local/resource/vault/external-secrets
 
 k8s_domain=$(prop 'project' 'domain')
 k8s_project=$(prop 'project' 'project')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 NS=external-secrets
 
 helm repo add external-secrets https://charts.external-secrets.io
@@ -21,7 +21,7 @@ helm upgrade --debug --install external-secrets \
     --set installCRDs=true
 
 #export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-#vault login ${vault_token}
+#vault login ${VAULT_TOKEN}
 #vault kv get secret/devops-prod/dbinfo
 
 #PROJECTS=(devops devops-dev)
