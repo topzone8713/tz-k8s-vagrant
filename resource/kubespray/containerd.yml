@@ -1,0 +1,32 @@
+- name: Conditional update of containerd config.toml
+  hosts: all
+  become: yes
+  tasks:
+    - name: Check if the last line matches the condition
+      shell: tail -n 1 /etc/containerd/config.toml
+      register: last_line
+
+    - name: Remove the last line if it matches the condition with optional leading spaces
+      lineinfile:
+        path: /etc/containerd/config.toml
+        state: absent
+        regexp: '^\s*endpoint = \["https://registry-1\.docker\.io"\]$'
+      when: last_line.stdout | regex_search('^\s*endpoint = \["https://registry-1\.docker\.io"\]$')
+
+    - name: Add registry configuration to /etc/containerd/config.toml
+      blockinfile:
+        path: /etc/containerd/config.toml
+        insertafter: EOF
+        block: |
+          [plugins."io.containerd.grpc.v1.cri".registry]
+            [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+              [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+                endpoint = ["https://registry-1.docker.io", "https://harbor.harbor.topzone-k8s.topzone.me"]
+
+          [plugins."io.containerd.grpc.v1.cri".registry.configs]
+              [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.topzone-k8s.topzone.me".auth]
+                username = "admin"
+                password = "Harbor12345"
+              [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.topzone-k8s.topzone.me".tls]
+                insecure_skip_verify = true
+      when: last_line.stdout | regex_search('^\s*endpoint = \["https://registry-1\.docker\.io"\]$')
