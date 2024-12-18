@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-bastion
+spec:
+  selector:
+    matchLabels:
+      app: devops-bastion
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: devops-bastion
+    spec:
+      hostAliases:
+      - ip: "192.168.86.200"
+        hostnames:
+        - "harbor.harbor.topzone-k8s.topzone.me"
+      imagePullSecrets:
+        - name: tz-registrykey
+        - name: harbor-secret
+      serviceAccountName: devops-dev-svcaccount
+      containers:
+      - name: devops-bastion
+        image: ubuntu:22.04
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
+
