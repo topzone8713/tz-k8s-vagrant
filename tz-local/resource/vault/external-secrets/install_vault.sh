@@ -25,8 +25,8 @@ vault login ${VAULT_TOKEN}
 #vault kv get secret/devops-prod/dbinfo
 VAULT_TOKEN_EN=`echo -n ${VAULT_TOKEN} | openssl base64 -A`
 
-PROJECTS=(devops devops-dev)
-#PROJECTS=(devops devops-dev default argocd jenkins harbor)
+#PROJECTS=(devops devops-dev)
+PROJECTS=(devops devops-dev default argocd jenkins harbor)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     STAGING="dev"
