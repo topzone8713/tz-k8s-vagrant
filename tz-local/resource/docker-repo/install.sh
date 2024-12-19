@@ -41,18 +41,25 @@ docker_url=$(prop 'project' 'docker_url')
 
 apt-get update -y
 apt-get -y install docker.io jq
-
 #mkdir -p ~/.docker
 #docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
-#echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
 
 mkdir -p /root/.docker
+
+cat <<EOF > /etc/docker/daemon.json
+{
+    "insecure-registries": ["harbor.harbor.topzone-k8s.topzone.me"]
+}
+EOF
+service docker restart
+echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+
 cp -Rf /vagrant/resources/config.json /root/.docker/config.json
 chown -Rf topzone:topzone /root/.docker
 
 kubectl delete secret tz-registrykey -n kube-system
 kubectl create secret generic tz-registrykey \
-    --from-file=.dockerconfigjson=config.json \
+    --from-file=.dockerconfigjson=/root/.docker/config.json \
     --type=kubernetes.io/dockerconfigjson -n kube-system
 
 #PROJECTS=(default)
@@ -64,7 +71,7 @@ for item in "${PROJECTS[@]}"; do
     kubectl delete secret tz-registrykey -n ${item}
     kubectl create secret generic tz-registrykey \
       -n ${item} \
-      --from-file=.dockerconfigjson=config.json \
+      --from-file=.dockerconfigjson=/root/.docker/config.json \
       --type=kubernetes.io/dockerconfigjson
   fi
 done
