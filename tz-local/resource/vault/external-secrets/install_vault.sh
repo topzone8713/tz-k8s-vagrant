@@ -20,8 +20,8 @@ helm upgrade --debug --install external-secrets \
     --create-namespace \
     --set installCRDs=true
 
-#export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-#vault login ${VAULT_TOKEN}
+export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
+vault login ${VAULT_TOKEN}
 #vault kv get secret/devops-prod/dbinfo
 VAULT_TOKEN_EN=`echo -n ${VAULT_TOKEN} | openssl base64 -A`
 
