@@ -20,7 +20,7 @@ helm upgrade --debug --install external-secrets \
     --create-namespace \
     --set installCRDs=true
 
-sleep 60
+sleep 30
 
 export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
 vault login ${VAULT_TOKEN}
