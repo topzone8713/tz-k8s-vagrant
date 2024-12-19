@@ -57,7 +57,7 @@ metadata:
 spec:
   provider:
     vault:
-      server: "https://vault.default.k8s_project.k8s_domain"
+      server: "http://vault.vault.svc.cluster.local:8200"
       path: "secret"
       version: "v2"
       auth:
