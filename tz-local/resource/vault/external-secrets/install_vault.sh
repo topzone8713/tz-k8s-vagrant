@@ -83,7 +83,7 @@ data:
     sed -i "s|VAULT_TOKEN_EN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
     sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
     sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
-    kubectl delete -f secret.yaml_bak
+#    kubectl delete -f secret.yaml_bak
     kubectl apply -f secret.yaml_bak
     kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
 
@@ -114,7 +114,7 @@ metadata:
       sed -i "s|VAULT_TOKEN_EN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
       sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
       sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
-      kubectl delete -f secret.yaml_bak
+#      kubectl delete -f secret.yaml_bak
       kubectl apply -f secret.yaml_bak
       kubectl patch serviceaccount ${project_stg}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
 
