@@ -71,14 +71,14 @@ metadata:
   name: vault-token
   namespace: "NAMESPACE"
 data:
-  token: VAULT_TOKEN
+  token: VAULT_TOKEN_EN
 
 ' > secret.yaml
 
     cp secret.yaml secret.yaml_bak
     sed -i "s|PROJECT|${project}|g" secret.yaml_bak
     sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
-    sed -i "s|VAULT_TOKEN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
+    sed -i "s|VAULT_TOKEN_EN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
     sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
     sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
     kubectl delete -f secret.yaml_bak
@@ -103,13 +103,13 @@ metadata:
       cp account.yaml account.yaml_bak
       sed -i "s|PROJECT|${item}|g" account.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
-      kubectl delete -f account.yaml_bak
+      #kubectl delete -f account.yaml_bak
       kubectl apply -f account.yaml_bak
 
       cp secret.yaml secret.yaml_bak
       sed -i "s|PROJECT|${project_stg}|g" secret.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
-      sed -i "s|VAULT_TOKEN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
+      sed -i "s|VAULT_TOKEN_EN|${VAULT_TOKEN_EN}|g" secret.yaml_bak
       sed -i "s|k8s_project|${k8s_project}|g" secret.yaml_bak
       sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
       kubectl delete -f secret.yaml_bak
@@ -119,13 +119,13 @@ metadata:
       cp account.yaml account.yaml_bak
       sed -i "s|PROJECT|${project_stg}|g" account.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
-      kubectl delete -f account.yaml_bak
+      #kubectl delete -f account.yaml_bak
       kubectl apply -f account.yaml_bak
     else
       cp account.yaml account.yaml_bak
       sed -i "s|PROJECT|${project}|g" account.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
-      kubectl delete -f account.yaml_bak
+      #kubectl delete -f account.yaml_bak
       kubectl apply -f account.yaml_bak
       kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
     fi
