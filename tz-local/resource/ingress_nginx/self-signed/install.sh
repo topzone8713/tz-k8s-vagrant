@@ -54,7 +54,7 @@ kubectl apply -f nginx3.yaml
 
 export NS=devops
 export k8s_project=topzone-k8s
-export k8s_domain=topzone.me
+export k8s_domain=topzone.com
 
 cp -Rf nginx-ingress.yaml nginx-ingress.yaml_bak
 sed -ie "s|NS|${NS}|g" nginx-ingress.yaml_bak

@@ -21,17 +21,17 @@ spec:
     group: cert-manager.io
     kind: Issuer
     name: ca-issuer
-  commonName: test.default.topzone-k8s.topzone.me
+  commonName: test.default.topzone-k8s.topzone.com
   dnsNames:
-    - test.default.topzone-k8s.topzone.me
-    - consul.default.topzone-k8s.topzone.me
-    - vault.default.topzone-k8s.topzone.me
-    - consul-server.default.topzone-k8s.topzone.me
-    - argocd.default.topzone-k8s.topzone.me
-    - jenkins.default.topzone-k8s.topzone.me
-    - harbor.harbor.topzone-k8s.topzone.me
-    - grafana.default.topzone-k8s.topzone.me
-    - prometheus.default.topzone-k8s.topzone.me
-    - alertmanager.default.topzone-k8s.topzone.me
-    - vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
+    - test.default.topzone-k8s.topzone.com
+    - consul.default.topzone-k8s.topzone.com
+    - vault.default.topzone-k8s.topzone.com
+    - consul-server.default.topzone-k8s.topzone.com
+    - argocd.default.topzone-k8s.topzone.com
+    - jenkins.default.topzone-k8s.topzone.com
+    - harbor.harbor.topzone-k8s.topzone.com
+    - grafana.default.topzone-k8s.topzone.com
+    - prometheus.default.topzone-k8s.topzone.com
+    - alertmanager.default.topzone-k8s.topzone.com
+    - vagrant-demo-app.devops-dev.topzone-k8s.topzone.com
 

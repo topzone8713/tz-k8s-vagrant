@@ -112,10 +112,10 @@ check_host=`cat /etc/hosts | grep 'jenkins'`
 if [[ "${check_host}" == "" ]]; then
 LB=`kubectl get svc | grep ingress-nginx-controller | grep LoadBalancer | awk '{print $4}'`
 cat <<EOF >> /etc/hosts
-${LB}   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
-${LB}   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
-${LB}   jenkins.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
-${LB}   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+${LB}   test.default.topzone-k8s.topzone.com consul.default.topzone-k8s.topzone.com vault.default.topzone-k8s.topzone.com
+${LB}   consul-server.default.topzone-k8s.topzone.com argocd.default.topzone-k8s.topzone.com
+${LB}   jenkins.default.topzone-k8s.topzone.com harbor.harbor.topzone-k8s.topzone.com
+${LB}   grafana.default.topzone-k8s.topzone.com prometheus.default.topzone-k8s.topzone.com alertmanager.default.topzone-k8s.topzone.com
 EOF
 fi
 
