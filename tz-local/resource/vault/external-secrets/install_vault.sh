@@ -26,7 +26,7 @@ helm upgrade --debug --install external-secrets \
 VAULT_TOKEN_EN=`echo -n ${VAULT_TOKEN} | openssl base64 -A`
 
 #PROJECTS=(devops devops-dev)
-PROJECTS=(default argocd devops devops-dev)
+PROJECTS=(default argocd jenkins harbor devops devops-dev)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     STAGING="dev"
@@ -83,6 +83,13 @@ data:
     sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
     kubectl delete -f secret.yaml_bak
     kubectl apply -f secret.yaml_bak
+    kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
+
+    kubectl create secret docker-registry harbor-secret -n ${namespace} \
+      --docker-server=harbor.harbor.topzone-k8s.topzone.me \
+      --docker-username=admin \
+      --docker-password=Harbor12345 \
+      --docker-email=doogee323@gmail.com
 
 echo '
 apiVersion: v1
@@ -107,6 +114,7 @@ metadata:
       sed -i "s|k8s_domain|${k8s_domain}|g" secret.yaml_bak
       kubectl delete -f secret.yaml_bak
       kubectl apply -f secret.yaml_bak
+      kubectl patch serviceaccount ${project_stg}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
 
       cp account.yaml account.yaml_bak
       sed -i "s|PROJECT|${project_stg}|g" account.yaml_bak
@@ -119,6 +127,7 @@ metadata:
       sed -i "s|NAMESPACE|${namespace}|g" account.yaml_bak
       kubectl delete -f account.yaml_bak
       kubectl apply -f account.yaml_bak
+      kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
     fi
   fi
 done
