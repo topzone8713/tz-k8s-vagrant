@@ -60,7 +60,7 @@ iptables -t mangle -X
 rm -Rf $HOME/.kube
 #sudo reboot
 
-#declare -a IPS=(192.168.86.100 192.168.86.91 192.168.86.92)
+#declare -a IPS=(192.168.86.200 192.168.86.91 192.168.86.92)
 #CONFIG_FILE=inventory/test-cluster/inventory.ini python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 
 #cat inventory/test-cluster/group_vars/all/all.yml
@@ -92,7 +92,7 @@ sudo cp -Rf /root/.kube /home/topzone/
 sudo chown -Rf topzone:topzone /home/topzone/.kube
 sudo cp -Rf /root/.kube/config /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
 
-sed -ie "s|127.0.0.1|192.168.86.100|g" /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
+sed -ie "s|127.0.0.1|192.168.86.200|g" /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
 
 echo "## [ install kubectl ] ######################################################"
 sudo apt-get update && sudo apt-get install -y apt-transport-https gnupg2 curl
