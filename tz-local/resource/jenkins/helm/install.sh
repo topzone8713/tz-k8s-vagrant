@@ -54,6 +54,8 @@ kubectl -n jenkins create configmap docker-config --from-file=/root/.docker/conf
 # jenkins-plugin-cli --list
 #jenkins-plugin-cli --plugin-file /tmp/plugin.txt --plugins delivery-pipeline-plugin:1.3.2 deployit-plugin
 
+sleep 240
+
 echo "
 ##[ Jenkins ]##########################################################
 #  - URL: https://jenkins.default.${k8s_project}.${k8s_domain}
