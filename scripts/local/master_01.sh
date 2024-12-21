@@ -58,13 +58,22 @@ bash /vagrant/tz-local/resource/vault/helm/install.sh
 # Go to /vagrant/tz-local/resource/vault/helm/install.sh again
 # vault operator unseal
 
-echo "##########################################"
-echo "Need to unseal vault manually with this command."
-echo "vault operator unseal"
+echo "####################################################################################"
+echo "Need to unseal vault manually with this command in each vault pod."
+echo "$> vault operator unseal"
+echo ""
+echo "--------------------------------------------------------------------------------"
 cat /vagrant/resources/unseal.txt
+echo "--------------------------------------------------------------------------------"
+echo ""
 echo "After that, to add slave nodes to k8s cluster"
 echo "bash /vagrant/scripts/local/kubespray_add.sh"
-echo "##########################################"
+echo ""
+echo "To go into kube-master"
+echo "$> vagrant ssh kube-master"
+echo "$> sudo su"
+echo "$> cd /vagrant"
+echo "####################################################################################"
 
 exit 0
 
