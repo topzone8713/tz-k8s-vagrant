@@ -25,7 +25,7 @@ helm upgrade --debug --install external-secrets \
 #vault kv get secret/devops-prod/dbinfo
 
 #PROJECTS=(devops devops-dev)
-PROJECTS=(default argocd jenkins harbor devops devops-dev)
+PROJECTS=(devops devops-dev default argocd jenkins harbor)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     STAGING="dev"
