@@ -52,12 +52,12 @@ to project root directory.
                     "username":"topzone8713",           # your dockerhub_id
                     "password":"xxxx",                  # your dockerhub_password
                     "email":"topzone8713@gmail.com",    # your email
-                    "auth":"xxxxxx"                     # your dockerhub auth token, 
-                                                        # After running "docker login" on your pc, 
-                                                        # cat ~/.docker/config.json
+                    "auth":"xxxxxx"                     # base64 encoding
                 }
             }
         }
+        
+       echo -n 'topzone8713:topzone!323' | base64
         
     -. DHCP IP address check
        Each VMs are supposed to get IP from DHCP server as public_ip in your network area.
@@ -191,5 +191,4 @@ to project root directory.
     kubectl get nodes
 ```
 
-# echo -n 'topzone8713:topzone!323' | base64
 
