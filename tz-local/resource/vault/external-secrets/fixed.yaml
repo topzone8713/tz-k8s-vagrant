@@ -1,0 +1,38 @@
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: devops-dev
+  namespace: devops-dev
+spec:
+  provider:
+    vault:
+      auth:
+        kubernetes:
+          mountPath: kubernetes
+          role: devops-dev
+          serviceAccountRef:
+            name: devops-dev-svcaccount
+      path: secret
+      server: http://vault.vault.svc.cluster.local:8200
+      version: v2
+
+---
+
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: devops-prod
+  namespace: devops
+spec:
+  provider:
+    vault:
+      auth:
+        kubernetes:
+          mountPath: kubernetes
+          role: devops-prod
+          serviceAccountRef:
+            name: devops-svcaccount
+      path: secret
+      server: http://vault.vault.svc.cluster.local:8200
+      version: v2
+
