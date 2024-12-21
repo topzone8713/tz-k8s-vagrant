@@ -91,8 +91,8 @@ done
 
 rm -Rf secret.yaml secret.yaml_bak
 
+exit 0
 kubectl apply -f test.yaml
 kubectl -n devops describe externalsecret devops-externalsecret
 kubectl get SecretStores,ClusterSecretStores,ExternalSecrets --all-namespaces
 
-exit 0

@@ -134,8 +134,7 @@ metadata:
   fi
 done
 
-#kubectl create serviceaccount mtown-prod-svcaccount -n mtown
-#kubectl create serviceaccount mtown-dev-svcaccount -n mtown-dev
+kubectl apply -f test.yaml
 
 rm -Rf secret.yaml secret.yaml_bak account.yaml account.yaml_bak
 
