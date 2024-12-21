@@ -134,6 +134,8 @@ metadata:
   fi
 done
 
+exit 0
+
 kubectl apply -f test.yaml
 
 rm -Rf secret.yaml secret.yaml_bak account.yaml account.yaml_bak
@@ -141,8 +143,6 @@ rm -Rf secret.yaml secret.yaml_bak account.yaml account.yaml_bak
 kubectl apply -f test.yaml
 kubectl -n devops describe externalsecret devops-externalsecret
 kubectl get SecretStores,ClusterSecretStores,ExternalSecrets --all-namespaces
-
-exit 0
 
 NAMESPACE=devops
 STAGING=prod

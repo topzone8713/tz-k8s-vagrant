@@ -91,9 +91,6 @@ done
 
 rm -Rf secret.yaml secret.yaml_bak
 
-kubectl delete -f fixed.yaml
-kubectl apply -f fixed.yaml
-
 exit 0
 kubectl apply -f test.yaml
 kubectl -n devops describe externalsecret devops-externalsecret
