@@ -18,10 +18,10 @@ Host 192.168.86.209
   LogLevel                ERROR
   UserKnownHostsFile      /dev/null
   IdentitiesOnly yes
-  IdentityFile /mnt/doogee323
+  IdentityFile /mnt/topzone8713
 ' > /root/.ssh/config
 
-ssh-copy-id -i /mnt/doogee323.pub dhong@192.168.86.209
+ssh-copy-id -i /mnt/topzone8713.pub dhong@192.168.86.209
 rsync -avzh -e ssh /mnt/result/ dhong@192.168.86.209:/Volumes/workspace/etc/tz-k8s-elk/data/
 
 exit 0

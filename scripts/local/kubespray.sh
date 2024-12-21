@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#https://sangvhh.net/set-up-kubernetes-cluster-with-kubespray-on-ubuntu-22-04/
-
 #set -x
 
 export ANSIBLE_CONFIG=/root/ansible.cfg
@@ -11,16 +9,8 @@ if [ -d /vagrant ]; then
 fi
 
 sudo rm -Rf kubespray
-#git clone --single-branch https://github.com/kubernetes-sigs/kubespray.git
 git clone https://github.com/kubernetes-sigs/kubespray.git --branch release-2.26
 rm -Rf kubespray/inventory/test-cluster
-
-#echo -n "Did you fix ip address in resource/kubespray settings? (Y)"
-#read A_ENV
-#echo "A_ENV: ${A_ENV}"
-#if [[ "${A_ENV}" != "Y" ]]; then
-#  exit 1
-#fi
 
 cp -rfp kubespray/inventory/sample kubespray/inventory/test-cluster
 cp -Rf resource/kubespray/addons.yml kubespray/inventory/test-cluster/group_vars/k8s_cluster/addons.yml
@@ -58,29 +48,6 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 rm -Rf $HOME/.kube
-#sudo reboot
-
-#declare -a IPS=(192.168.86.100 192.168.86.91 192.168.86.92)
-#CONFIG_FILE=inventory/test-cluster/inventory.ini python3 contrib/inventory_builder/inventory.py ${IPS[@]}
-
-#cat inventory/test-cluster/group_vars/all/all.yml
-#cat inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
-
-#cd resource/kubespray
-#scp doogee323@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml .
-#scp k8s-cluster.yml doogee323@master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml
-#scp master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/k8s-cluster.yml k8s-cluster.yml
-#scp master:/Volumes/workspace/etc/tz-k8s-topzone/kubespray/inventory/test-cluster/group_vars/k8s_cluster/addons.yml addons.yml
-
-#export ANSIBLE_PERSISTENT_CONNECT_TIMEOUT=120
-#ansible -vvvv -i inventory/test-cluster/inventory.ini all -a "systemctl status sshd" -u root
-
-#ansible-playbook -vvvv -u root -i inventory/test-cluster/inventory.ini -e 'ansible_python_interpreter=/usr/bin/python3' \
-#  --private-key /root/.ssh/tz_rsa --become --become-user=root cluster.yml
-
-#apt-add-repository ppa:ansible/ansible
-#apt update
-#apt install ansible -y
 
 # install k8s
 ansible-playbook -u root -i resource/kubespray/inventory.ini \

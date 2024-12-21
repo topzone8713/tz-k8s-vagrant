@@ -77,7 +77,7 @@ spec:
       --docker-server=harbor.harbor.topzone-k8s.topzone.me \
       --docker-username=admin \
       --docker-password=Harbor12345 \
-      --docker-email=doogee323@gmail.com
+      --docker-email=topzone8713@gmail.com
 
     if [ "${STAGING}" == "prod" ]; then
       cp secret.yaml secret.yaml_bak

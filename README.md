@@ -19,7 +19,7 @@ to project root directory.
 ## -. Prep a build environment
 ```
     -. checkout codes
-       git clone https://github.com/doogee323/tz-k8s-vagrant.git
+       git clone https://github.com/topzone8713/tz-k8s-vagrant.git
        cd tz-k8s-vagrant
 
     -. copy resources like this,
@@ -36,10 +36,10 @@ to project root directory.
         argocd_id=admin
         admin_password=DevOps!323
         basic_password=Soqn!323
-        github_id=doogee323       # your github_id
+        github_id=topzone8713       # your github_id
         github_token=               # your github token
         docker_url=index.docker.io
-        dockerhub_id=doogee323    # your dockerhub_id
+        dockerhub_id=topzone8713    # your dockerhub_id
         dockerhub_password=         # your dockerhub_password
         vault=xxxx                  
     
@@ -49,9 +49,9 @@ to project root directory.
         {
             "auths": {
                 "https://index.docker.io/v1/": {
-                    "username":"doogee323",           # your dockerhub_id
+                    "username":"topzone8713",           # your dockerhub_id
                     "password":"xxxx",                  # your dockerhub_password
-                    "email":"doogee323@gmail.com",    # your email
+                    "email":"topzone8713@gmail.com",    # your email
                     "auth":"xxxxxx"                     # your dockerhub auth token, 
                                                         # After running "docker login" on your pc, 
                                                         # cat ~/.docker/config.json
@@ -191,5 +191,5 @@ to project root directory.
     kubectl get nodes
 ```
 
-
+# echo -n 'topzone8713:topzone!323' | base64
 

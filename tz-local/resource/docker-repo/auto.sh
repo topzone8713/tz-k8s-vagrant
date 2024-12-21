@@ -14,7 +14,7 @@ kubectl apply -f https://raw.githubusercontent.com/alexellis/tz-registrykey/mast
 
 export DOCKER_USERNAME=$dockerhub_id
 export PW=$dockerhub_password
-export EMAIL=doogee323@gmail.com
+export EMAIL=topzone8713@gmail.com
 
 kubectl delete secret tz-registrykey -n kube-system
 kubectl create secret docker-registry tz-registrykey \

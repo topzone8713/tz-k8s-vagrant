@@ -87,11 +87,6 @@ echo "      env:" >> ${PROJECT_BASE}/kubeconfig_${k8s_project}
 echo "        - name: AWS_PROFILE" >> ${PROJECT_BASE}/kubeconfig_${k8s_project}
 echo '          value: '"${k8s_project}"'' >> ${PROJECT_BASE}/kubeconfig_${k8s_project}
 
-export s3_bucket_id=`terraform output | grep s3-bucket | awk '{print $3}'`
-echo $s3_bucket_id > s3_bucket_id
-
-#export s3_bucket_id=`terraform output | grep s3-bucket | awk '{print $3}'`
-#echo $s3_bucket_id > s3_bucket_id
 #master_ip=`terraform output | grep -A 2 "public_ip" | head -n 1 | awk '{print $3}'`
 #export master_ip=`echo $master_ip | sed -e 's/\"//g;s/ //;s/,//'`
 
@@ -119,7 +114,6 @@ echo "
     export KUBECONFIG='config_${k8s_project}'
 
   - kubectl get nodes
-  - S3 bucket: ${s3_bucket_id}
 
   - ${k8s_project} bastion:
     ssh ubuntu@${bastion_ip}
