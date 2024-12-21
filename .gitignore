@@ -43,3 +43,4 @@ kubeconfig_tz-k8s-vagrant
 /.vagrant/
 /tz-local/resource/vault/vault-injection/cert/
 self-signed.key
+self-signed.crt
