@@ -32,7 +32,7 @@ to project root directory.
     
     ex)
         project=topzone-k8s
-        domain=topzone.me     # temporary local domain
+        domain=topzone.com     # temporary local domain
         argocd_id=admin
         admin_password=DevOps!323
         basic_password=Soqn!323
@@ -67,7 +67,7 @@ to project root directory.
        
           config.vm.define "kube-master" do |master|
             master.vm.box = IMAGE_NAME
-            master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.100"        => This should be changed to your network
+            master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.200"        => This should be changed to your network
             master.vm.hostname = "kube-master"
             master.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/master.sh"), :args => master.vm.hostname
           end
@@ -154,14 +154,14 @@ to project root directory.
         vagrant ssh kube-master
         sudo su
         vi /etc/hosts
-        ex) 192.168.86.200 is my ingress-nginx's EXTERNAL-IP
+        ex) 192.168.86.220 is my ingress-nginx's EXTERNAL-IP
             kubectl get svc -n default | grep ingress-nginx-controller        
         
-            192.168.86.200   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
-            192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
-            192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
-            192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
-            192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
+            192.168.86.220   test.default.topzone-k8s.topzone.com consul.default.topzone-k8s.topzone.com vault.default.topzone-k8s.topzone.com
+            192.168.86.220   consul-server.default.topzone-k8s.topzone.com argocd.default.topzone-k8s.topzone.com
+            192.168.86.220   jenkins.default.topzone-k8s.topzone.com harbor.harbor.topzone-k8s.topzone.com
+            192.168.86.220   grafana.default.topzone-k8s.topzone.com prometheus.default.topzone-k8s.topzone.com alertmanager.default.topzone-k8s.topzone.com
+            192.168.86.220   vagrant-demo-app.devops-dev.topzone-k8s.topzone.com
 
     -. After installing k8s on all machines,
         bash /vagrant/scripts/k8s_addtion.sh

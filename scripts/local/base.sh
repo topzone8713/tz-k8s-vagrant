@@ -89,15 +89,15 @@ echo "##############################################"
 cat  /vagrant/info
 
 # manual test
-#sudo mount -t nfs 192.168.86.100:/srv/nfs /mnt
+#sudo mount -t nfs 192.168.86.200:/srv/nfs /mnt
 ## done
 
 check_host=`cat /etc/hosts | grep 'kube-master'`
 if [[ "${check_host}" == "" ]]; then
 cat <<EOF >> /etc/hosts
-192.168.86.100   kube-master
-192.168.86.101   kube-node-1
-192.168.86.102   kube-node-2
+192.168.86.200   kube-master
+192.168.86.201   kube-node-1
+192.168.86.202   kube-node-2
 
 192.168.86.97   kube-slave-1
 192.168.86.98   kube-slave-2
@@ -107,12 +107,12 @@ cat <<EOF >> /etc/hosts
 192.168.86.95   kube-slave-5
 192.168.86.99   kube-slave-6
 
-192.168.86.200   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
-192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
-192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
-192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
-192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
-192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
+192.168.86.220   test.default.topzone-k8s.topzone.com consul.default.topzone-k8s.topzone.com vault.default.topzone-k8s.topzone.com
+192.168.86.220   consul-server.default.topzone-k8s.topzone.com argocd.default.topzone-k8s.topzone.com
+192.168.86.220   jenkins.default.topzone-k8s.topzone.com harbor.default.topzone-k8s.topzone.com harbor.harbor.topzone-k8s.topzone.com
+192.168.86.220   grafana.default.topzone-k8s.topzone.com prometheus.default.topzone-k8s.topzone.com alertmanager.default.topzone-k8s.topzone.com
+192.168.86.220   grafana.default.topzone-k8s.topzone.com prometheus.default.topzone-k8s.topzone.com alertmanager.default.topzone-k8s.topzone.com
+192.168.86.220   vagrant-demo-app.devops-dev.topzone-k8s.topzone.com
 
 EOF
 fi

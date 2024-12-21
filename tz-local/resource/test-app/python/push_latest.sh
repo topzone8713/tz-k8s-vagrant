@@ -31,9 +31,9 @@ docker push doogee323/tz-py-crawler:latest
 #sudo chown -Rf topzone:topzone /var/run/docker.sock
 #export USERNAME=admin
 #export PASSWD=passwordg
-#docker login 192.168.86.100:5000 -u="$USERNAME" -p="$PASSWD"
-#docker tag tz-py-crawler 192.168.86.100:5000/doogee323/tz-py-crawler
-#docker push 192.168.86.100:5000/doogee323/tz-py-crawler
+#docker login 192.168.86.200:5000 -u="$USERNAME" -p="$PASSWD"
+#docker tag tz-py-crawler 192.168.86.200:5000/doogee323/tz-py-crawler
+#docker push 192.168.86.200:5000/doogee323/tz-py-crawler
 
 exit 0
 
