@@ -59,10 +59,11 @@ bash /vagrant/tz-local/resource/vault/helm/install.sh
 # vault operator unseal
 
 echo "##########################################"
-echo "Need to unseal vault manually !!!!"
+echo "Need to unseal vault manually with this command."
+echo "vault operator unseal"
 cat /vagrant/resources/unseal.txt
-echo "After that, "
-echo "bash /vagrant/scripts/k8s_addtion.sh"
+echo "After that, to add slave nodes to k8s cluster"
+echo "bash /vagrant/scripts/local/kubespray_add.sh"
 echo "##########################################"
 
 exit 0

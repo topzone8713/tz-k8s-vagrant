@@ -22,7 +22,7 @@ k delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/
 k apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 sleep 20
 k patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-sleep 150
+sleep 200
 TMP_PASSWORD=$(k -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
 echo "############################################"
 echo "TMP_PASSWORD: ${TMP_PASSWORD}"
