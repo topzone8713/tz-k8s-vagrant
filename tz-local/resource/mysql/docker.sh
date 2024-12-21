@@ -4,7 +4,6 @@ cd /vagrant/tz-local/resource/mysql
 
 aws_access_key_id=$(prop 'credentials' 'aws_access_key_id')
 aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key')
-AWS_REGION=$(prop 'config' 'region')
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 VAULT_TOKEN=$(prop 'project' 'vault')
@@ -26,9 +25,8 @@ aws ecr create-repository \
     --repository-name $SNAPSHOT_IMG \
     --image-tag-mutability IMMUTABLE
 
-#docker login --username AWS -p $(aws ecr get-login-password --region ${AWS_REGION}) ${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com/
 echo $dockerhub_password | docker login -u $dockerhub_id --password-stdin ${docker_url}
-DOCKER_ID=${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com
+#DOCKER_ID=${aws_account_id}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 docker image build -t ${SNAPSHOT_IMG} .
 docker tag ${SNAPSHOT_IMG}:latest ${DOCKER_ID}/${SNAPSHOT_IMG}:${TAG}
@@ -37,11 +35,6 @@ docker push ${DOCKER_ID}/${SNAPSHOT_IMG}:${TAG}
 export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 echo $VAULT_ADDR
 vault login ${VAULT_TOKEN}
-
-vault kv put secret/devops-prod/aws \
-  AWS_ACCESS_KEY_ID=${aws_access_key_id} \
-  AWS_SECRET_ACCESS_KEY=${aws_secret_access_key} \
-  AWS_DEFAULT_REGION=${AWS_REGION}
 
 #docker run tz-mysql-snapshot vol-0ccc1a959af735003
 #docker exec -it 48cdd1ac2e73 sh

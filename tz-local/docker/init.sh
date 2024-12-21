@@ -18,15 +18,10 @@ PROJECT_BASE='/vagrant/terraform-aws-k8s/workspace/base'
 function propConfig {
   grep "${1}" "/vagrant/resources/config" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
 }
-aws_region=$(propConfig 'region')
-export AWS_DEFAULT_REGION="${aws_region}"
 
 echo "k8s_project: ${k8s_project}"
-echo "aws_region: ${aws_region}"
-echo "aws_account_id: ${aws_account_id}"
 
 echo "
-export AWS_DEFAULT_REGION=${aws_region}
 export VAULT_ADDR=http://vault.${k8s_domain}
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'

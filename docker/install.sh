@@ -14,14 +14,9 @@ echo "dockerhub_password: ${dockerhub_password}"
 
 cd tz-local/docker
 
-#DOCKER_URL=${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
-
 #TAG=${DOCKER_URL}/${tz_project}:latest
 TAG=${tz_project}:latest
 
-#aws_account_id=$(aws sts get-caller-identity --query Account --output text)
-#aws ecr get-login-password --region ${aws_region} \
-#      | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
 #docker login -u="${dockerhub_id}" -p="${dockerhub_password}" ${docker_url}
 docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
 

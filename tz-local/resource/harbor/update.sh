@@ -2,9 +2,6 @@
 
 cd /vagrant/projects/tgd-web
 
-export AWS_ACCESS_KEY_ID=$(prop 'credentials' 'aws_access_key_id')
-export AWS_SECRET_ACCESS_KEY=$(prop 'credentials' 'aws_secret_access_key')
-export AWS_REGION=$(prop 'config' 'region')
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
@@ -19,7 +16,6 @@ AWS_REGION="ap-northeast-2"
 ACCOUNT_ID="xxxxx"
 CLUSTER_NAME="eks-main"
 STAGING="dev"
-#REPO_HOST="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 #IMAGE_TAG="${DOCKER_NAME}:${TAG_ID}"
 #IMAGE_TAG_NGINX="${DOCKER_NAME_NGINX}:${TAG_ID}"
 REPO_HOST="harbor.harbor.topzone-k8s.topzone.me"
@@ -36,8 +32,6 @@ aws s3 cp s3://${DOCKER_NAME}-${CLUSTER_NAME}/conf/${STAGING}/aws.php ./applicat
 bash ./k8s/config.sh ${GIT_BRANCH} ${STAGING}
 
 sudo chown -Rf topzone:topzone /var/run/docker.sock
-#aws ecr get-login-password --region ${AWS_REGION} \
-#  | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 sudo vi /etc/docker/daemon.json
 {
@@ -62,10 +56,7 @@ echo $REPOSITORY_TAG
 echo $REPOSITORY_TAG_NGINX
 
 docker image ls
-#docker run ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DOCKER_NAME}
 
 #aws ecr create-repository --repository-name "${DOCKER_NAME_NGINX}" || true
 #REPO_URL=$(aws ecr describe-repositories --repository-name "${DOCKER_NAME_NGINX}" | jq '.repositories[].repositoryUri' | tr -d '"')
 #echo "REPO_URL: ${REPO_URL}"
-#aws ecr get-login-password --region ${AWS_REGION} \
-#  | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
