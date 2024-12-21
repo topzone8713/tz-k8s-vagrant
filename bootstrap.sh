@@ -34,6 +34,7 @@ elif [[ "$1" == "provision" ]]; then
   PROVISION='y'
 elif [[ "$1" == "remove" ]]; then
   vagrant destroy -f
+  git checkout Vagrantfile
   exit 0
 elif [[ "$1" == "docker" ]]; then
   DOCKER_NAME=`docker ps | grep docker-${tz_project} | awk '{print $1}'`
