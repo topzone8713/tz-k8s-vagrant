@@ -9,10 +9,10 @@ metadata:
 spec:
 #  tls:
 #    - hosts:
-#        - https-wordpress.topzone8713
+#        - https-wordpress.doogee323
 #      secretName: default-token-nv5hl
   rules:
-#  - host: https-wordpress.topzone8713
+#  - host: https-wordpress.doogee323
 #  - http:
 #      paths:
 #      - path: /
