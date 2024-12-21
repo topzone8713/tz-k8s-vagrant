@@ -7,7 +7,7 @@ metadata:
     cert-manager.io/cluster-issuer: "selfsigned-issuer"
 spec:
   rules:
-    - host: test.default.topzone-k8s.topzone.com
+    - host: test.default.topzone-k8s.topzone.me
       http:
         paths:
           - path: /
@@ -19,5 +19,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - test.default.topzone-k8s.topzone.com
+        - test.default.topzone-k8s.topzone.me
       secretName: self-signed-cert-tls

@@ -88,7 +88,7 @@ data:
     kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
 
     kubectl create secret docker-registry harbor-secret -n ${namespace} \
-      --docker-server=harbor.harbor.topzone-k8s.topzone.com \
+      --docker-server=harbor.harbor.topzone-k8s.topzone.me \
       --docker-username=admin \
       --docker-password=Harbor12345 \
       --docker-email=doogee323@gmail.com

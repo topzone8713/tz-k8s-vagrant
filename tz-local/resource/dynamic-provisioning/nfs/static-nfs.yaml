@@ -9,7 +9,7 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 192.168.86.200
+    server: 192.168.86.100
     path: /home/topzone/data
 
 ---

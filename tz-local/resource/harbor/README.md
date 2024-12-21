@@ -4,7 +4,7 @@
 ## build a jenkins project in EKS
 ###################################################
 ```
-https://harbor.harbor.topzone-k8s.topzone.com/
+https://harbor.harbor.topzone-k8s.topzone.me/
 admin / Harbor12345
 
 1. new project: topzone-k8s

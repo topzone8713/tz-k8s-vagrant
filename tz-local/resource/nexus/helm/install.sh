@@ -94,10 +94,10 @@ http://nexus.default.${k8s_project}.${k8s_domain}/#admin/security/realms
 
 http://nexus.default.${k8s_project}.${k8s_domain}/#admin/security/sslcertificates
   load certificate from server
-  docker.default.topzone-k8s.topzone.com
+  docker.default.topzone-k8s.topzone.me
 
 
-DOCKER_ELB=nexus.topzone-k8s.topzone.com:5433
+DOCKER_ELB=nexus.topzone-k8s.topzone.me:5433
 docker login -u admin -p "${admin_password}" ${DOCKER_ELB}
 docker pull busybox
 RMI=`docker images -a | grep busybox | awk '{print $3}' | head -n 1`
@@ -109,13 +109,13 @@ cat /vagrant/info
 
 exit 0
 
-docker login -u admin https://docker.default.topzone-k8s.topzone.com --password-stdin admin123
+docker login -u admin https://docker.default.topzone-k8s.topzone.me --password-stdin admin123
 
 
-https://nexus.topzone-k8s.topzone.com/#admin/security/privileges
+https://nexus.topzone-k8s.topzone.me/#admin/security/privileges
 
-docker login nexus.topzone-k8s.topzone.com:5433
+docker login nexus.topzone-k8s.topzone.me:5433
 
 Get "https://xxx/v2/": dial tcp: lookup xxx on 127.0.0.53:53: no such host
 
-docker.topzone-k8s.topzone.com
+docker.topzone-k8s.topzone.me

@@ -16,7 +16,7 @@ spec:
       hostAliases:
       - ip: "192.168.86.200"
         hostnames:
-        - "harbor.harbor.topzone-k8s.topzone.com"
+        - "harbor.harbor.topzone-k8s.topzone.me"
       imagePullSecrets:
         - name: tz-registrykey
         - name: harbor-secret

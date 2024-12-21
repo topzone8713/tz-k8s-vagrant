@@ -4,7 +4,7 @@ cd tz-local/docker
 
 export docker_user="doogee323"
 export k8s_project=topzone-k8s
-export k8s_domain=topzone.com
+export k8s_domain=topzone.me
 export tz_project=devops-utils2
 
 dockerhub_id=${docker_user}
