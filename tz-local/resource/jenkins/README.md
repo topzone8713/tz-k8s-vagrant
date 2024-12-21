@@ -17,7 +17,7 @@
    - Jenkins URL: http://jenkins.jenkins.svc.cluster.local
    - Jenkins tunnel: jenkins-agent:50000
 
- - add github secrets  
+ - add secrets  
     - github-token
       1. get github's personal access token:
         https://github.com/settings/tokens
@@ -57,7 +57,7 @@
         ID: gmail-smtp
         Description: gmail-smtp
 
- - email settings
+ - settings
     https://jenkins.default.topzone-k8s.topzone.me/manage/configure
     Git plugin
         Global Config user.name Value: Doogee Hong
@@ -86,8 +86,8 @@
 ## build a demo app
 ###################################################
 
-github fork: https://github.com/doogee323/tz-demo-app.git
-https://github.com/doogee323/tz-demo-app.git
+github fork: https://github.com/topzone8713/tz-demo-app.git
+=> https://github.com/doogee323/tz-demo-app.git
 
 new project
 Enter an item name: tz-demo-app
