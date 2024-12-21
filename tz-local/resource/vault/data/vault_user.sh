@@ -3,19 +3,18 @@
 #set -x
 
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 #bash /vagrant/tz-local/resource/vault/data/vault_user.sh
 cd /vagrant/tz-local/resource/vault/data
 
-k8s_project=hyper-k8s  #k8s_project=hyper-k8s  #$(prop 'project' 'project')
+k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 
-#export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
-export VAULT_ADDR="https://vault.shoptools.co.kr"
+export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
 echo ${VAULT_ADDR}
-vault login ${vault_token}
+vault login ${VAULT_TOKEN}
 
-vault secrets enable aws
 vault secrets enable consul
 vault auth enable kubernetes
 vault secrets enable database
@@ -37,20 +36,13 @@ vault policy write tz-vault-userpass /vagrant/tz-local/resource/vault/data/userp
 PROJECTS=(argocd consul default devops devops-dev monitoring vault)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
-    kubectl create ns ${item}
-  fi
-done
-
-PROJECTS=(argocd consul default devops devops-dev monitoring vault)
-for item in "${PROJECTS[@]}"; do
-  if [[ "${item}" != "NAME" ]]; then
     staging="dev"
     if [[ "${item/*-dev/}" == "" ]]; then
       project=${item/-prod/}
       staging="dev"
     else
       project=${item}-prod
-      project_qa=${item}-qa
+      project_stg=${item}-stg
       staging="prod"
     fi
     echo "=====================staging: ${staging}"
@@ -68,16 +60,16 @@ for item in "${PROJECTS[@]}"; do
               policies=tz-vault-${project} \
               ttl=24h
       if [ "${staging}" == "prod" ]; then
-        echo project_qa: ${project_qa}
-        echo role_qa: auth/kubernetes/role/${project_qa}
-        echo project_qa: tz-vault-${project_qa}
-        echo svcaccount_qa: ${project_qa}-svcaccount
-        echo vault policy write tz-vault-${project_qa} /vagrant/tz-local/resource/vault/data/${project_qa}.hcl
-        vault policy write tz-vault-${project_qa} /vagrant/tz-local/resource/vault/data/${project_qa}.hcl
-        vault write auth/kubernetes/role/${project_qa} \
-                bound_service_account_names=argocd-repo-server,${project_qa}-svcaccount \
+        echo project_stg: ${project_stg}
+        echo role_stg: auth/kubernetes/role/${project_stg}
+        echo project_stg: tz-vault-${project_stg}
+        echo svcaccount_stg: ${project_stg}-svcaccount
+        echo vault policy write tz-vault-${project_stg} /vagrant/tz-local/resource/vault/data/${project_stg}.hcl
+        vault policy write tz-vault-${project_stg} /vagrant/tz-local/resource/vault/data/${project_stg}.hcl
+        vault write auth/kubernetes/role/${project_stg} \
+                bound_service_account_names=argocd-repo-server,${project_stg}-svcaccount \
                 bound_service_account_namespaces=${item} \
-                policies=tz-vault-${project_qa} \
+                policies=tz-vault-${project_stg} \
                 ttl=24h
       fi
     fi

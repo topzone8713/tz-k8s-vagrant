@@ -4,6 +4,7 @@
 #https://github.com/grafana/oncall/tree/main/helm/oncall
 
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 #bash /vagrant/tz-local/resource/monitoring/oncall/install.sh
 cd /vagrant/tz-local/resource/monitoring/oncall
 
@@ -11,8 +12,8 @@ cd /vagrant/tz-local/resource/monitoring/oncall
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 
-eks_project=$(prop 'project' 'project')
-eks_domain=$(prop 'project' 'domain')
+k8s_project=$(prop 'project' 'project')
+k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
 basic_password=$(prop 'project' 'basic_password')
 STACK_VERSION=16.6.0

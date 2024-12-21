@@ -13,15 +13,15 @@
 mkdir -p /root/.ssh
 
 echo '
-Host 192.168.0.209
+Host 192.168.86.209
   StrictHostKeyChecking   no
   LogLevel                ERROR
   UserKnownHostsFile      /dev/null
   IdentitiesOnly yes
-  IdentityFile /mnt/doohee323
+  IdentityFile /mnt/doogee323
 ' > /root/.ssh/config
 
-ssh-copy-id -i /mnt/doohee323.pub dhong@192.168.0.209
-rsync -avzh -e ssh /mnt/result/ dhong@192.168.0.209:/Volumes/workspace/etc/tz-k8s-elk/data/
+ssh-copy-id -i /mnt/doogee323.pub dhong@192.168.86.209
+rsync -avzh -e ssh /mnt/result/ dhong@192.168.86.209:/Volumes/workspace/etc/tz-k8s-elk/data/
 
 exit 0

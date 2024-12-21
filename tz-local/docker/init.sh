@@ -3,7 +3,7 @@
 # bash /init.sh
 cd /vagrant/tz-local/docker
 
-echo "vault_token: ${vault_token}"
+echo "VAULT_TOKEN: ${VAULT_TOKEN}"
 
 rm -Rf /vagrant/info
 
@@ -27,7 +27,7 @@ echo "aws_account_id: ${aws_account_id}"
 
 echo "
 export AWS_DEFAULT_REGION=${aws_region}
-export VAULT_ADDR=https://vault.${k8s_domain}
+export VAULT_ADDR=http://vault.${k8s_domain}
 alias k='kubectl'
 alias KUBECONFIG='~/.kube/config'
 alias base='cd /vagrant/terraform-aws-k8s/workspace/base'
@@ -40,30 +40,18 @@ export PATH=\"/root/.krew/bin:$PATH\"
 
 cat >> /root/.bashrc <<EOF
 function prop {
-  key="\${2}="
-  rslt=""
-  if [[ "\${3}" == "" ]]; then
-    rslt=\$(grep "\${key}" "/root/.aws/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    if [[ "\${rslt}" == "" ]]; then
-      key="\${2} = "
-      rslt=\$(grep "\${key}" "/root/.aws/\${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    fi
-  else
-    rslt=\$(grep "\${3}" "/root/.aws/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    if [[ "\${rslt}" == "" ]]; then
-      key="\${2} = "
-      rslt=\$(grep "\${3}" "/root/.aws/\${1}" -A 10 | grep "\${key}" | head -n 1 | tail -n 1 | cut -d '=' -f2 | sed 's/ //g')
-    fi
-  fi
-  echo \${rslt}
+  key="\${2}=" file="/root/.k8s/\${1}" rslt=\$(grep "\${3:-}" "\$file" -A 10 | grep "\$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
+  [[ -z "\$rslt" ]] && key="\${2} = " && rslt=\$(grep "\${3:-}" "\$file" -A 10 | grep "\$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g')
+  rslt=\$(echo "\$rslt" | tr -d '\n' | tr -d '\r')
+  echo "\$rslt"
 }
 EOF
 
-chown -Rf vagrant:vagrant /home/vagrant/.bashrc
-cp -Rf /root/.bashrc /home/vagrant/.bashrc
+chown -Rf topzone:topzone /home/topzone/.bashrc
+cp -Rf /root/.bashrc /home/topzone/.bashrc
 
 echo "###############"
-if [[ "${INSTALL_INIT}" == 'true' || ! -f "/root/.aws/config" ]]; then
+if [[ "${INSTALL_INIT}" == 'true' || ! -f "/root/.k8s/config" ]]; then
   VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
   sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
   sudo chmod +x /usr/local/bin/argocd
@@ -89,11 +77,11 @@ cp -Rf $KUBECONFIG /vagrant/config_${k8s_project}
 sudo mkdir -p /root/.kube
 sudo cp -Rf $KUBECONFIG /root/.kube/config
 sudo chmod -Rf 600 /root/.kube/config
-mkdir -p /home/vagrant/.kube
-cp -Rf $KUBECONFIG /home/vagrant/.kube/config
-sudo chmod -Rf 600 /home/vagrant/.kube/config
-export KUBECONFIG=/home/vagrant/.kube/config
-sudo chown -Rf vagrant:vagrant /home/vagrant
+mkdir -p /home/topzone/.kube
+cp -Rf $KUBECONFIG /home/topzone/.kube/config
+sudo chmod -Rf 600 /home/topzone/.kube/config
+export KUBECONFIG=/home/topzone/.kube/config
+sudo chown -Rf topzone:topzone /home/topzone
 
 echo "      env:" >> ${PROJECT_BASE}/kubeconfig_${k8s_project}
 echo "        - name: AWS_PROFILE" >> ${PROJECT_BASE}/kubeconfig_${k8s_project}
@@ -118,7 +106,7 @@ echo $s3_bucket_id > s3_bucket_id
 #  IdentitiesOnly yes
 #  IdentityFile /root/.ssh/${k8s_project}
 #" >> /root/.ssh/config
-#sudo chown -Rf vagrant:vagrant /root/.ssh/config
+#sudo chown -Rf topzone:topzone /root/.ssh/config
 
 #secondary_az1_ip=$(terraform output | grep "secondary-az1" | awk '{print $3}')
 
@@ -135,8 +123,8 @@ echo "
 
   - ${k8s_project} bastion:
     ssh ubuntu@${bastion_ip}
-    chmod 600 /home/vagrant/resources/${k8s_project}
-#  - secondary-az1: ssh -i /home/vagrant/resources/${k8s_project} ubuntu@${secondary_az1_ip}
+    chmod 600 /home/topzone/resources/${k8s_project}
+#  - secondary-az1: ssh -i /home/topzone/resources/${k8s_project} ubuntu@${secondary_az1_ip}
 
 #######################################################################
 " >> /vagrant/info

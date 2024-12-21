@@ -445,7 +445,7 @@ loki:
 #      http_config: {}
 #      insecure: false
 #      region: AWS_REGION
-#      s3: s3://AWS_REGION/devops-loki-eks_project
+#      s3: s3://AWS_REGION/devops-loki-k8s_project
 #      s3ForcePathStyle: false
 #      accessKeyId: aws_access_key_id
 #      secretAccessKey: aws_secret_access_key

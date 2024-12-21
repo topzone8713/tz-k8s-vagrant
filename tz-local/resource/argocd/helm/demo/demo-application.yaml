@@ -13,7 +13,7 @@ spec:
       jsonnet: {}
       recurse: true
     path: devops-tz-demo-app/prod
-    repoURL: https://github.com/doohee323/tz-argocd-repo.git
+    repoURL: https://github.com/doogee323/tz-argocd-repo.git
     targetRevision: main
   syncPolicy:
     automated:
@@ -22,11 +22,11 @@ spec:
       allowEmpty: true
 
 
-#argocd login argocd.default.k8s-main-t.shoptoolstest.co.kr:443 --username admin --password T1zone\!323 --insecure
+#argocd login argocd.default.topzone-k8s.topzone.me:443 --username admin --password T1zone\!323 --insecure
 #
 #argocd app create devops-tz-gpt3 \
 #  --project devops \
-#  --repo https://github.com/doohee323/tz-argocd-repo.git \
+#  --repo https://github.com/doogee323/tz-argocd-repo.git \
 #  --path devops-tz-gpt3 \
 #  --dest-namespace devops \
 #  --dest-server https://kubernetes.default.svc --directory-recurse --upsert --grpc-web

@@ -78,7 +78,7 @@ spec:
           mountPath: "kubernetes"
           role: "devops-prod"
           serviceAccountRef:
-            name: "devops-prod-svcaccount"
+            name: "devops-svcaccount"
 
 ---
 apiVersion: external-secrets.io/v1beta1

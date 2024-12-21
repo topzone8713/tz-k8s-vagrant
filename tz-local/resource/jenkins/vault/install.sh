@@ -2,11 +2,9 @@
 
 cd /vagrant/tz-local/resource/jenkins/vault
 
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
+k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
-aws_access_key_id=$(prop 'credentials' 'aws_access_key_id')
-aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key')
-vault_token=$(prop 'project' 'vault')
+VAULT_TOKEN=$(prop 'project' 'vault')
 
 #set -x
 vault -autocomplete-install
@@ -14,7 +12,7 @@ complete -C /usr/local/bin/vault vault
 #vault -h
 
 export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-vault login ${vault_token}
+vault login ${VAULT_TOKEN}
 
 vault auth enable approle
 vault secrets enable kv-v2
@@ -45,6 +43,8 @@ secret_id=$(echo $secret_id | awk '{print $6}')
 awk '!/jenkins_vault_secret_id=/' /vagrant/resources/project > tmpfile && mv tmpfile /vagrant/resources/project
 echo "jenkins_vault_secret_id=${secret_id}" >> /vagrant/resources/project
 
+cp -Rf /vagrant/resources/project /root/.k8s/project
+
 # Create dbinfo secret with 3 keys to read in jenkins pipeline
 tee dbinfo.json <<"EOF"
 {
@@ -58,3 +58,6 @@ vault kv delete secret/devops-dev/dbinfo
 vault kv get secret/devops-dev/dbinfo
 
 exit 0
+
+
+kubectl -n jenkins apply -f ubuntu.yaml

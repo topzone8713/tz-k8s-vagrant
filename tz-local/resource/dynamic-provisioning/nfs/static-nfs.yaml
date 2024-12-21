@@ -9,8 +9,8 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 192.168.86.90
-    path: /home/vagrant/data
+    server: 192.168.86.100
+    path: /home/topzone/data
 
 ---
 apiVersion: v1

@@ -1,22 +1,25 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 #bash /vagrant/tz-local/resource/argocd/helm/install.sh
 cd /vagrant/tz-local/resource/argocd/helm
 
 #set -x
 shopt -s expand_aliases
 
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
+k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
+github_id=$(prop 'project' 'github_id')
 github_token=$(prop 'project' 'github_token')
 basic_password=$(prop 'project' 'basic_password')
+VAULT_TOKEN=$(prop 'project' 'vault')
 
 alias k='kubectl --kubeconfig ~/.kube/config'
 #alias k="kubectl --kubeconfig ~/.kube/kubeconfig_${k8s_project}"
 
-k delete namespace argocd
+#k delete namespace argocd
 k create namespace argocd
 
 #################################################################################
@@ -51,26 +54,17 @@ echo "############################################"
 echo "TMP_PASSWORD: ${TMP_PASSWORD}"
 echo "############################################"
 
-#VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-#sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
-#sudo chmod +x /usr/local/bin/argocd
-#brew tap argoproj/tap
-#brew install argoproj/tap/argocd
-#argocd
-
-cp -Rf ingress-argocd.yaml ingress-argocd.yaml_bak
-sed -i "s/k8s_project/${k8s_project}/g" ingress-argocd.yaml_bak
-sed -i "s/k8s_domain/${k8s_domain}/g" ingress-argocd.yaml_bak
-k delete -f ingress-argocd.yaml_bak -n argocd
-k apply -f ingress-argocd.yaml_bak -n argocd
-
 VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
 sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
 sudo chmod +x /usr/local/bin/argocd
+#brew tap argoproj/tap
+#brew install argoproj/tap/argocd
 
-ARGOCD_SERVER=`k get ing -n argocd | grep -w "ingress-argocd " | awk '{print $3}'`
-argocd login ${ARGOCD_SERVER} --username admin --password ${TMP_PASSWORD} --insecure
+argocd login `k get service -n argocd | grep -w "argocd-server " | awk '{print $4}'` --username admin --password ${TMP_PASSWORD} --insecure
 argocd account update-password --account admin --current-password ${TMP_PASSWORD} --new-password ${admin_password}
+
+#TMP_PASSWORD="${admin_password}"
+#argocd login argocd.default.topzone-k8s.topzone.me:14444 --username admin --password ${TMP_PASSWORD} --insecure
 
 # basic auth
 #https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/
@@ -80,21 +74,29 @@ argocd account update-password --account admin --current-password ${TMP_PASSWORD
 #k get secret basic-auth-argocd -o yaml -n argocd
 #rm -Rf auth
 
+cp -Rf ingress-argocd.yaml ingress-argocd.yaml_bak
+sed -i "s/k8s_project/${k8s_project}/g" ingress-argocd.yaml_bak
+sed -i "s/k8s_domain/${k8s_domain}/g" ingress-argocd.yaml_bak
+k delete -f ingress-argocd.yaml_bak -n argocd
+k apply -f ingress-argocd.yaml_bak -n argocd
+
 #k patch deploy/argocd-server -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops", "environment": "prod"}}}}}' -n argocd
 #k patch deploy/argocd-applicationset-controller -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops", "environment": "prod"}}}}}' -n argocd
 #k patch deploy/argocd-redis -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops", "environment": "prod"}}}}}' -n argocd
 #k patch deploy/argocd-notifications-controller -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops", "environment": "prod"}}}}}' -n argocd
 #k patch deploy/argocd-repo-server -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops", "environment": "prod"}}}}}' -n argocd
 #k patch deploy/argocd-dex-server -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops", "environment": "prod"}}}}}' -n argocd
-k patch deploy/argocd-redis -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n argocd
+#k patch deploy/argocd-redis -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n argocd
 
-argocd repo add https://github.com/doohee323/tz-argocd-repo \
-  --username doohee323 --password ${github_token}
+argocd login `k get service -n argocd | grep argocd-server | awk '{print $4}' | head -n 1` --username admin --password ${admin_password} --insecure
+argocd repo add https://github.com/${github_id}/tz-argocd-repo \
+  --username ${github_id} --password ${github_token}
 
 kubectl config get-contexts
-#CURRENT   NAME                             CLUSTER         AUTHINFO           NAMESPACE
-#*         kubernetes-admin@cluster.local   cluster.local   kubernetes-admin
-argocd cluster add --yes eks_eks-main-t
+#CURRENT   NAME             CLUSTER          AUTHINFO         NAMESPACE
+#          topzone-k8s   topzone-k8s   topzone-k8s
+#project=`kubectl config get-contexts | tail -n 1 | awk '{print $3}'`
+#argocd cluster add --yes ${project}
 
 bash /vagrant/tz-local/resource/argocd/update.sh
 bash /vagrant/tz-local/resource/argocd/update.sh
@@ -104,7 +106,7 @@ bash /vagrant/tz-local/resource/argocd/update.sh
 #################################################################################
 export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 echo "VAULT_ADDR: ${VAULT_ADDR}"
-vault login ${vault_token}
+vault login ${VAULT_TOKEN}
 vault auth enable kubernetes
 
 cat <<EOF | kubectl apply -f -
@@ -167,24 +169,24 @@ vault write auth/kubernetes/role/argocd \
 # 3) verify access to vault from argocd-repo-server
 #################################################################################
 
-kubectl -n vault port-forward svc/vault 8200:8200 &
-curl -v localhost:8200
-
-curl --request POST \
- --data '{"jwt": "'${TR_ACCOUNT_TOKEN}'", "role": "argocd"}' \
-   http://localhost:8200/v1/auth/kubernetes/login
+#kubectl -n vault port-forward svc/vault 8200:8200 &
+#curl -v localhost:8200
+#
+#curl --request POST \
+# --data '{"jwt": "'${TR_ACCOUNT_TOKEN}'", "role": "argocd"}' \
+#   http://localhost:8200/v1/auth/kubernetes/login
 
 #################################################################################
 # 4) add demo app into arogocd with vault
 #################################################################################
 argocd app list
-argocd app delete devops-tz-demo-app
+argocd app delete devops-tz-demo-app -y
 argocd app create devops-tz-demo-app \
-  --project devops \
-  --repo https://github.com/doohee323/tz-argocd-repo.git \
-  --path devops-tz-demo-app/prod \
-  --dest-namespace devops \
-  --dest-server https://kubernetes.default.svc --directory-recurse --upsert --grpc-web
+    --project devops \
+    --repo https://github.com/${github_id}/tz-argocd-repo.git \
+    --path devops-tz-demo-app/prod --dest-namespace devops \
+    --dest-server https://kubernetes.default.svc \
+    --directory-recurse --upsert --grpc-web --sync-policy automated
 
 vault kv put secret/devops-prod/dbinfo name=123 passwod=456 ttl=789
 vault kv get secret/devops-prod/dbinfo
@@ -212,7 +214,7 @@ kubectl get secret devops-tz-demo-app-secret -o yaml -n devops
 echo 'MTIz' | base64 -d
 kubectl rollout restart deployment devops-demo-argo-vault -n devops
 
-curl https://argo-vault.devops.k8s-main-t.shoptoolstest.co.kr/index
+curl https://argo-vault.devops.topzone-k8s.topzone.me/index
 
 exit 0
 

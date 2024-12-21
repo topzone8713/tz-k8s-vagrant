@@ -18,16 +18,16 @@ data:
     [smtp]
     enabled = true
     host = smtp.gmail.com:587
-    user = doohee323@gmail.com
+    user = doogee323@gmail.com
     password = admin_password
     skip_verify = true
-    from_address = doohee323@gmail.com
-    from_name = Grafana (eks_project)
-    ehlo_identity = grafana.default.eks_project.eks_domain
+    from_address = doogee323@gmail.com
+    from_name = Grafana (k8s_project)
+    ehlo_identity = grafana.default.k8s_project.k8s_domain
     [server]
     protocol = http
-    domain = grafana.default.eks_project.eks_domain
-    root_url = https://grafana.default.eks_project.eks_domain
+    domain = grafana.default.k8s_project.k8s_domain
+    root_url = https://grafana.default.k8s_project.k8s_domain
     [users]
     viewers_can_edit = true
     [auth.google]
@@ -38,9 +38,9 @@ data:
     scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
     auth_url = https://accounts.google.com/o/oauth2/auth
     token_url = https://oauth2.googleapis.com/token
-    allowed_domains = shoptoolstest.co.kr
+    allowed_domains = k8s_domain k8s_domain
     allow_sigh_up = true
-    hosted_domain = shoptoolstest.co.kr
+    hosted_domain = k8s_domain
 
 ---
 
@@ -52,15 +52,74 @@ data:
   datasource.yaml: |-
     apiVersion: 1
     datasources:
-    - name: Prometheus
-      type: prometheus
-      url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
-      access: proxy
-      isDefault: true
-    - name: Loki
-      type: loki
-      url: http://loki.monitoring.svc.cluster.local:3100/
-      access: proxy
+      - uid: prometheus
+        orgId: 1
+        name: Prometheus
+        type: prometheus
+        typeName: Prometheus
+        access: proxy
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        password: ''
+        user: ''
+        database: ''
+        basicAuth: false
+        isDefault: true
+        jsonData:
+          exemplarTraceIdDestinations:
+            - datasourceUid: tempo
+              name: TraceID
+          httpMethod: POST
+        readOnly: false
+        editable: true
+      - uid: tempo
+        orgId: 1
+        name: Tempo
+        type: tempo
+        typeName: Tempo
+        access: proxy
+        url: http://tempo-query-frontend-discovery.tempo:3100
+        password: ''
+        user: ''
+        database: ''
+        basicAuth: false
+        isDefault: false
+        jsonData:
+          nodeGraph:
+            enabled: true
+          search:
+            hide: false
+          lokiSearch:
+            datasourceUid: loki
+          tracesToLogs:
+            datasourceUid: loki
+            filterBySpanID: false
+            filterByTraceID: true
+            mapTagNamesEnabled: false
+            tags:
+              - compose_service
+        readOnly: false
+        editable: true
+      - uid: loki
+        orgId: 1
+        name: Loki
+        type: loki
+        typeName: Loki
+        access: proxy
+        url: http://loki.monitoring.svc.cluster.local:3100/
+        password: ''
+        user: ''
+        database: ''
+        basicAuth: false
+        isDefault: false
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: (?:trace_id)=(\w+)
+              name: TraceID
+              url: $${__value.raw}
+        readOnly: false
+        editable: true
+
 ---
 
 kind: ConfigMap
@@ -73,9 +132,22 @@ data:
     datasources:
     - name: Loki
       type: loki
+      typeName: Loki
       access: proxy
       url: http://loki.monitoring.svc.cluster.local:3100/
-      version: 1
+      password: ''
+      user: ''
+      database: ''
+      basicAuth: false
+      isDefault: false
+      jsonData:
+        derivedFields:
+          - datasourceUid: tempo
+            matcherRegex: (?:trace_id)=(\w+)
+            name: TraceID
+            url: $${__value.raw}
+      readOnly: false
+      editable: true
 
 #---
 #apiVersion: v1

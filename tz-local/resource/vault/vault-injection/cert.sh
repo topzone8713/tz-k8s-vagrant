@@ -37,7 +37,7 @@ C = NO
 ST = Oslo
 L = Oslo
 O = Personal
-emailAddress = devops@tz.gg
+emailAddress = devops@topzone.me
 CN = ${SERVICE}.${NAMESPACE}.svc
 [ v3_req ]
 basicConstraints = CA:FALSE
@@ -91,6 +91,7 @@ kubectl certificate approve ${CSR_NAME} --namespace ${NAMESPACE}
 # Retrieve the certificate.
 ## If this process is automated, you may need to wait to ensure the certificate has been created. If it hasn't, this will return an empty string.
 serverCert=$(kubectl get csr ${CSR_NAME} -o jsonpath='{.status.certificate}')
+kubectl describe csr ${CSR_NAME}
 
 # Write the certificate out to the CRT file
 echo "${serverCert}" | openssl base64 -d -A -out ${TMPDIR}/${BASENAME}.crt

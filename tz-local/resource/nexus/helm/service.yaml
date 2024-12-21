@@ -1,0 +1,186 @@
+---
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: tz-sonatype-nexus
+      chart: tz-sonatype-nexus-1.23.1
+      fullname: tz-sonatype-nexus
+      heritage: Tiller
+      io.cattle.field/appId: tz-sonatype-nexus
+      release: tz-sonatype-nexus
+    name: tz-sonatype-nexus
+    namespace: sonatype-nexus
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: tz-sonatype-nexus
+        release: tz-sonatype-nexus
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: tz-sonatype-nexus
+          release: tz-sonatype-nexus
+      spec:
+        containers:
+        - env:
+          - name: NEXUS_SECURITY_RANDOMPASSWORD
+            value: "false"
+          - name: install4jAddVmParams
+            value: -Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+          image: sonatype/nexus3:3.20.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: nexus
+          ports:
+          - containerPort: 5003
+            name: nexus-docker-g
+            protocol: TCP
+          - containerPort: 8081
+            name: nexus-http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            capabilities: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /nexus-data
+            name: tz-sonatype-nexus-data
+          - mountPath: /nexus-data/backup
+            name: tz-sonatype-nexus-backup
+        - env:
+          - name: ALLOWED_USER_AGENTS_ON_ROOT_REGEX
+            value: GoogleHC
+          - name: BIND_PORT
+            value: "8080"
+          - name: CLOUD_IAM_AUTH_ENABLED
+            value: "false"
+          - name: ENFORCE_HTTPS
+            value: "false"
+          - name: NEXUS_DOCKER_HOST
+            value: "doogee323_docker.com"
+          - name: NEXUS_HTTP_HOST
+            value: "doogee323"
+          - name: UPSTREAM_DOCKER_PORT
+            value: "5003"
+          - name: UPSTREAM_HOST
+            value: localhost
+          - name: UPSTREAM_HTTP_PORT
+            value: "8081"
+          image: quay.io/travelaudience/docker-nexus-proxy:2.5.0
+          imagePullPolicy: IfNotPresent
+          name: nexus-proxy
+          ports:
+          - containerPort: 8080
+            name: nexus-proxy
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 2000
+        serviceAccount: tz-sonatype-nexus
+        serviceAccountName: tz-sonatype-nexus
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: tz-sonatype-nexus-data
+          persistentVolumeClaim:
+            claimName: tz-sonatype-nexus-data
+        - emptyDir: {}
+          name: tz-sonatype-nexus-backup
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIC5zCCAc+gAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+      cm5ldGVzMB4XDTIxMDMxNTAyNDEyN1oXDTMxMDMxMzAyNDEyN1owFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJdv
+      DRavI7KD+j+y84RnsQacPHVR4SMe4QmziTyk0pXAm8ykq3eJZOk1BR9OW6v+Wbz3
+      J7pmN6USYCk14Dr0KO9AAUcuIMozJdZSQvfQw99gObrqW7Fi3gK9K9fCS6xiAzZW
+      50kMjrXOv5oc93ELUjyJ7uBzLiK0b1dNUS+fvVPEh8IHjqD3EXAlkL0l4Ka5q1bq
+      lZQGjkmQE5WOgTfuUVJEJ0V+qb4E9PyLfOtJxkn02PpMg2rHW88TIIuZEWSynINP
+      M0Qg/O1zJzewxExb7JxpEa8N7YlEdZRbHs6+ImFRIdW/ma/wMq1U/m84DiYN6NLr
+      VasyJUk5DFLE+JB392ECAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
+      /wQFMAMBAf8wHQYDVR0OBBYEFJmZQsbcO5snOVLc6kZoDrHezFwvMA0GCSqGSIb3
+      DQEBCwUAA4IBAQBsNbspg2GRSPlZdgPD/BmA3SA1zXojGq5zqLoY/pFq/3fPcxFu
+      kWpW2XKCOlCJpbjrnk7dsE49kvxd4M7vZHXw8A0g0oRjXTra2bU0bT2N+zCvkRde
+      78KvPMFSwKaM+Kzz9XBwvF84ifh5NO5AupYBn+Qtz02ZIwdPDljGmr3bi3Aiy+XD
+      EOtvRepGZgyDujJJFSLGwBwbWa96gEUYUsXHWG2JBZkhGhxT4BY1nHabkl92Cg7P
+      wdr1lZr6T6RQd+v3W88FDm4jcL7023JNF+huJHHKY92Y9pg8ITs/KlDm3El9NO5P
+      bxYmgtI+TACPj20L9lwijF25vFbnr067dGu9
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    name: kube-root-ca.crt
+    namespace: sonatype-nexus
+- apiVersion: v1
+  data:
+    release: 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
+  kind: ConfigMap
+  metadata:
+    labels:
+      NAME: tz-sonatype-nexus
+      OWNER: TILLER
+      STATUS: DEPLOYED
+      VERSION: "1"
+    name: tz-sonatype-nexus.v1
+    namespace: sonatype-nexus
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: tz-sonatype-nexus
+      chart: tz-sonatype-nexus-1.23.1
+      fullname: tz-sonatype-nexus
+      heritage: Tiller
+      io.cattle.field/appId: tz-sonatype-nexus
+      release: tz-sonatype-nexus
+    name: tz-sonatype-nexus
+    namespace: sonatype-nexus
+    uid: 6c6ec145-e2b4-469e-8a43-640563503aa1
+  spec:
+    externalTrafficPolicy: Cluster
+    ports:
+    - name: tz-sonatype-nexus
+      port: 8080
+      protocol: TCP
+    selector:
+      app: tz-sonatype-nexus
+      io.cattle.field/appId: tz-sonatype-nexus
+      release: tz-sonatype-nexus
+    sessionAffinity: None
+    type: LoadBalancer
+  status:
+    loadBalancer: {}
+kind: List

@@ -34,12 +34,12 @@ alertmanager:
   config:
     global:
       resolve_timeout: 5m
-      smtp_from: doohee323@gmail.com
+      smtp_from: doogee323@gmail.com
       smtp_smarthost: smtp.gmail.com:587
-      smtp_auth_username: doohee323@gmail.com
-      smtp_auth_password: hdh971097
+      smtp_auth_username: doogee323@gmail.com
+      smtp_auth_password: "smtp_password"
       smtp_require_tls: true
-      slack_api_url: https://hooks.slack.com/services/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
+      slack_api_url: https://hooks.slack.com/services/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
     inhibit_rules:
       - source_matchers:
           - 'severity = critical'
@@ -109,7 +109,7 @@ alertmanager:
 #        text: '{{ template "slack.default.text" . }}'
 #      email_configs:
 #      - send_resolved: true
-#        to: doohee323@gmail.com
+#        to: doogee323@gmail.com
     templates:
     - /etc/alertmanager/config/*.tmpl
   service:
@@ -129,11 +129,14 @@ alertmanager:
       repository: prometheus/alertmanager
       tag: v0.25.0
 
-    externalUrl: https://alertmanager.default.eks_project.eks_domain
+    externalUrl: http://alertmanager.default.k8s_project.k8s_domain
     extraArgs:
-      web.external-url: https://alertmanager.default.eks_project.eks_domain
+      web.external-url: http://alertmanager.default.k8s_project.k8s_domain
       web.route-prefix: "/"
     replicas: 1
+#    nodeSelector:
+#      environment: monitoring
+#      team: devops
 
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
@@ -198,7 +201,7 @@ prometheusOperator:
 prometheus:
   enabled: true
   prometheusSpec:
-    externalUrl: https://prometheus.default.eks_project.eks_domain
+    externalUrl: http://prometheus.default.k8s_project.k8s_domain
 #    nodeSelector:
 #      environment: monitoring
 #      team: devops
@@ -233,15 +236,20 @@ prometheus:
         params:
           module: [http_2xx]
         static_configs:
+#            - http://devops-demo.devops-dev.k8s_project.k8s_domain
           - targets:
-            - https://jenkins.default.eks-main-t.shoptoolstest.co.kr
-            - https://argocd.default.eks-main-t.shoptoolstest.co.kr
-            - https://grafana.default.eks-main-t.shoptoolstest.co.kr
-            - https://prometheus.default.eks-main-t.shoptoolstest.co.kr
-            - https://alertmanager.default.eks-main-t.shoptoolstest.co.kr
-            - https://vault.default.eks-main-t.shoptoolstest.co.kr
-            - https://consul.default.eks-main-t.shoptoolstest.co.kr
-            - https://devops-demo.devops-dev.eks-main-t.shoptoolstest.co.kr
+            - https://jenkins.default.k8s_project.k8s_domain
+            - https://argocd.default.k8s_project.k8s_domain
+            - https://grafana.default.k8s_project.k8s_domain
+            - http://prometheus.default.k8s_project.k8s_domain
+            - http://alertmanager.default.k8s_project.k8s_domain
+            - http://vault.default.k8s_project.k8s_domain
+            - http://consul.default.k8s_project.k8s_domain
+            - http://sonarqube.default.k8s_project.k8s_domain
+#            - http://kiali.istio-system.k8s_project.k8s_domain
+#            - http://jaeger.istio-system.k8s_project.k8s_domain
+            - http://kibana.elk.k8s_project.k8s_domain
+
         relabel_configs:
           - source_labels: [__address__]
             target_label: __param_target
@@ -311,7 +319,7 @@ prometheus:
 #      - job_name: 'jenkins'
 #        metrics_path: /prometheus/
 #        static_configs:
-#          - targets: ['jenkins.shoptoolstest.co.kr:80']
+#          - targets: ['jenkins.k8s_domain:80']
 #        scheme: http
 #        tls_config:
 #          insecure_skip_verify: true

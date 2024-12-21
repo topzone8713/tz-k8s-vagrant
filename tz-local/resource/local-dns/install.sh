@@ -17,10 +17,12 @@ localdns=169.254.20.10
 cp nodelocaldns.yaml nodelocaldns.yaml_bak
 sed -i "s|__PILLAR__LOCAL__DNS__|${localdns}|g; s|__PILLAR__DNS__DOMAIN__|${domain}|g; s|__PILLAR__DNS__SERVER__|${kubedns}|g" nodelocaldns.yaml_bak
 
+kubectl delete -f nodelocaldns.yaml_bak
 kubectl apply -f nodelocaldns.yaml_bak
 
 
 #prometheus-kube-prometheus-operator.monitoring.svc.cluster.local
 
-
+kubectl delete -f ubuntu.yaml -n devops-dev
+kubectl apply -f ubuntu.yaml -n devops-dev
 

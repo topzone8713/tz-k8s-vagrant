@@ -11,27 +11,24 @@ cd /vagrant/tz-local/resource/velero
 shopt -s expand_aliases
 alias k='kubectl -n consul'
 
-eks_project=$(prop 'project' 'project')
-AWS_REGION=$(prop 'config' 'region')
-AWS_ACCESS_KEY_ID=$(prop 'credentials' 'aws_access_key_id')
-AWS_SECRET_ACCESS_KEY=$(prop 'credentials' 'aws_secret_access_key')
+k8s_project=$(prop 'project' 'project')
 basic_password=$(prop 'project' 'basic_password')
-eks_domain=$(prop 'project' 'domain')
+k8s_domain=$(prop 'project' 'domain')
 NS=devops
 
 wget https://github.com/vmware-tanzu/velero/releases/download/v1.10.3/velero-v1.10.3-linux-amd64.tar.gz
 tar -xvzf velero-v1.10.3-linux-amd64.tar.gz
 sudo mv velero-v1.10.3-linux-amd64/velero /usr/local/bin/velero
 
-#aws iam create-user --user-name ${eks_project}-velero
+#aws iam create-user --user-name ${k8s_project}-velero
 #aws iam put-user-policy \
-#  --user-name ${eks_project}-velero \
-#  --policy-name ${eks_project}-velero \
+#  --user-name ${k8s_project}-velero \
+#  --policy-name ${k8s_project}-velero \
 #  --policy-document file://velero-policy.json
 
-#aws iam create-access-key --user-name ${eks_project}-velero
+#aws iam create-access-key --user-name ${k8s_project}-velero
 
-credentials_velero="/root/.aws/credentials"
+credentials_velero="/root/.k8s/credentials"
 #[default]
 #aws_access_key_id=<AWS_ACCESS_KEY_ID>
 #aws_secret_access_key=<AWS_SECRET_ACCESS_KEY>
@@ -43,10 +40,6 @@ helm search repo vmware-tanzu/velero
 helm uninstall velero -n velero
 #helm show values vmware-tanzu/velero > values2.yaml
 cp -Rf values.yaml values.yamll_bak
-sed -i "s|EKS-CLUSTER|${eks_project}|g" values.yamll_bak
-sed -i "s|AWS_REGION|${AWS_REGION}|g" values.yamll_bak
-sed -i "s|AWS_ACCESS_KEY_ID|${AWS_ACCESS_KEY_ID}|g" values.yamll_bak
-sed -i "s|AWS_SECRET_ACCESS_KEY|${AWS_SECRET_ACCESS_KEY}|g" values.yamll_bak
 
 #helm template vmware-tanzu/velero -f values.yamll_bak -n velero
 #--reuse-values

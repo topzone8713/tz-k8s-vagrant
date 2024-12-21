@@ -1,4 +1,4 @@
-.vagrant
+.topzone
 .idea
 .project
 .DS_Store
@@ -31,7 +31,7 @@ data/*.json
 /kubespray
 /authorized_keys
 tz_rsa*
-/kubespray_vagrant
+/kubespray_topzone
 *.log
 /data2
 /pass.txt
@@ -40,3 +40,6 @@ tz_rsa*
 /resources
 /kubespray
 kubeconfig_tz-k8s-vagrant
+.ssh
+/.vagrant/
+/tz-local/resource/vault/vault-injection/cert/

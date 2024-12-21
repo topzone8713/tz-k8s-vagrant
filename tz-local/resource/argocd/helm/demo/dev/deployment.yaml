@@ -41,7 +41,7 @@ spec:
       serviceAccountName: devops-prod-svcaccount
       containers:
         - name: devops-tz-demo-app
-          image: 746446553436.dkr.ecr.ap-northeast-2.amazonaws.com/devops-tz-demo-app:v0.0.1
+          image: xxxxxx.dkr.ecr.ap-northeast-2.amazonaws.com/devops-tz-demo-app:v0.0.1
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
@@ -83,10 +83,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: "selfsigned-issuer"
 spec:
   rules:
-    - host: main.devops.k8s-main-t.shoptoolstest.co.kr
+    - host: main.devops.topzone-k8s.topzone.me
       http:
         paths:
           - path: /
@@ -98,5 +98,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - main.devops.k8s-main-t.shoptoolstest.co.kr
+        - main.devops.topzone-k8s.topzone.me
       secretName: devops-tz-demo-app-ssl

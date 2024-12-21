@@ -1,0 +1,35 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: self-signed-cert
+  namespace: default
+spec:
+  secretName: self-signed-cert-tls
+  duration: 8760h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+  commonName: test.default.topzone-k8s.topzone.me
+  dnsNames:
+    - test.default.topzone-k8s.topzone.me
+    - consul.default.topzone-k8s.topzone.me
+    - vault.default.topzone-k8s.topzone.me
+    - consul-server.default.topzone-k8s.topzone.me
+    - argocd.default.topzone-k8s.topzone.me
+    - jenkins.default.topzone-k8s.topzone.me
+    - harbor.harbor.topzone-k8s.topzone.me
+    - grafana.default.topzone-k8s.topzone.me
+    - prometheus.default.topzone-k8s.topzone.me
+    - alertmanager.default.topzone-k8s.topzone.me
+    - vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
+

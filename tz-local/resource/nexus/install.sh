@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+sudo apt-get update -y
 sudo apt-get install openjdk-8-jdk -y
 cd /opt
-wget http://download.sonatype.com/nexus/3/nexus-3.22.0-02-unix.tar.gz
-sudo tar -xvf nexus-3.22.0-02-unix.tar.gz
-ln -s nexus-3.22.0-02 nexus
+wget https://download.sonatype.com/nexus/3/nexus-3.30.0-01-unix.tar.gz
+sudo tar -xvf nexus-3.30.0-01-unix.tar.gz
+ln -s nexus-3.30.0-01 nexus
 
-sudo adduser nexus
+sudo groupadd nexus
+sudo useradd -m nexus -g nexus -s /bin/bash
 sudo chown -R nexus:nexus /opt/nexus
 sudo chown -R nexus:nexus /opt/sonatype-work
 sudo sed -i "s|#run_as_user=\"\"|run_as_user=\"root\"|g" /opt/nexus/bin/nexus.rc
@@ -21,8 +23,8 @@ After=network.target
 [Service]
 Type=forking
 LimitNOFILE=65536
-User=root
-Group=root
+User=nexus
+Group=nexus
 ExecStart=/opt/nexus/bin/nexus start
 ExecStop=/opt/nexus/bin/nexus stop
 Restart=on-abort
@@ -31,16 +33,16 @@ WantedBy=multi-user.target
 ' > /etc/systemd/system/nexus.service
 
 sudo systemctl enable nexus
-sudo service nexus start
-sudo service nexus stop
-#sudo service nexus status
+sudo systemctl stop nexus
+sudo systemctl start nexus
+#sudo systemctl restart nexus
+#sudo systemctl status nexus
 
 # every client pc needs this setting
 echo '
 {
         "insecure-registries" : [
-          "192.168.86.90:5000",
-          "192.168.0.180:5000",
+          "nexus.topzone-k8s.topzone.me:5000"
         ]
 }
 ' > /etc/docker/daemon.json
@@ -49,17 +51,17 @@ sudo service docker restart
 
 echo '
 ##[ Nexus ]##########################################################
-- url: http://192.168.86.90:8081
+- url: http://nexus.topzone-k8s.topzone.me:8081
 - id: admin
 - passwd: cat /opt/sonatype-work/nexus3/admin.password
 
-http://192.168.86.90:8081/#admin/repository/blobstores
+http://nexus.topzone-k8s.topzone.me:8081/#admin/repository/blobstores
 
 Create blob store
   docker-hosted
   docker-hub
 
-http://192.168.86.90:8081/#admin/repository/repositories
+http://nexus.topzone-k8s.topzone.me:8081/#admin/repository/repositories
   Repositories > Select Recipe > Create repository: docker (hosted)
   name: docker-hosted
   http: 5000
@@ -73,16 +75,17 @@ Repositories > Select Recipe > Create repository: docker (proxy)
   select Use Docker Hub
   Blob store: docker-hub
 
-http://192.168.86.90:8081/#admin/security/realms
+http://nexus.topzone-k8s.topzone.me:8081/#admin/security/realms
   add "Docker Bearer Token Realm" Active
 
-docker login 192.168.86.90:5000
+docker login nexus.topzone-k8s.topzone.me:5000
+
 docker pull busybox
 RMI=`docker images -a | grep busybox | awk '{print $3}'`
-docker tag $RMI 192.168.86.90:5000/busybox:v20201225
-docker push 192.168.86.90:5000/busybox:v20201225
+docker tag $RMI nexus.topzone-k8s.topzone.me:5000/busybox:v20201225
+docker push nexus.topzone-k8s.topzone.me:5000/busybox:v20201225
 
-http://192.168.86.90:8081/#browse/browse:docker-hosted
+http://nexus.topzone-k8s.topzone.me:8081/#browse/browse:docker-hosted
 
 #######################################################################
 ' >> /vagrant/info

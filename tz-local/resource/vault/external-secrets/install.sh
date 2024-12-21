@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 #bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
 cd /vagrant/tz-local/resource/vault/external-secrets
 
 k8s_domain=$(prop 'project' 'domain')
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
-vault_token=$(prop 'project' 'vault')
+k8s_project=$(prop 'project' 'project')
+VAULT_TOKEN=$(prop 'project' 'vault')
 NS=external-secrets
 
 helm repo add external-secrets https://charts.external-secrets.io
@@ -19,24 +20,12 @@ helm upgrade --debug --install external-secrets \
     --create-namespace \
     --set installCRDs=true
 
-#aws_access_key_id=$(prop 'credentials' 'aws_access_key_id' ${k8s_project})
-#aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key' ${k8s_project})
-aws_access_key_id=$(prop 'credentials' 'aws_access_key_id')
-aws_secret_access_key=$(prop 'credentials' 'aws_secret_access_key')
-
-echo -n ${aws_access_key_id} > ./access-key
-echo -n ${aws_secret_access_key} > ./secret-access-key
-kubectl -n ${NS} delete secret awssm-secret
-kubectl -n ${NS} create secret generic awssm-secret --from-file=./access-key  --from-file=./secret-access-key
-
-rm -Rf ./access-key ./secret-access-key
-
 #export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
-#vault login ${vault_token}
+#vault login ${VAULT_TOKEN}
 #vault kv get secret/devops-prod/dbinfo
 
 #PROJECTS=(devops devops-dev)
-PROJECTS=(default argocd devops devops-dev)
+PROJECTS=(default argocd jenkins harbor devops devops-dev)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     STAGING="dev"
@@ -46,7 +35,7 @@ for item in "${PROJECTS[@]}"; do
       namespace=${project}
     else
       project=${item}-prod
-      project_qa=${item}-qa
+      project_stg=${item}-stg
       STAGING="prod"
       namespace=${item}
     fi
@@ -82,12 +71,20 @@ spec:
     sed -i "s|PROJECT|${project}|g" secret.yaml_bak
     sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
     kubectl apply -f secret.yaml_bak
+    kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
+
+    kubectl create secret docker-registry harbor-secret -n ${namespace} \
+      --docker-server=harbor.harbor.topzone-k8s.topzone.me \
+      --docker-username=admin \
+      --docker-password=Harbor12345 \
+      --docker-email=doogee323@gmail.com
 
     if [ "${STAGING}" == "prod" ]; then
       cp secret.yaml secret.yaml_bak
-      sed -i "s|PROJECT|${project_qa}|g" secret.yaml_bak
+      sed -i "s|PROJECT|${project_stg}|g" secret.yaml_bak
       sed -i "s|NAMESPACE|${namespace}|g" secret.yaml_bak
       kubectl apply -f secret.yaml_bak
+      kubectl patch serviceaccount ${project_stg}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
     fi
   fi
 done

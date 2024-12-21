@@ -5,6 +5,6 @@ metadata:
 spec:
   containers:
   - name: bastion
-    image: ubuntu:20.04
+    image: ubuntu:22.04
     command: ["/bin/sh"]
     args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]

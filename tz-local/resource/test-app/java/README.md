@@ -1,13 +1,13 @@
 # tz-jenkins
 
 ## jenkins setting
-http://dooheehong323:31000/configure
+http://doogee323:31000/configure
 Global properties > Environment variables > Add
 ORGANIZATION_NAME: my-fleetman-organization
-YOUR_DOCKERHUB_USERNAME: doohee323
+YOUR_DOCKERHUB_USERNAME: doogee323
 
 ## git clone a test project
-mkdir -p tz-k8s-vagrant/projects
+mkdir -p tz-k8s-topzone/projects
 git clone https://github.com/devinterview-tz/fleetman-api-gateway.git
 
 ## make a project in Jenkins
@@ -17,7 +17,7 @@ type: multibranch Pipeline
 Display Name: api-gateway
 Branch Sources: GitHub
     Credential: Jenkins
-        Username: doohee323 # github id
+        Username: doogee323 # github id
         Password: xxxx
             https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token
         ID: GitHub

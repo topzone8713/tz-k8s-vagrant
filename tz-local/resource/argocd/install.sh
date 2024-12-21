@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 # bash /vagrant/tz-local/resource/argocd/install.sh
 cd /vagrant/tz-local/resource/argocd
 
 #set -x
 shopt -s expand_aliases
 
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
+k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 admin_password=$(prop 'project' 'admin_password')
 github_token=$(prop 'project' 'github_token')
@@ -15,13 +16,13 @@ basic_password=$(prop 'project' 'basic_password')
 
 alias k='kubectl --kubeconfig ~/.kube/config'
 
-k delete namespace argocd
+#k delete namespace argocd
 k create namespace argocd
 k delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 k apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 sleep 20
 k patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-sleep 120
+sleep 150
 TMP_PASSWORD=$(k -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
 echo "############################################"
 echo "TMP_PASSWORD: ${TMP_PASSWORD}"
@@ -34,8 +35,7 @@ sudo chmod +x /usr/local/bin/argocd
 #brew install argoproj/tap/argocd
 #argocd
 
-ARGOCD_SERVER=`k get ing -n argocd | grep -w "ingress-argocd " | awk '{print $3}'`
-argocd login ${ARGOCD_SERVER} --username admin --password ${TMP_PASSWORD} --insecure
+argocd login `k get service -n argocd | grep -w "argocd-server " | awk '{print $4}'` --username admin --password ${TMP_PASSWORD} --insecure
 argocd account update-password --account admin --current-password ${TMP_PASSWORD} --new-password ${admin_password}
 
 # basic auth
@@ -62,9 +62,9 @@ k apply -f ingress-argocd.yaml_bak -n argocd
 
 k patch deploy/argocd-redis -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n argocd
 
-argocd login ${ARGOCD_SERVER} --username admin --password ${admin_password} --insecure
-argocd repo add https://github.com/doohee323/tz-argocd-repo \
-  --username doohee323 --password ${github_token}
+argocd login `k get service -n argocd | grep argocd-server | awk '{print $4}' | head -n 1` --username admin --password ${admin_password} --insecure
+argocd repo add https://github.com/${github_id}/tz-argocd-repo \
+  --username ${github_id} --password ${github_token}
 
 bash /vagrant/tz-local/resource/argocd/update.sh
 bash /vagrant/tz-local/resource/argocd/update.sh

@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
+#set -x
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 #bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
 cd /vagrant/tz-local/resource/vault/vault-injection
 
 k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 VAULT_TOKEN=$(prop 'project' 'vault')
-AWS_REGION=$(prop 'config' 'region')
 
-#export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
-export VAULT_ADDR="https://vault.shoptools.co.kr"
+export VAULT_ADDR="http://vault.default.${k8s_project}.${k8s_domain}"
 vault login ${VAULT_TOKEN}
 
 vault list auth/kubernetes/role
@@ -32,8 +32,8 @@ for item in "${PROJECTS[@]}"; do
     echo "===================dev==${project} / ${namespaces}"
   else
     project=${item}-prod
-    project_qa=${item}-qa
-    accounts=${accounts},${item}-dev-svcaccount,${item}-qa-svcaccount,${project}-svcaccount # devops-dev devops-prod
+    project_stg=${item}-stg
+    accounts=${accounts},${item}-dev-svcaccount,${item}-stg-svcaccount,${item}-svcaccount # devops-dev devops-prod
     namespaces=${namespaces},${item/-prod/}-dev,${item/-prod/}  # devops-dev devops
     staging="prod"
   fi
@@ -57,15 +57,15 @@ for item in "${PROJECTS[@]}"; do
     vault kv put secret/${project}/foo name='localhost' passwod=1111 ttl='30s'
     vault read auth/kubernetes/role/${project}
     if [ "${staging}" == "prod" ]; then
-      vault write auth/kubernetes/role/${project_qa} \
+      vault write auth/kubernetes/role/${project_stg} \
               bound_service_account_names=${accounts} \
               bound_service_account_namespaces=${namespaces} \
-              policies=tz-vault-${project_qa} \
+              policies=tz-vault-${project_stg} \
               ttl=24h
-      vault policy write tz-vault-${project_qa} /vagrant/tz-local/resource/vault/data/${project_qa}.hcl
-      vault kv put secret/${project_qa}/dbinfo name='localhost' passwod=1111 ttl='30s'
-      vault kv put secret/${project_qa}/foo name='localhost' passwod=1111 ttl='30s'
-      vault read auth/kubernetes/role/${project_qa}
+      vault policy write tz-vault-${project_stg} /vagrant/tz-local/resource/vault/data/${project_stg}.hcl
+      vault kv put secret/${project_stg}/dbinfo name='localhost' passwod=1111 ttl='30s'
+      vault kv put secret/${project_stg}/foo name='localhost' passwod=1111 ttl='30s'
+      vault read auth/kubernetes/role/${project_stg}
     fi
   fi
 done

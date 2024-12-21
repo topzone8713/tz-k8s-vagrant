@@ -1,25 +1,20 @@
 #!/usr/bin/env bash
 
-function prop {
-	grep "${2}" "/home/vagrant/.aws/${1}" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'
-}
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 
-bash /vagrant/tz-local/resource/docker-repo/install.sh
-bash /vagrant/tz-local/resource/ingress_nginx/install.sh
+k8s_project=$(prop 'project' 'project')
 
-bash /vagrant/tz-local/resource/consul/install.sh
-bash /vagrant/tz-local/resource/vault/helm/install.sh
 bash /vagrant/tz-local/resource/vault/data/vault_user.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/install.sh
 bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
+bash /vagrant/tz-local/resource/monitoring/install.sh
+bash /vagrant/tz-local/resource/monitoring/rules/update.sh
+
+bash /vagrant/tz-local/resource/harbor/install.sh
+
 bash /vagrant/tz-local/resource/argocd/helm/install.sh
 bash /vagrant/tz-local/resource/jenkins/helm/install.sh
 
-bash /vagrant/tz-local/resource/monitoring/install.sh
-
 exit 0
-
-bash /vagrant/tz-local/resource/vault/external-secrets/install.sh

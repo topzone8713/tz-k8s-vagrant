@@ -1,49 +1,73 @@
 #!/usr/bin/env bash
 
 source /root/.bashrc
+function prop { key="${2}=" file="/root/.k8s/${1}" rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); [[ -z "$rslt" ]] && key="${2} = " && rslt=$(grep "${3:-}" "$file" -A 10 | grep "$key" | head -n 1 | cut -d '=' -f2 | sed 's/ //g'); rslt=$(echo "$rslt" | tr -d '\n' | tr -d '\r'); echo "$rslt"; }
 cd /vagrant/tz-local/resource/docker-repo
 
 #set -x
 shopt -s expand_aliases
 alias k='kubectl'
 
-k8s_project=hyper-k8s  #$(prop 'project' 'project')
+k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 dockerhub_id=$(prop 'project' 'dockerhub_id')
 dockerhub_password=$(prop 'project' 'dockerhub_password')
+docker_url=$(prop 'project' 'docker_url')
+
+#kubectl describe cm/coredns -n kube-system > coredns.yqml
+#kubectl edit cm/coredns -n kube-system
+#
+#data:
+#  Corefile: |
+#    .:53 {
+#        errors {
+#        }
+#        health {
+#            lameduck 5s
+#        }
+#        ready
+#        ~~~~
+#    }
+#    harbor.harbor.topzone-k8s.topzone.me:53 {
+#        hosts {
+#            192.168.86.200    harbor.harbor.topzone-k8s.topzone.me
+#        }
+#    }
+
+#kubectl -n kube-system rollout restart deployment coredns
+
+# apt-get update && apt-get install dnsutils -y
+# nslookup harbor.harbor.topzone-k8s.topzone.me
 
 apt-get update -y
 apt-get -y install docker.io jq
-usermod -G docker ubuntu
-chown -Rf vagrant:vagrant /var/run/docker.sock
+#mkdir -p ~/.docker
+#docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
 
-mkdir -p ~/.docker
-docker login -u="${dockerhub_id}" -p="${dockerhub_password}"
+mkdir -p /root/.docker
 
-sleep 2
+cat <<EOF > /etc/docker/daemon.json
+{
+    "insecure-registries": ["harbor.harbor.topzone-k8s.topzone.me"]
+}
+EOF
+service docker restart
+echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
 
-cat ~/.docker/config.json
-#mkdir -p /root/.docker
-#cp -Rf ~/.docker/config.json /root/.docker/config.json
-#chown -Rf vagrant:vagrant /root/.docker
+cp -Rf /vagrant/resources/config.json /root/.docker/config.json
+chown -Rf topzone:topzone /root/.docker
 
-kubectl delete secret tz-registrykey
+kubectl delete secret tz-registrykey -n kube-system
 kubectl create secret generic tz-registrykey \
     --from-file=.dockerconfigjson=/root/.docker/config.json \
-    --type=kubernetes.io/dockerconfigjson
+    --type=kubernetes.io/dockerconfigjson -n kube-system
 
-kubectl create ns argocd
-kubectl create ns consul
-kubectl create ns default
-kubectl create ns devops
-kubectl create ns devops-dev
-kubectl create ns monitoring
-kubectl create ns vault
-
-PROJECTS=(argocd consul default devops devops-dev monitoring vault)
+#PROJECTS=(default)
+PROJECTS=(argocd consul harbor jenkins default devops devops-dev monitoring vault)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     echo "===================== ${item}"
+    kubectl create namespace ${item}
     kubectl delete secret tz-registrykey -n ${item}
     kubectl create secret generic tz-registrykey \
       -n ${item} \
@@ -52,23 +76,6 @@ for item in "${PROJECTS[@]}"; do
   fi
 done
 
-#echo "
-#apiVersion: v1
-#kind: Secret
-#metadata:
-#  name: tz-registrykey
-#data:
-#  .dockerconfigjson: docker-config
-#type: kubernetes.io/dockerconfigjson
-#" > docker-config.yaml
-#
-#DOCKER_CONFIG=$(cat /root/.docker/config.json | base64 | tr -d '\r')
-#DOCKER_CONFIG=$(echo $DOCKER_CONFIG | sed 's/ //g')
-#echo "${DOCKER_CONFIG}"
-#cp docker-config.yaml docker-config.yaml_bak
-#sed -i "s/DOCKER_CONFIG/${DOCKER_CONFIG}/g" docker-config.yaml_bak
-#k apply -f docker-config.yaml_bak
-
 kubectl get secret tz-registrykey --output=yaml
 kubectl get secret tz-registrykey -n vault --output=yaml
 
@@ -76,9 +83,17 @@ kubectl get secret tz-registrykey --output="jsonpath={.data.\.dockerconfigjson}"
 
 exit 0
 
-spec:
-  containers:
-  - name: private-reg-container
-    image: <your-private-image>
-  imagePullSecrets:
-    - name: tz-registrykey
+
+sudo vi /etc/containerd/config.toml
+
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["https://registry-1.docker.io", "https://harbor.harbor.topzone-k8s.topzone.me"]
+
+    [plugins."io.containerd.grpc.v1.cri".registry.configs]
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.topzone-k8s.topzone.me".auth]
+          username = "admin"
+          password = "Harbor12345"
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.harbor.topzone-k8s.topzone.me".tls]
+          insecure_skip_verify = true
