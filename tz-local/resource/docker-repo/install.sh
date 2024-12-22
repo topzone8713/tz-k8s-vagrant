@@ -46,13 +46,13 @@ apt-get -y install docker.io jq
 
 mkdir -p /root/.docker
 
-cat <<EOF > /etc/docker/daemon.json
-{
-    "insecure-registries": ["harbor.harbor.topzone-k8s.topzone.me"]
-}
-EOF
-service docker restart
-echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+#cat <<EOF > /etc/docker/daemon.json
+#{
+#    "insecure-registries": ["harbor.harbor.topzone-k8s.topzone.me"]
+#}
+#EOF
+#service docker restart
+#echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
 
 cp -Rf /vagrant/resources/config.json /root/.docker/config.json
 chown -Rf topzone:topzone /root/.docker
