@@ -49,11 +49,17 @@ to project root directory.
         {
             "auths": {
                 "https://index.docker.io/v1/": {
-                    "username":"doogee323",           # your dockerhub_id
+                    "username":"doogee323",             # your dockerhub_id
                     "password":"xxxx",                  # your dockerhub_password
-                    "email":"doogee323@gmail.com",    # your email
+                    "email":"doogee323@gmail.com",      # your email
                     "auth":"xxxxxx"                     # base64 encoding
                 }
+            },
+            "harbor.harbor.topzone-k8s.topzone.me": {
+                "username":"admin",
+                "password":"Harbor12345",
+                "email":"doogee323@gmail.com",          # your email
+                "auth":"YWRtaW46SGFyYm9yMTIzNDU="
             }
         }
         
