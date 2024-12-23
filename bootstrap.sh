@@ -19,6 +19,10 @@ cat <<EOF
       "vagrant reload"
   - bash bootstrap.sh provision
       "run kubespray.sh and other scripts"
+  - bash bootstrap.sh status
+      "vagrant status"
+  - bash bootstrap.sh ssh
+      "vagrant ssh kube-master"
   - bash bootstrap.sh remove
       "vagrant destroy -f"
 EOF
@@ -27,12 +31,21 @@ fi
 
 PROVISION=''
 if [[ "$1" == "halt" ]]; then
-  echo "Vagrant halt!"
+  echo "vagrant halt"
   vagrant halt
+  exit 0
+elif [[ "$1" == "status" ]]; then
+  echo "vagrant status"
+  vagrant status
+  exit 0
+elif [[ "$1" == "ssh" ]]; then
+  echo "vagrant ssh kube-master"
+  vagrant ssh kube-master
   exit 0
 elif [[ "$1" == "provision" ]]; then
   PROVISION='y'
 elif [[ "$1" == "remove" ]]; then
+  echo "vagrant destroy -f"
   vagrant destroy -f
   git checkout Vagrantfile
   exit 0
@@ -59,6 +72,9 @@ if [ ! -f .ssh/${MYKEY} ]; then
   mkdir -p .ssh \
     && cd .ssh \
     && ssh-keygen -t rsa -C ${MYKEY} -P "" -f ${MYKEY} -q
+  echo "Make ssh key files: ${MYKEY}"
+else
+  echo "Use existing ssh key files: ${MYKEY}"
 fi
 
 cp -Rf Vagrantfile Vagrantfile.bak
