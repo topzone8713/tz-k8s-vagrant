@@ -162,3 +162,8 @@ cat /vagrant/info
 
 exit 0
 
+kubectl label nodes kube-master master=yes
+kubectl label nodes kube-node-1 master=yes
+kubectl label nodes kube-node-2 master=yes
+
+kubectl patch statefulset/vault -p '{"spec": {"template": {"spec": {"nodeSelector": {"master": "yes"}}}}}' -n vault
