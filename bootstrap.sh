@@ -38,10 +38,6 @@ elif [[ "$1" == "status" ]]; then
   echo "vagrant status"
   vagrant status
   exit 0
-elif [[ "$1" == "halt" ]]; then
-  echo "vagrant halt"
-  vagrant halt
-  exit 0
 elif [[ "$1" == "ssh" ]]; then
   echo "vagrant ssh kube-master"
   vagrant ssh kube-master
