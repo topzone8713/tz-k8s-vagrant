@@ -1,9 +1,10 @@
-# tz-k8s-topzone
+# tz-k8s-vagrant
 
 It supports two version of k8s installation in terraform or local VMs.
 to project root directory. 
 
-![Architecture1](./resource/tz-k8s-topzone-env.png)
+![Architecture1](./resource/tz-k8s-vagrant-env.png)
+![Architecture2](./resource/tz-k8s-vagrant-env1.png)
 
 ## -. Features 
 ```
@@ -19,7 +20,7 @@ to project root directory.
 ## -. Prep a build environment
 ```
     -. checkout codes
-       git clone https://github.com/topzone8713/tz-k8s-vagrant.git
+       git clone https://github.com/doogee323/tz-k8s-vagrant.git
        cd tz-k8s-vagrant
 
     -. copy resources like this,
@@ -36,10 +37,10 @@ to project root directory.
         argocd_id=admin
         admin_password=DevOps!323
         basic_password=Soqn!323
-        github_id=topzone8713       # your github_id
+        github_id=doogee323       # your github_id
         github_token=               # your github token
         docker_url=index.docker.io
-        dockerhub_id=topzone8713    # your dockerhub_id
+        dockerhub_id=doogee323    # your dockerhub_id
         dockerhub_password=         # your dockerhub_password
         vault=xxxx                  
     
@@ -49,15 +50,21 @@ to project root directory.
         {
             "auths": {
                 "https://index.docker.io/v1/": {
-                    "username":"topzone8713",           # your dockerhub_id
+                    "username":"doogee323",             # your dockerhub_id
                     "password":"xxxx",                  # your dockerhub_password
-                    "email":"topzone8713@gmail.com",    # your email
-                    "auth":"xxxxxx"                     # your dockerhub auth token, 
-                                                        # After running "docker login" on your pc, 
-                                                        # cat ~/.docker/config.json
+                    "email":"doogee323@gmail.com",      # your email
+                    "auth":"xxxxxx"                     # base64 encoding
                 }
+            },
+            "harbor.harbor.topzone-k8s.topzone.me": {
+                "username":"admin",
+                "password":"Harbor12345",
+                "email":"doogee323@gmail.com",          # your email
+                "auth":"YWRtaW46SGFyYm9yMTIzNDU="
             }
         }
+        
+       echo -n 'doogee323:topzone!323' | base64
         
     -. DHCP IP address check
        Each VMs are supposed to get IP from DHCP server as public_ip in your network area.
@@ -168,12 +175,10 @@ to project root directory.
 ``` 
 
 ## -. Build Demo app
+### cf) demo app: https://github.com/doogee323/tz-demo-app
 ```
-    cf) my topzone's host server ip: 192.168.86.143
-
     - build a K8S in local topzone VMs
         topzone -> VMs -> k8s -> monitoring -> jenkins -> demo-app build
-        scripts/local/README.md
 ```
 
 ## -. Remove VMs
@@ -187,9 +192,8 @@ to project root directory.
 ``` 
     brew install kubectl
     mkdir -p ~/.kube
-    cp tz-k8s-topzone/config ~/.kube/config
+    cp tz-k8s-vagrant/config ~/.kube/config
     kubectl get nodes
 ```
 
-# echo -n 'topzone8713:topzone!323' | base64
 

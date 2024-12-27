@@ -19,7 +19,6 @@ spec:
         - "harbor.harbor.topzone-k8s.topzone.me"
       imagePullSecrets:
         - name: tz-registrykey
-        - name: harbor-secret
       serviceAccountName: devops-dev-svcaccount
       containers:
       - name: devops-bastion

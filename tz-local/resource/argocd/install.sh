@@ -49,7 +49,6 @@ argocd account update-password --account admin --current-password ${TMP_PASSWORD
 cp -Rf ingress-argocd.yaml ingress-argocd.yaml_bak
 sed -i "s/k8s_project/${k8s_project}/g" ingress-argocd.yaml_bak
 sed -i "s/k8s_domain/${k8s_domain}/g" ingress-argocd.yaml_bak
-sed -i "s/AWS_REGION/${AWS_REGION}/g" ingress-argocd.yaml_bak
 k delete -f ingress-argocd.yaml_bak -n argocd
 k apply -f ingress-argocd.yaml_bak -n argocd
 

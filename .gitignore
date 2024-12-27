@@ -42,3 +42,5 @@ kubeconfig_tz-k8s-vagrant
 .ssh
 /.vagrant/
 /tz-local/resource/vault/vault-injection/cert/
+self-signed.key
+self-signed.crt

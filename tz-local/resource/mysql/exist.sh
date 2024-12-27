@@ -2,9 +2,7 @@
 
 cd /vagrant/tz-local/resource/mysql
 
-AWS_REGION=$(prop 'config' 'region')
 k8s_project=$(prop 'project' 'project')
-aws_account_id=$(aws sts get-caller-identity --query Account --output text)
 NS=devops-dev
 
 echo "########################################################################"

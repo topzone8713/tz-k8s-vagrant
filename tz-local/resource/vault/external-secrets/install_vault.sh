@@ -87,12 +87,6 @@ data:
     kubectl apply -f secret.yaml_bak
     kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
 
-    kubectl create secret docker-registry harbor-secret -n ${namespace} \
-      --docker-server=harbor.harbor.topzone-k8s.topzone.me \
-      --docker-username=admin \
-      --docker-password=Harbor12345 \
-      --docker-email=topzone8713@gmail.com
-
 echo '
 apiVersion: v1
 kind: ServiceAccount
@@ -134,16 +128,15 @@ metadata:
   fi
 done
 
-#kubectl create serviceaccount mtown-prod-svcaccount -n mtown
-#kubectl create serviceaccount mtown-dev-svcaccount -n mtown-dev
+exit 0
+
+kubectl apply -f test.yaml
 
 rm -Rf secret.yaml secret.yaml_bak account.yaml account.yaml_bak
 
 kubectl apply -f test.yaml
 kubectl -n devops describe externalsecret devops-externalsecret
 kubectl get SecretStores,ClusterSecretStores,ExternalSecrets --all-namespaces
-
-exit 0
 
 NAMESPACE=devops
 STAGING=prod

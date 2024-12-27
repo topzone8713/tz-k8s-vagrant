@@ -1072,9 +1072,6 @@ backup:
   # jenkinsgcp:
   ## Use this key for GCP credentials
   # gcpcredentials: credentials.json
-#  env:
-#   - name: "AWS_REGION"
-#     value: "aws_region"
   resources:
     requests:
       memory: 500Mi

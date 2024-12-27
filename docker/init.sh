@@ -107,25 +107,11 @@ dockerhub_id=$(prop 'project' 'dockerhub_id')
 dockerhub_password=$(prop 'project' 'dockerhub_password')
 docker_url=$(prop 'project' 'docker_url')
 
-#aws_account_id=$(aws sts get-caller-identity --query Account --output text)
-#aws_region=ap-northeast-2
 SNAPSHOT_IMG=devops-utils2
 TAG=latest
 
-#aws ecr create-repository \
-#    --repository-name $SNAPSHOT_IMG \
-#    --image-tag-mutability IMMUTABLE
-
-#aws ecr get-login-password --region ${aws_region} \
-#      | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
-#DOCKER_URL=${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
-#DOCKER_URL=xxxxxxxx.dkr.ecr.ap-northeast-2.amazonaws.com
-
-#docker login --username AWS -p $(aws ecr get-login-password --region ${aws_region}) ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/
-#  DOCKER_URL=${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
-
 DOCKER_URL=index.docker.io
-dockerhub_id=topzone8713
+dockerhub_id=doogee323
 dockerhub_password=''
 echo $dockerhub_password | docker login -u ${dockerhub_id} --password-stdin ${DOCKER_URL}
 
@@ -139,5 +125,5 @@ docker push ${dockerhub_id}/${SNAPSHOT_IMG}:${TAG}
 #docker tag ${DOCKER_URL}/${SNAPSHOT_IMG}:${TAG} ${DOCKER_URL}/devops-utils2:latest
 #docker push ${DOCKER_URL}/devops-utils2:latest
 
-docker tag ${SNAPSHOT_IMG}:latest topzone8713/${SNAPSHOT_IMG}:${TAG}
-docker push topzone8713/${SNAPSHOT_IMG}:${TAG}
+docker tag ${SNAPSHOT_IMG}:latest doogee323/${SNAPSHOT_IMG}:${TAG}
+docker push doogee323/${SNAPSHOT_IMG}:${TAG}

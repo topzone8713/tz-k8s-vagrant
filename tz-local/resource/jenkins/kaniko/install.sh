@@ -47,13 +47,13 @@ kubectl create secret docker-registry regsecret -n jenkins \
     --docker-server=harbor.harbor.topzone-k8s.topzone.me \
     --docker-username=admin \
     --docker-password=Harbor12345 \
-    --docker-email=topzone8713@gmail.com
+    --docker-email=doogee323@gmail.com
 
 exit 0
 
-#docker login -u topzone8713
-docker build -t topzone8713/kaniko-executor:v1.7.0-debug .
-#docker push topzone8713/kaniko-executor:v1.7.0-debug
+#docker login -u doogee323
+docker build -t doogee323/kaniko-executor:v1.7.0-debug .
+#docker push doogee323/kaniko-executor:v1.7.0-debug
 
 kubectl delete -f ubuntu.yaml -n jenkins
 kubectl apply -f ubuntu.yaml -n jenkins

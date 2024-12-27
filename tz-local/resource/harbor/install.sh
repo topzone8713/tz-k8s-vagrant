@@ -49,17 +49,17 @@ sleep 300
 #  logging:
 #    enabled: false
 
-cat <<EOF > /etc/docker/daemon.json
-{
-  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
-}
-EOF
-
-echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
-
-kubectl delete secret harbor-registry-secret -n jenkins
-kubectl create secret generic harbor-registry-secret \
-    --from-file=.dockerconfigjson=/root/.docker/config.json \
-    --type=kubernetes.io/dockerconfigjson -n jenkins
+#cat <<EOF > /etc/docker/daemon.json
+#{
+#  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
+#}
+#EOF
+#
+#echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+#
+#kubectl delete secret harbor-registry-secret -n jenkins
+#kubectl create secret generic harbor-registry-secret \
+#    --from-file=.dockerconfigjson=/root/.docker/config.json \
+#    --type=kubernetes.io/dockerconfigjson -n jenkins
 
 exit 0

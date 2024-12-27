@@ -25,7 +25,7 @@ helm upgrade --debug --install external-secrets \
 #vault kv get secret/devops-prod/dbinfo
 
 #PROJECTS=(devops devops-dev)
-PROJECTS=(default argocd jenkins harbor devops devops-dev)
+PROJECTS=(devops devops-dev default argocd jenkins harbor)
 for item in "${PROJECTS[@]}"; do
   if [[ "${item}" != "NAME" ]]; then
     STAGING="dev"
@@ -73,12 +73,6 @@ spec:
     kubectl apply -f secret.yaml_bak
     kubectl patch serviceaccount ${project}-svcaccount -p '{"imagePullSecrets": [{"name": "tz-registrykey"}]}' -n ${namespace}
 
-    kubectl create secret docker-registry harbor-secret -n ${namespace} \
-      --docker-server=harbor.harbor.topzone-k8s.topzone.me \
-      --docker-username=admin \
-      --docker-password=Harbor12345 \
-      --docker-email=topzone8713@gmail.com
-
     if [ "${STAGING}" == "prod" ]; then
       cp secret.yaml secret.yaml_bak
       sed -i "s|PROJECT|${project_stg}|g" secret.yaml_bak
@@ -91,8 +85,8 @@ done
 
 rm -Rf secret.yaml secret.yaml_bak
 
+exit 0
 kubectl apply -f test.yaml
 kubectl -n devops describe externalsecret devops-externalsecret
 kubectl get SecretStores,ClusterSecretStores,ExternalSecrets --all-namespaces
 
-exit 0
