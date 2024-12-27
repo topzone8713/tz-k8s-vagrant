@@ -1,9 +1,10 @@
-# tz-k8s-topzone
+# tz-k8s-vagrant
 
 It supports two version of k8s installation in terraform or local VMs.
 to project root directory. 
 
-![Architecture1](./resource/tz-k8s-topzone-env.png)
+![Architecture1](./resource/tz-k8s-vagrant-env.png)
+![Architecture2](./resource/tz-k8s-vagrant-env1.png)
 
 ## -. Features 
 ```
@@ -174,12 +175,10 @@ to project root directory.
 ``` 
 
 ## -. Build Demo app
+### cf) demo app: https://github.com/doogee323/tz-demo-app
 ```
-    cf) my topzone's host server ip: 192.168.86.143
-
     - build a K8S in local topzone VMs
         topzone -> VMs -> k8s -> monitoring -> jenkins -> demo-app build
-        scripts/local/README.md
 ```
 
 ## -. Remove VMs
@@ -193,7 +192,7 @@ to project root directory.
 ``` 
     brew install kubectl
     mkdir -p ~/.kube
-    cp tz-k8s-topzone/config ~/.kube/config
+    cp tz-k8s-vagrant/config ~/.kube/config
     kubectl get nodes
 ```
 
