@@ -39,7 +39,7 @@ alertmanager:
       smtp_auth_username: doogee323@gmail.com
       smtp_auth_password: "smtp_password"
       smtp_require_tls: true
-      slack_api_url: https://hooks.slack.com/services/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
+      slack_api_url: https://hooks.slack.com/services/xxxxx/xxxxx/xxxxx
     inhibit_rules:
       - source_matchers:
           - 'severity = critical'

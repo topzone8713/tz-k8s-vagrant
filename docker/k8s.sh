@@ -259,8 +259,8 @@ function argocd_delete {
   trace_off
 }
 
-#SLACK_DEVOPS=https://hooks.slack.com/services/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 # k8s_alert
-SLACK_DEVOPS=https://hooks.slack.com/services/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 # devop
+#SLACK_DEVOPS=https://hooks.slack.com/services/xxxxxx/xxxxxx/xxxxxx # k8s_alert
+SLACK_DEVOPS=https://hooks.slack.com/services/xxxxx/xxxxxx/xxxxxx # devop
 function alert_slack {
   echo ""
 #  curl -X POST -H 'Content-type: application/json' --data '{"text":"build error '${APP_NAME}' - '${BUILD_URL}'"}' ${SLACK_DEVOPS}
