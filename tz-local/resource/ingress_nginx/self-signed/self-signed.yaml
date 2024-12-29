@@ -13,14 +13,20 @@ metadata:
   name: self-signed-cert
   namespace: default
 spec:
-  secretName: self-signed-cert-tls
+  secretName: self-signed-cert
   duration: 8760h
   renewBefore: 360h
   issuerRef:
     name: selfsigned-issuer
     kind: ClusterIssuer
+    group: cert-manager.io
   commonName: test.default.topzone-k8s.topzone.me
+  privateKey:
+    algorithm: ECDSA
+    size: 256
   dnsNames:
+    - test.topzone.me
+    - test.topzone-k8s.topzone.me
     - test.default.topzone-k8s.topzone.me
     - consul.default.topzone-k8s.topzone.me
     - vault.default.topzone-k8s.topzone.me
@@ -32,4 +38,3 @@ spec:
     - prometheus.default.topzone-k8s.topzone.me
     - alertmanager.default.topzone-k8s.topzone.me
     - vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
-
