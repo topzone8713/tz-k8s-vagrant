@@ -33,7 +33,7 @@ kubectl get secrets self-signed-cert-tls
 kubectl get secret self-signed-cert-tls -o jsonpath='{.data.ca\.crt}' | base64 --decode > self-signed.crt
 
 # Step 1: CA 키 및 인증서 생성
-openssl req -x509 -newkey rsa:4096 -keyout self-signed.key -out self-signed.crt -days 365 -nodes -subj "/CN=topzone-me"
+openssl req -x509 -newkey rsa:4096 -keyout self-signed.key -out self-signed.crt -days 365 -nodes -subj "/CN=topzone.me"
 
 # Step 2: Kubernetes Secret 생성
 kubectl create secret tls ca-secret --cert=self-signed.crt --key=self-signed.key
