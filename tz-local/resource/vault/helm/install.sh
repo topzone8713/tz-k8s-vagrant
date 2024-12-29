@@ -110,6 +110,12 @@ exit 0
 #complete -C /usr/local/bin/vault vault
 #vault -h
 
+kubectl label nodes kube-master master=yes
+kubectl label nodes kube-node-1 master=yes
+kubectl label nodes kube-node-2 master=yes
+
+kubectl patch statefulset/vault -p '{"spec": {"template": {"spec": {"nodeSelector": {"master": "yes"}}}}}' -n vault
+
 echo "
 ##[ Vault ]##########################################################
 export VAULT_ADDR=http://vault.default.${k8s_project}.${k8s_domain}
@@ -162,8 +168,3 @@ cat /vagrant/info
 
 exit 0
 
-kubectl label nodes kube-master master=yes
-kubectl label nodes kube-node-1 master=yes
-kubectl label nodes kube-node-2 master=yes
-
-kubectl patch statefulset/vault -p '{"spec": {"template": {"spec": {"nodeSelector": {"master": "yes"}}}}}' -n vault

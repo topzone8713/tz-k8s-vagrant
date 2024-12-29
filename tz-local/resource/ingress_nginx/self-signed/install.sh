@@ -45,7 +45,7 @@ kubectl apply -f ca-cert.yaml
 kubectl get secrets ca-signed-cert-tls
 
 # 로컬 환경 테스트
-#echo "127.0.0.1 my.local.server" | sudo tee -a /etc/hosts
+#echo "127.0.0.1 my.topzone.me" | sudo tee -a /etc/hosts
 
 rm -Rf csr_config.ext signing_config.ext
 
