@@ -21,6 +21,12 @@ cat <<EOF
       "run kubespray.sh and other scripts"
   - bash bootstrap.sh status
       "vagrant status"
+  - bash bootstrap.sh save
+      "vagrant save snapshot xxx"
+  - bash bootstrap.sh restore xxx
+      "vagrant restore snapshot xxx"
+  - bash bootstrap.sh delete xxx
+      "vagrant restore delete xxx"
   - bash bootstrap.sh ssh
       "vagrant ssh kube-master"
   - bash bootstrap.sh remove
@@ -48,6 +54,7 @@ elif [[ "$1" == "remove" ]]; then
   echo "vagrant destroy -f"
   vagrant destroy -f
   git checkout Vagrantfile
+  rm -Rf info
   exit 0
 elif [[ "$1" == "docker" ]]; then
   DOCKER_NAME=`docker ps | grep docker-${tz_project} | awk '{print $1}'`
@@ -64,8 +71,17 @@ elif [[ "$1" == "docker" ]]; then
 #  docker exec -it ${DOCKER_NAME} bash /vagrant/tz-local/docker/init2.sh
 fi
 
-echo -n "Do you want to make a jenkins on k8s in Vagrant Master / Slave? (M/S) "
-read A_ENV
+if [ ! -f info ]; then
+  echo -n "Do you want to make a jenkins on k8s in Vagrant Master / Slave? (M/S) "
+  read A_ENV
+else
+  A_ENV=`cat Vagrantfile | grep 'kube-master'`
+  if [[ "${A_ENV}" != "" ]]; then
+    A_ENV="M"
+  else
+    A_ENV="S"
+  fi
+fi
 
 MYKEY=tz_rsa
 if [ ! -f .ssh/${MYKEY} ]; then
@@ -78,15 +94,18 @@ else
 fi
 
 cp -Rf Vagrantfile Vagrantfile.bak
-EVENT=`vagrant status | grep -E 'kube-master|kube-slave-1' | grep 'not created'`
-if [[ "${EVENT}" != "" ]]; then
-  EVENT='up'
+if [[ "${1}" == "save" || "${1}" == "restore" || "${1}" == "delete" || "${1}" == "list" ]]; then
+  EVENT=${1}
 else
-  EVENT='reload'
+  EVENT=`vagrant status | grep -E 'kube-master|kube-slave-1' | grep 'not created'`
+  if [[ "${EVENT}" != "" ]]; then
+    EVENT='up'
+  else
+    EVENT='reload'
+  fi
 fi
-echo "EVENT: ${EVENT}, PROVISION: ${PROVISION}"
+echo "EVENT: ${EVENT}, Type: ${A_ENV}, PROVISION: ${PROVISION}"
 
-echo "" > info
 if [[ "${A_ENV}" == "M" ]]; then
   cp -Rf ./scripts/local/Vagrantfile Vagrantfile
   PROJECTS=(kube-master kube-node-1 kube-node-2)
@@ -96,6 +115,7 @@ elif [[ "${A_ENV}" == "S" ]]; then
 fi
 
 if [[ "${EVENT}" == "up" ]]; then
+  echo "- PC Type: ${A_ENV}" > info
   echo "##################################################################################"
   echo 'vagrant ${EVENT} --provider=virtualbox'
   echo "##################################################################################"
@@ -113,6 +133,20 @@ if [[ "${EVENT}" == "up" ]]; then
     sleep 5
     vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"
   fi
+elif [[ "${EVENT}" == "save" || "${EVENT}" == "restore" || "${EVENT}" == "delete" || "${EVENT}" == "list" ]]; then
+  if [[ "${EVENT}" == "save" ]]; then
+    item=$(date +"%Y%m%d-%H%M%S")
+    echo vagrant snapshot ${EVENT} ${item}
+    vagrant snapshot ${EVENT} ${item}
+  elif [[ "${EVENT}" == "restore" || "${EVENT}" == "delete" ]]; then
+    echo vagrant snapshot ${EVENT} ${2}
+    vagrant snapshot ${EVENT} ${2}
+  fi
+  if [[ "${EVENT}" != "delete" ]]; then
+    echo vagrant snapshot list
+    vagrant snapshot list
+  fi
+  exit 0
 else
   if [[ "${PROVISION}" == "y" ]]; then
     if [[ "${A_ENV}" == "M" ]]; then
