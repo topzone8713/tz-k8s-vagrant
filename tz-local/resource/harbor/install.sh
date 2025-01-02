@@ -27,7 +27,7 @@ sed -ie "s|k8s_project|${k8s_project}|g" values.yaml_bak
 sed -ie "s|k8s_domain|${k8s_domain}|g" values.yaml_bak
 sed -ie "s|NS|${NS}|g" values.yaml_bak
 #--reuse-values
-helm upgrade -n ${NS} --debug --install harbor-release harbor/harbor -f values.yaml_bak
+helm upgrade -n ${NS} --debug --install --reuse-values harbor-release harbor/harbor -f values.yaml_bak
 
 sleep 300
 

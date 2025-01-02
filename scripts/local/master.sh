@@ -53,7 +53,7 @@ kubectl get nodes -o wide
 ## !!! Warning: Authentication failure. Retrying... after nfs setting and ubuntu up
 sudo apt-get install nfs-common nfs-kernel-server rpcbind portmap -y
 sudo mkdir -p /homedata
-sudo chmod -Rf 777 /home
+#sudo chmod -Rf 777 /home
 #sudo chown -Rf nobody:nogroup /home
 echo '/homedata 192.168.1.0/16(rw,sync,no_subtree_check)' >> /etc/exports
 exportfs -a

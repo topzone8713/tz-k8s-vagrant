@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-ITEM-tls
+spec:
+  secretName: ingress-ITEM-tls
+  duration: 8760h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+  commonName: ITEM.topzone.me
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  dnsNames:
+    - ITEM.topzone.me
+    - ITEM.default.topzone-k8s.topzone.me
+    - ITEM.NS.topzone-k8s.topzone.me

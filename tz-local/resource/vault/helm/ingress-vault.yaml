@@ -9,13 +9,16 @@ metadata:
     cert-manager.io/cluster-issuer: "selfsigned-issuer"
 spec:
   rules:
-#  - host: vault.k8s_domain
-#    http:
-#      paths:
-#      - path: /
-#        backend:
-#          serviceName: vault
-#          servicePort: 8200
+  - host: vault.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: vault
+            port:
+              number: 8200
   - host: vault.default.k8s_project.k8s_domain
     http:
       paths:
@@ -28,6 +31,6 @@ spec:
               number: 8200
   tls:
     - hosts:
-#        - vault.k8s_domain
+        - vault.k8s_domain
         - vault.default.k8s_project.k8s_domain
       secretName: ingress-vault-tls

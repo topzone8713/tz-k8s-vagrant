@@ -45,9 +45,9 @@ sleep 30
 
 #k patch svc vault-standby --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/0/nodePort","value":31700}]' -n vault
 cp -Rf ingress-vault.yaml ingress-vault.yaml_bak
-sed -i "s/k8s_project/${k8s_project}/g" ingress-vault.yaml_bak
-sed -i "s/k8s_domain/${k8s_domain}/g" ingress-vault.yaml_bak
-sed -i "s|NS|${NS}|g" ingress-vault.yaml_bak
+sed -ie "s/k8s_project/${k8s_project}/g" ingress-vault.yaml_bak
+sed -ie "s/k8s_domain/${k8s_domain}/g" ingress-vault.yaml_bak
+sed -ie "s|NS|${NS}|g" ingress-vault.yaml_bak
 k delete -f ingress-vault.yaml_bak -n vault
 k apply -f ingress-vault.yaml_bak -n vault
 
@@ -158,9 +158,10 @@ secrets
 export CONSUL_HTTP_ADDR="consul.default.${k8s_project}.${k8s_domain}"
 consul members
 
-consul snapshot save backup.snap
-vault operator raft snapshot save backup.snap
-vault operator raft snapshot restore -force backup.snap
+consul snapshot save /vagrant/tz-local/resource/vault/helm/backup.snap
+consul snapshot restore /vagrant/tz-local/resource/vault/helm/backup.snap
+#vault operator raft snapshot save /vagrant/tz-local/resource/vault/helm/backup.snap
+#vault operator raft snapshot restore -force /vagrant/tz-local/resource/vault/helm/backup.snap
 
 #######################################################################
 " >> /vagrant/info

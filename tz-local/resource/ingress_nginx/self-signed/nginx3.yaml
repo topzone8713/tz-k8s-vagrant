@@ -42,4 +42,4 @@ spec:
         - test.topzone.me
         - test.topzone-k8s.topzone.me
         - test.default.topzone-k8s.topzone.me
-      secretName: self-signed-cert-tls
+      secretName: ingress-test-tls

@@ -52,8 +52,9 @@
     
     - gmail-smtp
       1. https://jenkins.default.topzone-k8s.topzone.me/credentials/store/system/domain/_/newCredentials
-        Kind: Secret text
-        Secret: ex) xxxxxxxxxxxxxxxxxxxxxxxxx
+        Kind: Username with password
+        Username: ex) topzone8713@gmail.com
+        Password: ex) xxxxxxxxxxxxxxxx
         ID: gmail-smtp
         Description: gmail-smtp
 
@@ -67,7 +68,7 @@
         SMTP Server: smtp.gmail.com
         Use SMTP Authentication
             User Name: topzone8713@gmail.com
-            Password: xxxxx  => Google "App password"
+            Password: xxxxx  => Google "App password"  // https://myaccount.google.com/apppasswords
         Use SSL: no
         Use TLS: yes
         SMTP Port: 587

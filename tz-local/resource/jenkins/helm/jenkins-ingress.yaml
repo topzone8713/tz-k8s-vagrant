@@ -22,4 +22,4 @@ spec:
   tls:
     - hosts:
         - jenkins.default.k8s_project.k8s_domain
-      secretName: jenkins-ingress-tls
+      secretName: ingress-jenkins-tls

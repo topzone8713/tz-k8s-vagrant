@@ -22,24 +22,37 @@ shopt -s expand_aliases
 alias k="kubectl -n ${NS} --kubeconfig ~/.kube/config"
 
 kubectl delete -f self-signed.yaml
-kubectl delete secret ca-secret
-kubectl delete -f ca-cert.yaml
-kubectl delete -f nginx2.yaml
-kubectl delete -f nginx3.yaml
-kubectl delete certificate self-signed-cert-tls -n devops
-
 kubectl apply -f self-signed.yaml
-sleep 10
-kubectl get secrets self-signed-cert-tls
-kubectl get secret self-signed-cert-tls -o jsonpath='{.data.ca\.crt}' | base64 --decode > self-signed.crt
+
+#PROJECTS=(harbor/harbor)
+PROJECTS=(default/test consul/consul vault/vault monitoring/grafana monitoring/alertmanager monitoring/prometheus argocd/argocd jenkins/jenkins)
+for item in "${PROJECTS[@]}"; do
+  echo "====================="
+  IFS='/' read NS ITEM <<< "$item"
+  echo "=> ${NS} / ${ITEM}"
+  cp -Rf certificate.yaml certificate.yaml_bak
+  sed -ie "s/ITEM/${ITEM}/g" certificate.yaml_bak
+  sed -ie "s/k8s_project/${k8s_project}/g" certificate.yaml_bak
+  sed -ie "s/k8s_domain/${k8s_domain}/g" certificate.yaml_bak
+  sed -ie "s|NS|${NS}|g" certificate.yaml_bak
+  k delete -f certificate.yaml_bak -n ${NS}
+  k apply -f certificate.yaml_bak -n ${NS}
+  sleep 2
+  kubectl get secret ingress-${ITEM}-tls -n ${NS} -o jsonpath='{.data.ca\.crt}' | base64 --decode > ingress-${ITEM}-tls.crt
+done
 
 # 로컬 환경 테스트
 #echo "192.168.86.200  test.topzone-k8s.topzone.me" | sudo tee -a /etc/hosts
 
 rm -Rf csr_config.ext signing_config.ext
 
+kubectl delete -f nginx2.yaml
+kubectl delete -f nginx3.yaml
 kubectl apply -f nginx2.yaml
 kubectl apply -f nginx3.yaml
+
+kubectl delete -f ingress-vault.yaml -n vault
+kubectl apply -f ingress-vault.yaml -n vault
 
 export NS=devops
 export k8s_project=topzone-k8s
