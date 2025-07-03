@@ -27,7 +27,7 @@ touch /home/topzone/.ssh/authorized_keys
 cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
 cat /root/.ssh/${MYKEY}.pub >> /root/.ssh/authorized_keys
 chown -R root:root /root/.ssh \
-  chmod -Rf 400 /root/.ssh
+  chmod -Rf 600 /root/.ssh
 rm -Rf /home/topzone/.ssh \
   && cp -Rf /root/.ssh /home/topzone/.ssh \
   && chown -Rf topzone:topzone /home/topzone/.ssh \
@@ -95,9 +95,9 @@ cat  /vagrant/info
 check_host=`cat /etc/hosts | grep 'kube-master'`
 if [[ "${check_host}" == "" ]]; then
 cat <<EOF >> /etc/hosts
-192.168.86.100   kube-master
-192.168.86.101   kube-node-1
-192.168.86.102   kube-node-2
+192.168.0.61   kube-master
+192.168.0.63   kube-node-1
+192.168.0.62   kube-node-2
 
 192.168.86.110   kube-slave-1
 192.168.86.112   kube-slave-2
@@ -107,12 +107,12 @@ cat <<EOF >> /etc/hosts
 192.168.86.212   kube-slave-5
 192.168.86.213   kube-slave-6
 
-192.168.86.200   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
-192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
-192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
-192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
-192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
-192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
+192.168.86.200   test.default.topzone-k8s.new-nation.church consul.default.topzone-k8s.new-nation.church vault.default.topzone-k8s.new-nation.church
+192.168.86.200   consul-server.default.topzone-k8s.new-nation.church argocd.default.topzone-k8s.new-nation.church
+192.168.86.200   jenkins.default.topzone-k8s.new-nation.church harbor.harbor.topzone-k8s.new-nation.church
+192.168.86.200   grafana.default.topzone-k8s.new-nation.church prometheus.default.topzone-k8s.new-nation.church alertmanager.default.topzone-k8s.new-nation.church
+192.168.86.200   grafana.default.topzone-k8s.new-nation.church prometheus.default.topzone-k8s.new-nation.church alertmanager.default.topzone-k8s.new-nation.church
+192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.new-nation.church
 
 EOF
 fi

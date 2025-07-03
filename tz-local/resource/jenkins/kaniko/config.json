@@ -1,6 +1,6 @@
 {
 	"auths": {
-		"harbor.harbor.topzone-k8s.topzone.me": {
+		"harbor.harbor.topzone-k8s.new-nation.church": {
 			"username":"admin",
 			"password":"Harbor12345",
 			"auth": "YWRtaW46SGFyYm9yMTIzNDU="

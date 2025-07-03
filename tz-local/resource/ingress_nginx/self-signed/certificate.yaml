@@ -10,11 +10,11 @@ spec:
     name: selfsigned-issuer
     kind: ClusterIssuer
     group: cert-manager.io
-  commonName: ITEM.topzone.me
+  commonName: ITEM.new-nation.church
   privateKey:
     algorithm: ECDSA
     size: 256
   dnsNames:
-    - ITEM.topzone.me
-    - ITEM.default.topzone-k8s.topzone.me
-    - ITEM.NS.topzone-k8s.topzone.me
+    - ITEM.new-nation.church
+    - ITEM.default.topzone-k8s.new-nation.church
+    - ITEM.NS.topzone-k8s.new-nation.church

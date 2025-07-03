@@ -36,22 +36,26 @@ ansible all -i resource/kubespray/inventory.ini --list-hosts -u root
 #kubeadm reset
 #ansible-playbook -u root -i resource/kubespray/inventory.ini kubespray/reset.yml \
 #  --become --become-user=root --extra-vars "reset_confirmation=yes"
-
-iptables --policy INPUT   ACCEPT
-iptables --policy OUTPUT  ACCEPT
-iptables --policy FORWARD ACCEPT
-iptables -Z # zero counters
-iptables -F # flush (delete) rules
-iptables -X # delete all extra chains
-iptables -t nat -F
-iptables -t nat -X
-iptables -t mangle -F
-iptables -t mangle -X
-rm -Rf $HOME/.kube
+#
+#docker image prune -a -f
+#rm -rf /var/lib/etcd
+#rm -rf /var/lib/kubelet/*
+#
+#iptables --policy INPUT   ACCEPT
+#iptables --policy OUTPUT  ACCEPT
+#iptables --policy FORWARD ACCEPT
+#iptables -Z # zero counters
+#iptables -F # flush (delete) rules
+#iptables -X # delete all extra chains
+#iptables -t nat -F
+#iptables -t nat -X
+#iptables -t mangle -F
+#iptables -t mangle -X
+#rm -Rf $HOME/.kube
 
 # install k8s
 ansible-playbook -u root -i resource/kubespray/inventory.ini \
-  --private-key .ssh/tz_rsa --become --become-user=root \
+  --private-key .ssh/tz_rsa --become --skip-tags=memory_check --become-user=root \
   kubespray/cluster.yml
 #ansible-playbook -i resource/kubespray/inventory.ini --become --become-user=root cluster.yml
 
@@ -59,7 +63,7 @@ sudo cp -Rf /root/.kube /home/topzone/
 sudo chown -Rf topzone:topzone /home/topzone/.kube
 sudo cp -Rf /root/.kube/config /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
 
-sed -ie "s|127.0.0.1|192.168.86.100|g" /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
+sed -ie "s|127.0.0.1|192.168.0.61|g" /vagrant/.ssh/kubeconfig_tz-k8s-vagrant
 
 echo "## [ install kubectl ] ######################################################"
 sudo apt-get update && sudo apt-get install -y apt-transport-https gnupg2 curl
