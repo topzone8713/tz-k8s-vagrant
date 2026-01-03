@@ -155,6 +155,20 @@ to project root directory.
         bash /vagrant/scripts/local/kubespray_add.sh
 ``` 
 
+## -. NFS Server Setup
+```
+    -. NFS server is automatically installed on all VMs via scripts/local/base.sh
+       - NFS server runs on kube-master (192.168.86.100)
+       - Shared directory: /srv/nfs
+       - Network: 192.168.86.0/24
+    
+    -. Kubernetes NFS integration
+       - NFS provisioner is installed via master_01.sh
+       - StorageClass 'nfs-client' is created for dynamic provisioning
+       - Pods can use PVCs with storageClassName: nfs-client
+       - PVs are automatically created on kube-master's /srv/nfs directory
+```
+
 ## -. Install other applications (k8s_addtion.sh)
 ``` 
     -. Set temporary domains
@@ -194,6 +208,153 @@ to project root directory.
     mkdir -p ~/.kube
     cp tz-k8s-vagrant/config ~/.kube/config
     kubectl get nodes
+```
+
+## * Access Kubernetes from host (my-ubuntu)
+### Use access-k8s-from-host.sh to access k8s cluster from my-ubuntu via SSH tunnel
+```
+    -. Prerequisites
+       - Vagrant VMs (kube-master, kube-node-1, kube-node-2) are running
+       - kubectl is installed on my-ubuntu
+       - You are on my-ubuntu machine
+    
+    -. Usage
+       cd ~/workspaces/tz-k8s-vagrant
+       
+       # Start SSH tunnel and copy kubeconfig
+       ./access-k8s-from-host.sh start
+       
+       # Check tunnel status
+       ./access-k8s-from-host.sh status
+       
+       # Test connection
+       ./access-k8s-from-host.sh test
+       
+       # Stop tunnel
+       ./access-k8s-from-host.sh stop
+       
+       # Restart tunnel
+       ./access-k8s-from-host.sh restart
+    
+    -. What it does
+       - Creates SSH tunnel: my-ubuntu -> kube-master (127.0.0.1:6443)
+       - Copies kubeconfig from kube-master to ~/.kube/config
+       - Updates kubeconfig server address to use localhost:6443
+       - Allows kubectl commands from my-ubuntu
+```
+
+## * Access Kubernetes from MacBook (or local PC)
+### Use access-k8s-from-mypc.sh to access k8s cluster from MacBook via my-ubuntu
+```
+    -. Prerequisites
+       - my-ubuntu has access-k8s-from-host.sh script
+       - SSH access to my-ubuntu is configured (ssh my-ubuntu works)
+       - kubectl is installed on MacBook (brew install kubectl)
+       - You are on MacBook or local PC
+    
+    -. Usage
+       cd ~/workspaces/tz-k8s-vagrant  # or project directory
+       
+       # Start double SSH tunnel and copy kubeconfig
+       ./access-k8s-from-mypc.sh start
+       
+       # Check tunnel status
+       ./access-k8s-from-mypc.sh status
+       
+       # Test connection
+       ./access-k8s-from-mypc.sh test
+       
+       # Stop tunnel
+       ./access-k8s-from-mypc.sh stop
+       
+       # Restart tunnel
+       ./access-k8s-from-mypc.sh restart
+    
+    -. What it does
+       - Creates double SSH tunnel: MacBook -> my-ubuntu -> kube-master
+       - Copies kubeconfig from my-ubuntu to ~/.kube/my-ubuntu.config
+       - Updates kubeconfig server address to use localhost:6443
+       - Sets KUBECONFIG environment variable
+       - Allows kubectl commands from MacBook
+    
+    -. Using kubectl
+       # Set KUBECONFIG environment variable
+       export KUBECONFIG="$HOME/.kube/my-ubuntu.config"
+       
+       # Use kubectl commands
+       kubectl get nodes
+       kubectl get pods --all-namespaces
+       kubectl cluster-info
+    
+    -. Network Architecture
+       MacBook (localhost:6443) 
+         -> SSH Tunnel 
+         -> my-ubuntu (127.0.0.1:6443) 
+         -> SSH Tunnel 
+         -> kube-master (127.0.0.1:6443)
+```
+
+## * Access Kubernetes Ingress from MacBook (or local PC)
+### Use access-ingress-from-mypc.sh to access Kubernetes services/ingresses via kubectl port-forward
+```
+    -. Prerequisites
+       - access-k8s-from-mypc.sh must be run first (kubectl access must be configured)
+       - kubectl is installed on MacBook (brew install kubectl)
+       - You are on MacBook or local PC
+    
+    -. Usage
+       cd ~/workspaces/tz-k8s-vagrant  # or project directory
+       
+       # List available services and ingresses
+       bash access-ingress-from-mypc.sh list
+       bash access-ingress-from-mypc.sh list kube-system  # List in specific namespace
+       
+       # Start port-forward for default service (ingress-nginx-controller)
+       bash access-ingress-from-mypc.sh start
+       
+       # Start port-forward for specific service
+       bash access-ingress-from-mypc.sh start my-service
+       bash access-ingress-from-mypc.sh start my-service production  # With namespace
+       
+       # Check port-forward status
+       bash access-ingress-from-mypc.sh status
+       
+       # Stop port-forward
+       bash access-ingress-from-mypc.sh stop my-service production
+       
+       # Restart port-forward
+       bash access-ingress-from-mypc.sh restart my-service production
+       
+       # Show help
+       bash access-ingress-from-mypc.sh help
+    
+    -. What it does
+       - Uses kubectl port-forward to forward service ports to localhost
+       - Default: forwards ingress-nginx-controller service (HTTP:8080, HTTPS:8443)
+       - **Important**: Forwarding ingress-nginx-controller allows access to ALL ingresses
+       - All ingress domains can be accessed through the same port (8080/8443)
+       - Automatically detects service ports (HTTP/HTTPS)
+    
+    -. Important Notes
+       - Only one port-forward is needed: ingress-nginx-controller
+       - Once ingress-nginx-controller is forwarded, all ingress domains are accessible
+       - Individual service port-forwarding is not necessary (and may cause conflicts)
+       - Just add desired domains to /etc/hosts and access them via the forwarded port
+    
+    -. Example: Access Ingress
+       # 1. Start port-forward for ingress-nginx-controller (default, accesses all ingresses)
+       bash access-ingress-from-mypc.sh start
+       # or explicitly:
+       bash access-ingress-from-mypc.sh start ingress-nginx-controller default
+       
+       # 2. Add domains to /etc/hosts (add all domains you want to access)
+       sudo sh -c 'echo "127.0.0.1  jenkins.default.topzone-k8s.drillquiz.com" >> /etc/hosts'
+       sudo sh -c 'echo "127.0.0.1  test.default.topzone-k8s.drillquiz.com" >> /etc/hosts'
+       
+       # 3. Access in browser (all ingresses accessible via same port)
+       http://jenkins.default.topzone-k8s.drillquiz.com:8080
+       http://test.default.topzone-k8s.drillquiz.com:8080
+       https://jenkins.default.topzone-k8s.drillquiz.com:8443
 ```
 
 
