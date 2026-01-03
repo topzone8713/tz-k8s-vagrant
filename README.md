@@ -348,13 +348,13 @@ to project root directory.
        bash access-ingress-from-mypc.sh start ingress-nginx-controller default
        
        # 2. Add domains to /etc/hosts (add all domains you want to access)
-       sudo sh -c 'echo "127.0.0.1  jenkins.default.topzone-k8s.drillquiz.com" >> /etc/hosts'
-       sudo sh -c 'echo "127.0.0.1  test.default.topzone-k8s.drillquiz.com" >> /etc/hosts'
+       sudo sh -c 'echo "127.0.0.1  jenkins.default.topzone-k8s.topzone.me" >> /etc/hosts'
+       sudo sh -c 'echo "127.0.0.1  test.default.topzone-k8s.topzone.me" >> /etc/hosts'
        
        # 3. Access in browser (all ingresses accessible via same port)
-       http://jenkins.default.topzone-k8s.drillquiz.com:8080
-       http://test.default.topzone-k8s.drillquiz.com:8080
-       https://jenkins.default.topzone-k8s.drillquiz.com:8443
+       http://jenkins.default.topzone-k8s.topzone.me:8080
+       http://test.default.topzone-k8s.topzone.me:8080
+       https://jenkins.default.topzone-k8s.topzone.me:8443
 ```
 
 

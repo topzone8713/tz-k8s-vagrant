@@ -1,0 +1,34 @@
+## MinIO Helm Chart Values (MinIO 공식 Helm Chart)
+## 
+## 기본 values를 가져오려면 다음 명령어를 실행하세요:
+##   helm repo add minio https://charts.min.io/
+##   helm repo update
+##   helm show values minio/minio --version 5.4.0 > values.yaml
+##
+## 실제 적용된 설정을 확인하려면:
+##   helm get values minio -n devops
+
+## MinIO Authentication parameters
+## Root user access key
+accessKey: "k8s_project"
+
+## Root user secret key
+secretKey: "basic_password"
+
+## MinIO Replica configuration
+## StatefulSet replicas (분산 모드)
+replicas: 3
+
+## MinIO Persistence configuration
+persistence:
+  ## Storage class for PersistentVolumeClaim
+  ## nfs-client 스토리지 클래스 사용
+  storageClass: "nfs-client"
+  ## Storage size per pod
+  size: 5Gi
+
+## MinIO Resource requests and limits
+resources:
+  requests:
+    ## Memory request
+    memory: 1Gi
