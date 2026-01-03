@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
       vb.memory = 5096
       vb.cpus = 3
     end
-    master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.61"
+    master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.100"
     master.vm.hostname = "kube-master"
     master.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/master.sh"), :args => master.vm.hostname
   end

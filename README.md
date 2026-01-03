@@ -20,7 +20,7 @@ to project root directory.
 ## -. Prep a build environment
 ```
     -. checkout codes
-       git clone https://github.com/doogee323/tz-k8s-vagrant.git
+       git clone https://github.com/topzone8713/tz-k8s-vagrant.git
        cd tz-k8s-vagrant
 
     -. copy resources like this,
@@ -33,14 +33,14 @@ to project root directory.
     
     ex)
         project=topzone-k8s
-        domain=new-nation.church     # temporary local domain
+        domain=topzone.me     # temporary local domain
         argocd_id=admin
         admin_password=DevOps!323
         basic_password=Soqn!323
-        github_id=doogee323       # your github_id
+        github_id=topzone8713       # your github_id
         github_token=               # your github token
         docker_url=index.docker.io
-        dockerhub_id=doogee323    # your dockerhub_id
+        dockerhub_id=topzone8713    # your dockerhub_id
         dockerhub_password=         # your dockerhub_password
         vault=xxxx                  
     
@@ -50,21 +50,21 @@ to project root directory.
         {
             "auths": {
                 "https://index.docker.io/v1/": {
-                    "username":"doogee323",             # your dockerhub_id
+                    "username":"topzone8713",             # your dockerhub_id
                     "password":"xxxx",                  # your dockerhub_password
-                    "email":"doogee323@gmail.com",      # your email
+                    "email":"topzone8713@gmail.com",      # your email
                     "auth":"xxxxxx"                     # base64 encoding
                 }
             },
-            "harbor.harbor.topzone-k8s.new-nation.church": {
+            "harbor.harbor.topzone-k8s.topzone.me": {
                 "username":"admin",
                 "password":"Harbor12345",
-                "email":"doogee323@gmail.com",          # your email
+                "email":"topzone8713@gmail.com",          # your email
                 "auth":"YWRtaW46SGFyYm9yMTIzNDU="
             }
         }
         
-       echo -n 'doogee323:topzone!323' | base64
+       echo -n 'topzone8713:topzone!323' | base64
         
     -. DHCP IP address check
        Each VMs are supposed to get IP from DHCP server as public_ip in your network area.
@@ -74,7 +74,7 @@ to project root directory.
        
           config.vm.define "kube-master" do |master|
             master.vm.box = IMAGE_NAME
-            master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.61"        => This should be changed to your network
+            master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.100"        => This should be changed to your network
             master.vm.hostname = "kube-master"
             master.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/master.sh"), :args => master.vm.hostname
           end
@@ -164,18 +164,18 @@ to project root directory.
         ex) 192.168.86.200 is my ingress-nginx's EXTERNAL-IP
             kubectl get svc -n default | grep ingress-nginx-controller        
         
-            192.168.86.200   test.default.topzone-k8s.new-nation.church consul.default.topzone-k8s.new-nation.church vault.default.topzone-k8s.new-nation.church
-            192.168.86.200   consul-server.default.topzone-k8s.new-nation.church argocd.default.topzone-k8s.new-nation.church
-            192.168.86.200   jenkins.default.topzone-k8s.new-nation.church harbor.harbor.topzone-k8s.new-nation.church
-            192.168.86.200   grafana.default.topzone-k8s.new-nation.church prometheus.default.topzone-k8s.new-nation.church alertmanager.default.topzone-k8s.new-nation.church
-            192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.new-nation.church
+            192.168.86.200   test.default.topzone-k8s.topzone.me consul.default.topzone-k8s.topzone.me vault.default.topzone-k8s.topzone.me
+            192.168.86.200   consul-server.default.topzone-k8s.topzone.me argocd.default.topzone-k8s.topzone.me
+            192.168.86.200   jenkins.default.topzone-k8s.topzone.me harbor.harbor.topzone-k8s.topzone.me
+            192.168.86.200   grafana.default.topzone-k8s.topzone.me prometheus.default.topzone-k8s.topzone.me alertmanager.default.topzone-k8s.topzone.me
+            192.168.86.200   vagrant-demo-app.devops-dev.topzone-k8s.topzone.me
 
     -. After installing k8s on all machines,
         bash /vagrant/scripts/k8s_addtion.sh
 ``` 
 
 ## -. Build Demo app
-### cf) demo app: https://github.com/doogee323/tz-demo-app
+### cf) demo app: https://github.com/topzone8713/tz-demo-app
 ```
     - build a K8S in local topzone VMs
         topzone -> VMs -> k8s -> monitoring -> jenkins -> demo-app build

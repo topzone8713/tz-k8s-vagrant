@@ -5,14 +5,14 @@ metadata:
   annotations:
 #    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      X-Forwarded-Host: nexus.k8s_project.new-nation.church;
+      X-Forwarded-Host: nexus.k8s_project.topzone.me;
 spec:
 #  tls:
 #    - hosts:
-#        - https-wordpress.doogee323
+#        - https-wordpress.topzone8713
 #      secretName: default-token-nv5hl
   rules:
-#  - host: https-wordpress.doogee323
+#  - host: https-wordpress.topzone8713
 #  - http:
 #      paths:
 #      - path: /

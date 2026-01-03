@@ -545,7 +545,7 @@ exit 0
 export VAULT_ADDR=http://vault.vault.svc.cluster.local:8200
 
 CLUSTER_NAME=topzone-k8s
-k8s_domain=default.topzone-k8s.new-nation.church
+k8s_domain=default.topzone-k8s.topzone.me
 export VAULT_ADDR=http://vault.default.${CLUSTER_NAME}.${k8s_domain}
 login_out=$(vault login ${VAULT_TOKEN})
 

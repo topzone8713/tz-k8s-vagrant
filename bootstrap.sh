@@ -186,7 +186,7 @@ cat info
 exit 0
 
 # install in docker
-export docker_user="doogee323"
+export docker_user="topzone8713"
 bash /vagrant/tz-local/docker/init2.sh
 
 # remove all resources

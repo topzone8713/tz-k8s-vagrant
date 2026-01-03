@@ -1,8 +1,8 @@
 {
   "auths": {
-      "http://docker.topzone-k8s.new-nation.church/v1/": {
+      "http://docker.topzone-k8s.topzone.me/v1/": {
           "auth": "admin",
-          "email": "doogee323@gmail.com"
+          "email": "topzone8713@gmail.com"
       }
   }
 }

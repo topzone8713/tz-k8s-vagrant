@@ -95,7 +95,7 @@ FLUSH PRIVILEGES;
 #mysql -h devops-prod.cluster-cc6byzimkqxb.ap-northeast-2.rds.amazonaws.com -P 3306 --user=root -p'w14YE*6u+kx~0b[eQikOKwEjyt1%'
 #mysql -h devops-prod.cluster-cc6byzimkqxb.ap-northeast-2.rds.amazonaws.com -P 3306 --protocol tcp --user=topzone -pxxxxx
 
-#ssh -i ~/.ssh/doogee323 ubuntu@3.35.207.182 -L 3306:devops-prod.cluster-cc6byzimkqxb.ap-northeast-2.rds.amazonaws.com:3306
+#ssh -i ~/.ssh/topzone8713 ubuntu@3.35.207.182 -L 3306:devops-prod.cluster-cc6byzimkqxb.ap-northeast-2.rds.amazonaws.com:3306
 #mysql -h localhost -P 3306 --protocol tcp --user=topzone -p'xxxxx'
 
 # 5. dump topzone mysql
@@ -115,7 +115,7 @@ kubectl cp monitoring/bastion:Service.sql Service.sql
 
 #MYSQL_HOST=topzone2-prod-private-2.c01spz81v11d.ap-northeast-2.rds.amazonaws.com
 #MYSQL_HOST=devops-mysql.devops-dev.svc.cluster.local
-MYSQL_HOST=mysql.devops.new-nation.church
+MYSQL_HOST=mysql.devops.topzone.me
 MYSQL_PORT=3306
 MYSQL_PASSWORD='xxxxx'
 mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} --protocol tcp --user=topzone -p${MYSQL_PASSWORD}
@@ -173,7 +173,7 @@ mysqldump --column-statistics=0 -h ${MYSQL_HOST} -P ${MYSQL_PORT} --user=root -p
 mysqldump --column-statistics=0 -h ${MYSQL_HOST} -P ${MYSQL_PORT} --user=root -p${MYSQL_ROOT_PASSWORD} --add-drop-table Service > Service.sql
 
 MYSQL_HOST=devops-prod.cluster-cc6byzimkqxb.ap-northeast-2.rds.amazonaws.com
-MYSQL_HOST=mysql.devops.new-nation.church
+MYSQL_HOST=mysql.devops.topzone.me
 MYSQL_PORT=3306
 MYSQL_USER=topzone
 MYSQL_PASSWORD='xxx'

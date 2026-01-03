@@ -86,9 +86,9 @@ items:
           - name: ENFORCE_HTTPS
             value: "false"
           - name: NEXUS_DOCKER_HOST
-            value: "doogee323_docker.com"
+            value: "topzone8713_docker.com"
           - name: NEXUS_HTTP_HOST
-            value: "doogee323"
+            value: "topzone8713"
           - name: UPSTREAM_DOCKER_PORT
             value: "5003"
           - name: UPSTREAM_HOST

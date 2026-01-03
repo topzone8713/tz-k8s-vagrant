@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 data:
   context: |
-    argocdUrl: "https://argocd.topzone-k8s.new-nation.church"
+    argocdUrl: "https://argocd.topzone-k8s.topzone.me"
   defaultTriggers: |
     - on-sync-status-unknown
   service.slack: |

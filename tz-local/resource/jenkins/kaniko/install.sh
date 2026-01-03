@@ -12,30 +12,30 @@ complete -C /usr/local/bin/vault vault
 #vault -h
 
 kubectl get secret harbor-release-ingress -n harbor -o jsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
-echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.new-nation.church -u admin --password-stdin
-docker build -t harbor.harbor.topzone-k8s.new-nation.church/topzone-k8s/kaniko-executor:v1.7.0-debug .
-docker push harbor.harbor.topzone-k8s.new-nation.church/topzone-k8s/kaniko-executor:v1.7.0-debug
+echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
+docker build -t harbor.harbor.topzone-k8s.topzone.me/topzone-k8s/kaniko-executor:v1.7.0-debug .
+docker push harbor.harbor.topzone-k8s.topzone.me/topzone-k8s/kaniko-executor:v1.7.0-debug
 
 /kaniko/executor --dockerfile=Dockerfile --context=/root/shared-data/tz-demo-app --build-arg NODE_ENV=development \
---destination=harbor.harbor.topzone-k8s.new-nation.church/topzone-k8s/tz-demo-app:13 \
+--destination=harbor.harbor.topzone-k8s.topzone.me/topzone-k8s/tz-demo-app:13 \
 --use-new-run --cleanup --force --skip-tls-verify
 
 
 /kaniko/executor --dockerfile=Dockerfile --context=/root/shared-data/tz-demo-app --build-arg NODE_ENV=development \
---destination=harbor.harbor.topzone-k8s.new-nation.church/topzone-k8s/kaniko-executor:v1.7.0-debug \
+--destination=harbor.harbor.topzone-k8s.topzone.me/topzone-k8s/kaniko-executor:v1.7.0-debug \
 --use-new-run --cleanup --force --skip-tls-verify
 
 
 
 cat <<EOF > /etc/docker/daemon.json
 {
-  "insecure-registries":["harbor.harbor.topzone-k8s.new-nation.church"]
+  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
 }
 EOF
 
 systemctl restart docker
 
-echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.new-nation.church -u admin --password-stdin
+echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.topzone.me -u admin --password-stdin
 
 #kubectl delete secret harbor-registry-secret -n jenkins
 #kubectl create secret generic harbor-registry-secret \
@@ -44,16 +44,16 @@ echo "Harbor12345" | docker login harbor.harbor.topzone-k8s.new-nation.church -u
 
 
 kubectl create secret docker-registry regsecret -n jenkins \
-    --docker-server=harbor.harbor.topzone-k8s.new-nation.church \
+    --docker-server=harbor.harbor.topzone-k8s.topzone.me \
     --docker-username=admin \
     --docker-password=Harbor12345 \
-    --docker-email=doogee323@gmail.com
+    --docker-email=topzone8713@gmail.com
 
 exit 0
 
-#docker login -u doogee323
-docker build -t doogee323/kaniko-executor:v1.7.0-debug .
-#docker push doogee323/kaniko-executor:v1.7.0-debug
+#docker login -u topzone8713
+docker build -t topzone8713/kaniko-executor:v1.7.0-debug .
+#docker push topzone8713/kaniko-executor:v1.7.0-debug
 
 kubectl delete -f ubuntu.yaml -n jenkins
 kubectl apply -f ubuntu.yaml -n jenkins
@@ -66,7 +66,7 @@ apt-get update && \
 
 cat <<EOF > /etc/docker/daemon.json
 {
-  "insecure-registries":["harbor.harbor.topzone-k8s.new-nation.church"]
+  "insecure-registries":["harbor.harbor.topzone-k8s.topzone.me"]
 }
 EOF
 

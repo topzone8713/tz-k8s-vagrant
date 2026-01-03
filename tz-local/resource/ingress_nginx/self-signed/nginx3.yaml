@@ -7,7 +7,7 @@ metadata:
     cert-manager.io/cluster-issuer: "selfsigned-issuer"
 spec:
   rules:
-    - host: test.new-nation.church
+    - host: test.topzone.me
       http:
         paths:
           - path: /
@@ -17,7 +17,7 @@ spec:
                 name: nginx
                 port:
                   number: 80
-    - host: test.topzone-k8s.new-nation.church
+    - host: test.topzone-k8s.topzone.me
       http:
         paths:
           - path: /
@@ -27,7 +27,7 @@ spec:
                 name: nginx
                 port:
                   number: 80
-    - host: test.default.topzone-k8s.new-nation.church
+    - host: test.default.topzone-k8s.topzone.me
       http:
         paths:
           - path: /
@@ -39,7 +39,7 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - test.new-nation.church
-        - test.topzone-k8s.new-nation.church
-        - test.default.topzone-k8s.new-nation.church
+        - test.topzone.me
+        - test.topzone-k8s.topzone.me
+        - test.default.topzone-k8s.topzone.me
       secretName: ingress-test-tls

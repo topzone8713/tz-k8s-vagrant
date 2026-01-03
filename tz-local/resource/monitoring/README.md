@@ -59,7 +59,7 @@ tz-eks-main/tz-local/resource/monitoring/prometheus/alertmanager.values
     - to: doohee.hong@tz.com
   - name: 'prod_mail'
     email_configs:
-    - to: doogee323@gmail.com
+    - to: topzone8713@gmail.com
 ```
 
 ## 룰 적용 (DevOps가 수행)

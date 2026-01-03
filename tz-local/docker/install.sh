@@ -2,9 +2,9 @@
 
 cd tz-local/docker
 
-export docker_user="doogee323"
+export docker_user="topzone8713"
 export k8s_project=topzone-k8s
-export k8s_domain=new-nation.church
+export k8s_domain=topzone.me
 export tz_project=devops-utils2
 
 dockerhub_id=${docker_user}
