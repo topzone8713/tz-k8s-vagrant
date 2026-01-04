@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "kube-node-#{i}" do |node|
         node.vm.box = IMAGE_NAME
         node.vm.provider "virtualbox" do |vb|
-          vb.memory = 3072
+          vb.memory = 4096
           vb.cpus = 2
         end
         node.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.10#{i}"

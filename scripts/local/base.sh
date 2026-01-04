@@ -42,6 +42,7 @@ EOF
 sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 #sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+# Swap 파일 생성 (2GB) - 메모리 부족 시 사용if [ ! -f /swapfile ]; then  echo "Swap 파일 생성 중..."  sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048  sudo chmod 600 /swapfile  sudo mkswap /swapfile  sudo swapon /swapfile  # /etc/fstab에 추가 (위에서 삭제했으므로 다시 추가)  if ! grep -q "/swapfile" /etc/fstab; then    echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab  fi  echo "Swap 설정 완료:"  free -hfi
 sudo apt-get update
 sudo apt install -y python3 python3-pip net-tools git runc
 
