@@ -75,5 +75,15 @@ echo "$> sudo su"
 echo "$> cd /vagrant"
 echo "####################################################################################"
 
+echo ""
+echo "####################################################################################"
+echo "Installing monitoring (Prometheus Operator)..."
+echo "####################################################################################"
+bash /vagrant/tz-local/resource/monitoring/install.sh
+bash /vagrant/tz-local/resource/monitoring/rules/update.sh
+echo "####################################################################################"
+echo "Monitoring installation completed!"
+echo "####################################################################################"
+
 exit 0
 

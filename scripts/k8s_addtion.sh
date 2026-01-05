@@ -10,8 +10,9 @@ bash /vagrant/tz-local/resource/vault/vault-injection/update.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install.sh
 bash /vagrant/tz-local/resource/vault/external-secrets/install_vault.sh
 
-bash /vagrant/tz-local/resource/monitoring/install.sh
-bash /vagrant/tz-local/resource/monitoring/rules/update.sh
+# Monitoring은 master_01.sh에서 설치되므로 여기서는 제거됨
+# bash /vagrant/tz-local/resource/monitoring/install.sh
+# bash /vagrant/tz-local/resource/monitoring/rules/update.sh
 
 bash /vagrant/tz-local/resource/harbor/install.sh
 
