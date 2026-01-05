@@ -2,6 +2,10 @@
 
 #set -x
 
+# Locale 설정 (Ansible locale 에러 해결)
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
 export ANSIBLE_CONFIG=/root/ansible.cfg
 
 if [ -d /vagrant ]; then

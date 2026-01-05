@@ -72,8 +72,13 @@ elif [[ "$1" == "docker" ]]; then
 fi
 
 if [ ! -f info ]; then
-  echo -n "Do you want to make a jenkins on k8s in Vagrant Master / Slave? (M/S) "
-  read A_ENV
+  # 환경변수에서 A_ENV 확인, 없으면 기본값 "M" 사용
+  if [ -z "${A_ENV}" ]; then
+    A_ENV="M"
+    echo "Using default A_ENV=M (Master)"
+  else
+    echo "Using A_ENV from environment: ${A_ENV}"
+  fi
 else
   A_ENV=`cat Vagrantfile | grep 'kube-master'`
   if [[ "${A_ENV}" != "" ]]; then
