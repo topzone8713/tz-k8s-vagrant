@@ -2,21 +2,29 @@
 
 ## 개요
 
-이 문서는 my-ubuntu 서버가 재시작될 때 Vagrant VM을 자동으로 시작하고 SSH 터널을 설정하는 방법을 설명합니다.
+이 문서는 서버가 재시작될 때 Vagrant VM을 자동으로 시작하고 SSH 터널을 설정하는 방법을 설명합니다.
+
+**지원 플랫폼:**
+- **my-ubuntu**: Linux (systemd 사용)
+- **my-mac**: macOS (launchd 사용)
 
 ## 목차
 
 1. [개요](#개요)
-2. [자동 시작 설정](#자동-시작-설정)
+2. [플랫폼별 설정](#플랫폼별-설정)
+   - [my-ubuntu (Linux/systemd)](#my-ubuntu-linuxsystemd)
+   - [my-mac (macOS/launchd)](#my-mac-macoslaunchd)
 3. [서비스 동작 원리](#서비스-동작-원리)
 4. [설정 확인 및 테스트](#설정-확인-및-테스트)
 5. [문제 해결](#문제-해결)
 
 ---
 
-## 자동 시작 설정
+## 플랫폼별 설정
 
-### 1단계: systemd 서비스 파일 복사
+### my-ubuntu (Linux/systemd)
+
+#### 1단계: systemd 서비스 파일 복사
 
 **my-ubuntu 서버에서 실행:**
 
@@ -30,14 +38,14 @@ cp ~/workspaces/tz-drillquiz/provisioning/vagrant-reload.service ~/.config/syste
 - 원본: `~/workspaces/tz-drillquiz/provisioning/vagrant-reload.service`
 - 복사 위치: `~/.config/systemd/user/vagrant-reload.service`
 
-### 2단계: systemd daemon reload
+#### 2단계: systemd daemon reload
 
 ```bash
 # systemd user 서비스 데몬 리로드
 systemctl --user daemon-reload
 ```
 
-### 3단계: 서비스 활성화
+#### 3단계: 서비스 활성화
 
 ```bash
 # 서비스 활성화 (재시작 시 자동 실행)
@@ -50,7 +58,7 @@ systemctl --user is-enabled vagrant-reload.service
 # 출력: enabled
 ```
 
-### 4단계: linger 활성화
+#### 4단계: linger 활성화
 
 **중요**: 사용자가 로그인하지 않아도 서비스가 실행되도록 linger를 활성화해야 합니다.
 
@@ -65,7 +73,7 @@ loginctl show-user $USER | grep Linger
 # 출력: Linger=yes
 ```
 
-### 5단계: 서비스 테스트
+#### 5단계: 서비스 테스트
 
 **서비스 수동 시작 (테스트):**
 ```bash
@@ -85,6 +93,101 @@ journalctl --user -u vagrant-reload.service -f
 # 최근 로그 확인
 journalctl --user -u vagrant-reload.service -n 50
 ```
+
+---
+
+### my-mac (macOS/launchd)
+
+#### 1단계: plist 파일 준비
+
+**my-mac에서 실행:**
+
+먼저 plist 파일의 사용자 경로를 수정해야 합니다:
+
+```bash
+# plist 파일 복사
+cp ~/workspaces/tz-drillquiz/provisioning/com.vagrant.autostart.plist ~/Library/LaunchAgents/
+
+# 사용자 경로로 수정 (필요시)
+vi ~/Library/LaunchAgents/com.vagrant.autostart.plist
+```
+
+**수정할 내용:**
+- `ProgramArguments` 배열의 스크립트 경로를 실제 경로로 변경
+- `EnvironmentVariables`의 `WORKSPACE_BASE` 경로를 실제 경로로 변경
+- `StandardOutPath`와 `StandardErrorPath`의 로그 파일 경로를 실제 경로로 변경
+
+**예시 (사용자: dooheehong):**
+```xml
+<key>ProgramArguments</key>
+<array>
+    <string>/bin/bash</string>
+    <string>/Users/dooheehong/workspaces/tz-drillquiz/provisioning/auto-reload-and-tunnel.sh</string>
+</array>
+
+<key>EnvironmentVariables</key>
+<dict>
+    <key>WORKSPACE_BASE</key>
+    <string>/Users/dooheehong/workspaces</string>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+</dict>
+
+<key>StandardOutPath</key>
+<string>/Users/dooheehong/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log</string>
+
+<key>StandardErrorPath</key>
+<string>/Users/dooheehong/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.error.log</string>
+```
+
+#### 2단계: 로그 디렉토리 생성
+
+```bash
+# 로그 디렉토리 생성
+mkdir -p ~/workspaces/tz-drillquiz/provisioning/logs
+```
+
+#### 3단계: launchd에 서비스 로드
+
+```bash
+# 서비스 로드 (재시작 시 자동 실행)
+launchctl load ~/Library/LaunchAgents/com.vagrant.autostart.plist
+```
+
+**로드 확인:**
+```bash
+launchctl list | grep com.vagrant.autostart
+```
+
+#### 4단계: 서비스 시작 (테스트)
+
+```bash
+# 서비스 시작 (즉시 실행)
+launchctl start com.vagrant.autostart
+```
+
+**상태 확인:**
+```bash
+# 서비스 상태 확인
+launchctl list | grep com.vagrant.autostart
+
+# 로그 확인
+tail -f ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log
+tail -f ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.error.log
+```
+
+#### 5단계: 자동 시작 확인
+
+**macOS 재시작 후 자동 실행 확인:**
+```bash
+# 재시작 후 서비스가 자동으로 실행되었는지 확인
+launchctl list | grep com.vagrant.autostart
+
+# 로그 확인
+tail -n 100 ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log
+```
+
+**참고**: macOS는 사용자가 로그인한 후에 LaunchAgents가 실행됩니다. 로그인 없이 실행하려면 LaunchDaemons를 사용해야 하지만, 이는 root 권한이 필요합니다.
 
 ---
 
@@ -349,7 +452,9 @@ systemctl --user status vagrant-reload.service
 
 ## 서비스 관리 명령어
 
-### 서비스 시작/중지
+### my-ubuntu (Linux/systemd)
+
+#### 서비스 시작/중지
 
 ```bash
 # 서비스 시작 (수동)
@@ -362,7 +467,7 @@ systemctl --user stop vagrant-reload.service
 systemctl --user restart vagrant-reload.service
 ```
 
-### 서비스 활성화/비활성화
+#### 서비스 활성화/비활성화
 
 ```bash
 # 서비스 활성화 (재시작 시 자동 실행)
@@ -372,7 +477,7 @@ systemctl --user enable vagrant-reload.service
 systemctl --user disable vagrant-reload.service
 ```
 
-### 서비스 상태 확인
+#### 서비스 상태 확인
 
 ```bash
 # 서비스 상태 확인
@@ -385,7 +490,7 @@ systemctl --user is-enabled vagrant-reload.service
 systemctl --user is-active vagrant-reload.service
 ```
 
-### 로그 확인
+#### 로그 확인
 
 ```bash
 # 실시간 로그
@@ -399,6 +504,53 @@ journalctl --user -u vagrant-reload.service --since "boot"
 
 # 특정 시간 이후 로그
 journalctl --user -u vagrant-reload.service --since "2026-01-23 00:00:00"
+```
+
+---
+
+### my-mac (macOS/launchd)
+
+#### 서비스 시작/중지
+
+```bash
+# 서비스 시작 (즉시 실행)
+launchctl start com.vagrant.autostart
+
+# 서비스 중지 (실행 중인 경우)
+launchctl stop com.vagrant.autostart
+```
+
+#### 서비스 로드/언로드
+
+```bash
+# 서비스 로드 (재시작 시 자동 실행)
+launchctl load ~/Library/LaunchAgents/com.vagrant.autostart.plist
+
+# 서비스 언로드 (재시작 시 자동 실행 안 함)
+launchctl unload ~/Library/LaunchAgents/com.vagrant.autostart.plist
+```
+
+#### 서비스 상태 확인
+
+```bash
+# 서비스 목록 확인
+launchctl list | grep com.vagrant.autostart
+
+# 서비스 상세 정보 확인
+launchctl list com.vagrant.autostart
+```
+
+#### 로그 확인
+
+```bash
+# 표준 출력 로그 (실시간)
+tail -f ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log
+
+# 에러 로그 (실시간)
+tail -f ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.error.log
+
+# 최근 로그 확인
+tail -n 100 ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log
 ```
 
 ---
@@ -462,14 +614,26 @@ systemctl --user daemon-reload
 
 ## 관련 파일
 
+### my-ubuntu (Linux/systemd)
 - **서비스 파일**: `~/workspaces/tz-drillquiz/provisioning/vagrant-reload.service`
+- **서비스 설치 위치**: `~/.config/systemd/user/vagrant-reload.service`
+
+### my-mac (macOS/launchd)
+- **서비스 파일**: `~/workspaces/tz-drillquiz/provisioning/com.vagrant.autostart.plist`
+- **서비스 설치 위치**: `~/Library/LaunchAgents/com.vagrant.autostart.plist`
+
+### 공통 파일
 - **실행 스크립트**: `~/workspaces/tz-drillquiz/provisioning/auto-reload-and-tunnel.sh`
 - **SSH 터널 스크립트**: `~/workspaces/tz-k8s-vagrant/access-k8s-from-host.sh`
-- **서비스 설치 위치**: `~/.config/systemd/user/vagrant-reload.service`
+- **로그 파일 (macOS)**: 
+  - `~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log`
+  - `~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.error.log`
 
 ---
 
 ## 빠른 설정 요약
+
+### my-ubuntu (Linux/systemd)
 
 ```bash
 # 1. 서비스 파일 복사
@@ -493,6 +657,27 @@ systemctl --user status vagrant-reload.service
 journalctl --user -u vagrant-reload.service -f
 ```
 
+### my-mac (macOS/launchd)
+
+```bash
+# 1. plist 파일 복사 및 경로 수정
+cp ~/workspaces/tz-drillquiz/provisioning/com.vagrant.autostart.plist ~/Library/LaunchAgents/
+vi ~/Library/LaunchAgents/com.vagrant.autostart.plist  # 경로 수정 필요
+
+# 2. 로그 디렉토리 생성
+mkdir -p ~/workspaces/tz-drillquiz/provisioning/logs
+
+# 3. 서비스 로드
+launchctl load ~/Library/LaunchAgents/com.vagrant.autostart.plist
+
+# 4. 서비스 시작 (테스트)
+launchctl start com.vagrant.autostart
+
+# 5. 상태 확인
+launchctl list | grep com.vagrant.autostart
+tail -f ~/workspaces/tz-drillquiz/provisioning/logs/vagrant-autostart.log
+```
+
 ---
 
 ## 작성일
@@ -501,6 +686,13 @@ journalctl --user -u vagrant-reload.service -f
 
 ## 참고 자료
 
+### Linux/systemd
 - [systemd user services](https://wiki.archlinux.org/title/Systemd/User)
-- [Vagrant documentation](https://www.vagrantup.com/docs)
 - [REINSTALL_PLAN.md](../provisioning/REINSTALL_PLAN.md) - 4.1.1 섹션 참조
+
+### macOS/launchd
+- [Apple Developer - Launch Agents and Daemons](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html)
+- [launchd.plist man page](https://www.manpagez.com/man/5/launchd.plist/)
+
+### 공통
+- [Vagrant documentation](https://www.vagrantup.com/docs)
