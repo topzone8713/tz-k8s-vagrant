@@ -71,17 +71,18 @@ elif [[ "$1" == "docker" ]]; then
 #  docker exec -it ${DOCKER_NAME} bash /vagrant/tz-local/docker/init2.sh
 fi
 
-if [ ! -f info ]; then
-  # 환경변수에서 A_ENV 확인, 없으면 기본값 "M" 사용
-  if [ -z "${A_ENV}" ]; then
-    A_ENV="M"
-    echo "Using default A_ENV=M (Master)"
-  else
-    echo "Using A_ENV from environment: ${A_ENV}"
-  fi
+# 환경변수에서 A_ENV 확인, 없으면 기본값 "M" 사용
+if [ -z "${A_ENV}" ]; then
+  A_ENV="M"
+  echo "Using default A_ENV=M (Master)"
 else
-  A_ENV=`cat Vagrantfile | grep 'kube-master'`
-  if [[ "${A_ENV}" != "" ]]; then
+  echo "Using A_ENV from environment: ${A_ENV}"
+fi
+
+# info 파일이 있고, 환경변수가 없으면 Vagrantfile에서 확인
+if [ -f info ] && [ -z "${A_ENV}" ]; then
+  A_ENV_CHECK=`cat Vagrantfile | grep 'kube-master'`
+  if [[ "${A_ENV_CHECK}" != "" ]]; then
     A_ENV="M"
   else
     A_ENV="S"
@@ -126,6 +127,20 @@ if [[ "${EVENT}" == "up" ]]; then
   echo "##################################################################################"
   sleep 5
   vagrant ${EVENT} --provider=virtualbox
+  # Static IP 설정 적용 (호스트-VM 통신을 위해)
+  if [ -f scripts/local/apply-static-ip-ubuntu.sh ]; then
+    echo "##################################################################################"
+    echo 'Applying static IP configuration for host-VM communication'
+    echo "##################################################################################"
+    sleep 5
+    bash scripts/local/apply-static-ip-ubuntu.sh
+  elif [ -f scripts/local/apply-static-ip.sh ]; then
+    echo "##################################################################################"
+    echo 'Applying static IP configuration for host-VM communication'
+    echo "##################################################################################"
+    sleep 5
+    bash scripts/local/apply-static-ip.sh
+  fi
   if [[ "${A_ENV}" == "M" ]]; then
     echo "##################################################################################"
     echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
