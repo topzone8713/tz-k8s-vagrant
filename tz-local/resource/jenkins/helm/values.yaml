@@ -475,6 +475,31 @@ controller:
             connect_timeout: 100
             read_timeout: 300
             max_requests_per_host_str: 32
+            templates:
+            - name: "default"
+              namespace: jenkins
+              labels: "jenkins-agent"
+              containerCap: 10
+              idleMinutes: 0
+              serviceAccount: "default"
+              nodeSelector: "kubernetes.io/os=linux"
+              containers:
+              - name: "jnlp"
+                image: "jenkins/inbound-agent:3355.v388858a_47b_33-3"
+                resourceRequestCpu: "512m"
+                resourceRequestMemory: "512Mi"
+                resourceLimitCpu: "512m"
+                resourceLimitMemory: "512Mi"
+                alwaysPullImage: false
+                runAsUser: 1000
+                runAsGroup: 1000
+                envVars:
+                - envVar:
+                    key: "JENKINS_URL"
+                    value: "http://jenkins.jenkins.svc.cluster.local:8080"
+                - envVar:
+                    key: "JENKINS_TUNNEL"
+                    value: "jenkins-agent:50000"
       welcome-message: |
         jenkins:
           systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
