@@ -762,10 +762,9 @@ agent:
   enabled: true
   defaultsProviderTemplate: ""
   # URL for connecting to the Jenkins contoller
-  # jenkinsUrl: '{{ default "" .Values.controller.ingress.hostName }}/{{ default "" .Values.controller.jenkinsUriPrefix }}'
-  jenkinsUrl: "jenkins.{{ .Values.namespaceOverride }}.svc.{{ .Values.clusterZone }}"
+  jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
   # connect to the specified host and port, instead of connecting directly to the Jenkins controller
-  jenkinsTunnel:
+  jenkinsTunnel: "jenkins-agent:50000"
   kubernetesConnectTimeout: 10
   kubernetesReadTimeout: 15
   maxRequestsPerHostStr: "32"
