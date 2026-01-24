@@ -461,6 +461,20 @@ controller:
     # - https://acme.org/jenkins.yaml
     # Remote URL:s for configuration files.
     configScripts:
+      kubernetes-cloud: |
+        unclassified:
+          location:
+            url: http://jenkins.jenkins.svc.cluster.local:8080/
+          kubernetes:
+            kubernetes_url: https://kubernetes.default
+            kubernetes_namespace: jenkins
+            jenkins_url: http://jenkins.jenkins.svc.cluster.local:8080
+            jenkins_tunnel: jenkins-agent:50000
+            pod_retention: Never
+            container_cap: 10
+            connect_timeout: 100
+            read_timeout: 300
+            max_requests_per_host_str: 32
       welcome-message: |
         jenkins:
           systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
