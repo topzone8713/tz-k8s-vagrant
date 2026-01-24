@@ -17,10 +17,7 @@ Vagrant.configure("2") do |config|
       vb.memory = 5096
       vb.cpus = 3
     end
-    # 기존 인터페이스 (Kubernetes용 - 유지)
     master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.100"
-    # 추가 인터페이스 (호스트 접근용)
-    master.vm.network "public_network", bridge: "eno1", ip: "192.168.0.100"
     master.vm.hostname = "kube-master"
     master.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/master.sh"), :args => master.vm.hostname
   end
@@ -32,10 +29,7 @@ Vagrant.configure("2") do |config|
           vb.memory = 4096
           vb.cpus = 2
         end
-        # 기존 인터페이스 (Kubernetes용 - 유지)
         node.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.86.10#{i}"
-        # 추가 인터페이스 (호스트 접근용)
-        node.vm.network "public_network", bridge: "eno1", ip: "192.168.0.10#{i}"
         node.vm.hostname = "kube-node-#{i}"
         node.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/node.sh"), :args => node.vm.hostname
     end
