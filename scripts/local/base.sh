@@ -100,6 +100,20 @@ systemctl start ntp
 systemctl enable ntp
 #ntpdate pool.ntp.org
 
+# Install kubectl (required for all nodes)
+if ! command -v kubectl > /dev/null 2>&1; then
+  echo "##############################################"
+  echo "Installing kubectl..."
+  echo "##############################################"
+  KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+  curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  rm -f kubectl
+  echo "kubectl installed: $(kubectl version --client --short 2>/dev/null || echo 'version check failed')"
+else
+  echo "kubectl is already installed: $(kubectl version --client --short 2>/dev/null || echo 'version check failed')"
+fi
+
 echo "##############################################"
 echo "Ready to be added to k8s"
 echo "##############################################"
