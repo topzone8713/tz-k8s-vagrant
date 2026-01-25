@@ -120,7 +120,7 @@ controller:
   containerSecurityContext:
     runAsUser: 1000
     runAsGroup: 1000
-    readOnlyRootFilesystem: false
+    readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
   servicePort: 80
   targetPort: 8080
@@ -196,7 +196,9 @@ controller:
   agentListenerExternalTrafficPolicy:
   agentListenerLoadBalancerSourceRanges:
     - 0.0.0.0/0
-  disabledAgentProtocols: []
+  disabledAgentProtocols:
+    - JNLP-connect
+    - JNLP2-connect
   csrf:
     defaultCrumbIssuer:
       enabled: true

@@ -127,20 +127,6 @@ if [[ "${EVENT}" == "up" ]]; then
   echo "##################################################################################"
   sleep 5
   vagrant ${EVENT} --provider=virtualbox
-  # Static IP 설정 적용 (호스트-VM 통신을 위해)
-  if [ -f scripts/local/apply-static-ip-ubuntu.sh ]; then
-    echo "##################################################################################"
-    echo 'Applying static IP configuration for host-VM communication'
-    echo "##################################################################################"
-    sleep 5
-    bash scripts/local/apply-static-ip-ubuntu.sh
-  elif [ -f scripts/local/apply-static-ip.sh ]; then
-    echo "##################################################################################"
-    echo 'Applying static IP configuration for host-VM communication'
-    echo "##################################################################################"
-    sleep 5
-    bash scripts/local/apply-static-ip.sh
-  fi
   if [[ "${A_ENV}" == "M" ]]; then
     echo "##################################################################################"
     echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
