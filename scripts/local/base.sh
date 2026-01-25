@@ -60,16 +60,16 @@ fi
 sudo chown -R root:root /root/.ssh
 sudo chmod -Rf 600 /root/.ssh
 sudo chmod 700 /root/.ssh
-rm -Rf /home/topzone/.ssh \
-  && cp -Rf /root/.ssh /home/topzone/.ssh \
-  && chown -Rf topzone:topzone /home/topzone/.ssh \
-  && chmod -Rf 700 /home/topzone/.ssh \
-  && chmod -Rf 600 /home/topzone/.ssh/*
+sudo rm -Rf /home/topzone/.ssh
+sudo cp -Rf /root/.ssh /home/topzone/.ssh
+sudo chown -Rf topzone:topzone /home/topzone/.ssh
+sudo chmod -Rf 700 /home/topzone/.ssh
+sudo chmod -Rf 600 /home/topzone/.ssh/*
 
-cat <<EOF >> /etc/resolv.conf
+sudo sh -c "cat <<EOF >> /etc/resolv.conf
 nameserver 1.1.1.1 #cloudflare DNS
 nameserver 8.8.8.8 #Google DNS
-EOF
+EOF"
 
 sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
