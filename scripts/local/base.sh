@@ -24,8 +24,8 @@ if [ -d /vagrant ]; then
   cd /vagrant
 fi
 
-sudo groupadd topzone
-sudo useradd -g topzone -d /home/topzone -s /bin/bash -m topzone
+sudo groupadd topzone 2>/dev/null || true
+sudo useradd -g topzone -d /home/topzone -s /bin/bash -m topzone 2>/dev/null || true
 cat <<EOF > pass.txt
 topzone:topzone
 EOF
