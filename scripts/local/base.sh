@@ -114,6 +114,19 @@ else
   echo "kubectl is already installed: $(kubectl version --client --short 2>/dev/null || echo 'version check failed')"
 fi
 
+# Install helm (required for all nodes)
+if ! command -v helm > /dev/null 2>&1; then
+  echo "##############################################"
+  echo "Installing helm..."
+  echo "##############################################"
+  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+  sudo bash get_helm.sh
+  sudo rm -f get_helm.sh
+  echo "helm installed: $(helm version --short 2>/dev/null || echo 'version check failed')"
+else
+  echo "helm is already installed: $(helm version --short 2>/dev/null || echo 'version check failed')"
+fi
+
 echo "##############################################"
 echo "Ready to be added to k8s"
 echo "##############################################"

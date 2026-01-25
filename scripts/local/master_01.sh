@@ -37,6 +37,15 @@ if ! command -v kubectl > /dev/null 2>&1; then
   echo "kubectl installed: $(kubectl version --client --short 2>/dev/null || echo 'version check failed')"
 fi
 
+# Ensure helm is installed before using it
+if ! command -v helm > /dev/null 2>&1; then
+  echo "helm not found. Installing helm..."
+  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+  sudo bash get_helm.sh
+  sudo rm -f get_helm.sh
+  echo "helm installed: $(helm version --short 2>/dev/null || echo 'version check failed')"
+fi
+
 kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
 
 #kubectl get nodes
