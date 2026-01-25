@@ -10,11 +10,15 @@ set -e
 ##################################################################
 export DEBIAN_FRONTEND=noninteractive
 
-# Log file for debugging
-LOG_FILE="/var/log/base.sh.log"
-echo "==========================================" >> "$LOG_FILE"
-echo "base.sh started at $(date)" >> "$LOG_FILE"
-echo "==========================================" >> "$LOG_FILE"
+# Log file for debugging (use /tmp if /var/log is not writable)
+LOG_FILE="/tmp/base.sh.log"
+if [ -w /var/log ]; then
+  LOG_FILE="/var/log/base.sh.log"
+fi
+touch "$LOG_FILE" 2>/dev/null || LOG_FILE="/tmp/base.sh.log"
+echo "==========================================" | tee -a "$LOG_FILE"
+echo "base.sh started at $(date)" | tee -a "$LOG_FILE"
+echo "==========================================" | tee -a "$LOG_FILE"
 
 if [ -d /vagrant ]; then
   cd /vagrant
@@ -200,7 +204,10 @@ else
 fi
 
 echo "[$(date)] base.sh completed successfully" | tee -a "$LOG_FILE"
-echo "==========================================" >> "$LOG_FILE"
+echo "==========================================" | tee -a "$LOG_FILE"
+echo ""
+echo "base.sh execution completed successfully"
+echo "Log file: $LOG_FILE"
 
 echo "##############################################"
 echo "Ready to be added to k8s"
