@@ -46,7 +46,8 @@ if [ -f /vagrant/.ssh/${MYKEY}.pub ]; then
   sudo cp -f /vagrant/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
   sudo chmod 644 /root/.ssh/${MYKEY}.pub
 fi
-touch /home/topzone/.ssh/authorized_keys
+sudo touch /home/topzone/.ssh/authorized_keys
+sudo chown topzone:topzone /home/topzone/.ssh/authorized_keys
 if [ -f /root/.ssh/authorized_keys ]; then
   sudo cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
 else
