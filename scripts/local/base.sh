@@ -118,7 +118,7 @@ sudo ufw disable
 
 apt update
 apt install -y nfs-server nfs-common
-mkdir /srv/nfs
+mkdir -p /srv/nfs 2>/dev/null || true
 sudo chown nobody:nogroup /srv/nfs
 sudo chmod 0777 /srv/nfs
 cat << EOF >> /etc/exports
