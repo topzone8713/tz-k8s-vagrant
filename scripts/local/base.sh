@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 
+# Exit on error - 설치 실패 시 중지
+set -e
+
 #set -x
 
 ##################################################################
 # k8s base
 ##################################################################
 export DEBIAN_FRONTEND=noninteractive
+
+# Log file for debugging
+LOG_FILE="/var/log/base.sh.log"
+echo "==========================================" >> "$LOG_FILE"
+echo "base.sh started at $(date)" >> "$LOG_FILE"
+echo "==========================================" >> "$LOG_FILE"
 
 if [ -d /vagrant ]; then
   cd /vagrant
@@ -101,31 +110,97 @@ systemctl enable ntp
 #ntpdate pool.ntp.org
 
 # Install kubectl (required for all nodes)
+echo "[$(date)] Starting kubectl installation check..." | tee -a "$LOG_FILE"
 if ! command -v kubectl > /dev/null 2>&1; then
   echo "##############################################"
   echo "Installing kubectl..."
   echo "##############################################"
+  echo "[$(date)] kubectl not found, installing..." | tee -a "$LOG_FILE"
+  
+  # Get kubectl version
   KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
-  curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  if [ -z "$KUBECTL_VERSION" ]; then
+    echo "[$(date)] ERROR: Failed to get kubectl version" | tee -a "$LOG_FILE"
+    echo "ERROR: Failed to get kubectl version" >&2
+    exit 1
+  fi
+  
+  # Download kubectl
+  if ! curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; then
+    echo "[$(date)] ERROR: Failed to download kubectl" | tee -a "$LOG_FILE"
+    echo "ERROR: Failed to download kubectl" >&2
+    exit 1
+  fi
+  
+  echo "[$(date)] kubectl downloaded successfully" | tee -a "$LOG_FILE"
+  
+  # Install kubectl
+  if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
+    echo "[$(date)] ERROR: Failed to install kubectl" | tee -a "$LOG_FILE"
+    echo "ERROR: Failed to install kubectl" >&2
+    rm -f kubectl
+    exit 1
+  fi
+  
   rm -f kubectl
-  echo "kubectl installed: $(kubectl version --client --short 2>/dev/null || echo 'version check failed')"
+  
+  # Verify installation
+  if ! kubectl version --client --short > /dev/null 2>&1; then
+    echo "[$(date)] ERROR: kubectl installation verification failed" | tee -a "$LOG_FILE"
+    echo "ERROR: kubectl installation verification failed" >&2
+    exit 1
+  fi
+  
+  echo "kubectl installed: $(kubectl version --client --short)"
+  echo "[$(date)] kubectl installed successfully" | tee -a "$LOG_FILE"
 else
   echo "kubectl is already installed: $(kubectl version --client --short 2>/dev/null || echo 'version check failed')"
+  echo "[$(date)] kubectl already installed" | tee -a "$LOG_FILE"
 fi
 
 # Install helm (required for all nodes)
+echo "[$(date)] Starting helm installation check..." | tee -a "$LOG_FILE"
 if ! command -v helm > /dev/null 2>&1; then
   echo "##############################################"
   echo "Installing helm..."
   echo "##############################################"
-  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-  sudo bash get_helm.sh
+  echo "[$(date)] helm not found, installing..." | tee -a "$LOG_FILE"
+  
+  # Download helm install script
+  if ! curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3; then
+    echo "[$(date)] ERROR: Failed to download helm install script" | tee -a "$LOG_FILE"
+    echo "ERROR: Failed to download helm install script" >&2
+    exit 1
+  fi
+  
+  echo "[$(date)] helm install script downloaded successfully" | tee -a "$LOG_FILE"
+  
+  # Run helm install script
+  if ! sudo bash get_helm.sh; then
+    echo "[$(date)] ERROR: helm installation script failed (exit code: $?)" | tee -a "$LOG_FILE"
+    echo "ERROR: helm installation script failed" >&2
+    sudo rm -f get_helm.sh
+    exit 1
+  fi
+  
   sudo rm -f get_helm.sh
-  echo "helm installed: $(helm version --short 2>/dev/null || echo 'version check failed')"
+  
+  # Verify installation
+  if ! helm version --short > /dev/null 2>&1; then
+    echo "[$(date)] ERROR: helm installation verification failed" | tee -a "$LOG_FILE"
+    echo "ERROR: helm installation verification failed" >&2
+    exit 1
+  fi
+  
+  echo "helm installed: $(helm version --short)"
+  echo "[$(date)] helm installed successfully" | tee -a "$LOG_FILE"
 else
   echo "helm is already installed: $(helm version --short 2>/dev/null || echo 'version check failed')"
+  echo "[$(date)] helm already installed" | tee -a "$LOG_FILE"
 fi
+
+echo "[$(date)] base.sh completed successfully" | tee -a "$LOG_FILE"
+echo "==========================================" >> "$LOG_FILE"
 
 echo "##############################################"
 echo "Ready to be added to k8s"

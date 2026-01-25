@@ -24,7 +24,17 @@ fi
 shopt -s expand_aliases
 alias k='kubectl --kubeconfig ~/.kube/config'
 
-bash /vagrant/scripts/local/base.sh
+echo "##############################################"
+echo "Executing base.sh..."
+echo "##############################################"
+if ! bash /vagrant/scripts/local/base.sh; then
+  echo "✗ ERROR: base.sh execution failed (exit code: $?)"
+  echo "ERROR: Critical tools (kubectl, helm) installation failed!"
+  echo "Please check /var/log/base.sh.log for details"
+  exit 1
+fi
+echo "✓ base.sh executed successfully"
+echo "##############################################"
 
 sudo apt-add-repository ppa:ansible/ansible -y
 sudo apt update
