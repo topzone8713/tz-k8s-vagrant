@@ -34,13 +34,31 @@ sudo mkdir -p /home/topzone/.ssh &&
   sudo chown -Rf topzone:topzone /home/topzone
 
 MYKEY=tz_rsa
-cp -Rf /vagrant/.ssh/${MYKEY} /root/.ssh/${MYKEY}
-cp -Rf /vagrant/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
+# Ensure /root/.ssh directory exists with proper permissions
+sudo mkdir -p /root/.ssh
+sudo chmod 700 /root/.ssh
+# Copy SSH keys from /vagrant/.ssh to /root/.ssh
+if [ -f /vagrant/.ssh/${MYKEY} ]; then
+  sudo cp -f /vagrant/.ssh/${MYKEY} /root/.ssh/${MYKEY}
+  sudo chmod 600 /root/.ssh/${MYKEY}
+fi
+if [ -f /vagrant/.ssh/${MYKEY}.pub ]; then
+  sudo cp -f /vagrant/.ssh/${MYKEY}.pub /root/.ssh/${MYKEY}.pub
+  sudo chmod 644 /root/.ssh/${MYKEY}.pub
+fi
 touch /home/topzone/.ssh/authorized_keys
-cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
-cat /root/.ssh/${MYKEY}.pub >> /root/.ssh/authorized_keys
-chown -R root:root /root/.ssh \
-  chmod -Rf 400 /root/.ssh
+if [ -f /root/.ssh/authorized_keys ]; then
+  sudo cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
+else
+  sudo touch /root/.ssh/authorized_keys
+  sudo cp /home/topzone/.ssh/authorized_keys /root/.ssh/authorized_keys
+fi
+if [ -f /root/.ssh/${MYKEY}.pub ]; then
+  sudo sh -c "cat /root/.ssh/${MYKEY}.pub >> /root/.ssh/authorized_keys"
+fi
+sudo chown -R root:root /root/.ssh
+sudo chmod -Rf 600 /root/.ssh
+sudo chmod 700 /root/.ssh
 rm -Rf /home/topzone/.ssh \
   && cp -Rf /root/.ssh /home/topzone/.ssh \
   && chown -Rf topzone:topzone /home/topzone/.ssh \
