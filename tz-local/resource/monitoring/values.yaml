@@ -1,0 +1,341 @@
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserverAvailability: true
+    kubeApiserverBurnrate: true
+    kubeApiserverHistogram: true
+    kubeApiserverSlos: true
+    kubeControllerManager: false
+    kubelet: true
+    kubeProxy: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeSchedulerAlerting: true
+    kubeSchedulerRecording: true
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+
+alertmanager:
+  enabled: true
+  config:
+    global:
+      resolve_timeout: 5m
+      smtp_from: topzone8713@gmail.com
+      smtp_smarthost: smtp.gmail.com:587
+      smtp_auth_username: topzone8713@gmail.com
+      smtp_auth_password: "smtp_password"
+      smtp_require_tls: true
+      slack_api_url: https://hooks.slack.com/services/xxxxx/xxxxx/xxxxx
+    inhibit_rules:
+      - source_matchers:
+          - 'severity = critical'
+        target_matchers:
+          - 'severity =~ warning|info'
+        equal:
+          - 'namespace'
+          - 'alertname'
+      - source_matchers:
+          - 'severity = warning'
+        target_matchers:
+          - 'severity = info'
+        equal:
+          - 'namespace'
+          - 'alertname'
+      - source_matchers:
+          - 'alertname = InfoInhibitor'
+        target_matchers:
+          - 'severity = info'
+        equal:
+          - 'namespace'
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      routes:
+      - receiver: 'null'
+        matchers:
+          - alertname =~ "InfoInhibitor|Watchdog"
+#      - receiver: devops-dev
+#        match:
+#          team: devops_dev
+      - receiver: devops-admin
+        match:
+          team: devops-admin
+    receivers:
+    - name: devops-admin
+      slack_configs:
+      - send_resolved: true
+        channel: devops-alert
+        title: |-
+          {{ range .Alerts }}{{ .Annotations.summary }}
+          {{ end }}
+        text: '{{ template "slack.default.text" . }}'
+      email_configs:
+      - send_resolved: true
+        to: topzone8713@gmail.com
+#    - name: devops-dev
+#      slack_configs:
+#      - send_resolved: true
+#        channel: devops-alert
+#        title: |-
+#          {{ range .Alerts }}{{ .Annotations.summary }}
+#          {{ end }}
+#        text: '{{ template "slack.default.text" . }}'
+#      email_configs:
+#      - send_resolved: true
+#        to: doohee.hong@tz.kr
+#    - name: devops-prod
+#      slack_configs:
+#      - send_resolved: true
+#        channel: devops-alert
+#        title: |-
+#          {{ range .Alerts }}{{ .Annotations.summary }}
+#          {{ end }}
+#        text: '{{ template "slack.default.text" . }}'
+#      email_configs:
+#      - send_resolved: true
+#        to: topzone8713@gmail.com
+    templates:
+    - /etc/alertmanager/config/*.tmpl
+  service:
+    clusterIP: ""
+    port: 9093
+    targetPort: 9093
+    nodePort: 30903
+    additionalPorts: []
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    externalTrafficPolicy: Cluster
+    type: ClusterIP
+  alertmanagerSpec:
+    image:
+      registry: quay.io
+      repository: prometheus/alertmanager
+      tag: v0.25.0
+
+    externalUrl: http://alertmanager.default.k8s_project.k8s_domain
+    extraArgs:
+      web.external-url: http://alertmanager.default.k8s_project.k8s_domain
+      web.route-prefix: "/"
+    replicas: 1
+#    nodeSelector:
+#      environment: monitoring
+#      team: devops
+
+## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+##
+grafana:
+  enabled: true
+  adminPassword: admin_password
+#  nodeSelector:
+#    environment: monitoring
+#    team: devops
+  additionalDataSources:
+  - name: Loki
+    type: loki
+    url: http://loki.monitoring.svc.cluster.local:3100/
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: nfs-client
+    accessModes:
+    - ReadWriteOnce
+    size: 5Gi
+#    finalizers:
+#    - kubernetes.io/pvc-protection
+
+prometheusOperator:
+  enabled: true
+  serviceMonitor:
+    selfMonitor: true
+  resources:
+   limits:
+     cpu: 200m
+     memory: 200Mi
+   requests:
+     cpu: 100m
+     memory: 100Mi
+  tls:
+    enabled: false
+  admissionWebhooks:
+    enabled: false
+#  nodeSelector:
+#    environment: monitoring
+#    team: devops
+#  affinity:
+#    nodeAffinity:
+#     requiredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: kubernetes.io/e2e-az-name
+#           operator: In
+#           values:
+#           - e2e-az1
+#           - e2e-az2
+
+  image:
+    registry: quay.io
+    repository: prometheus-operator/prometheus-operator
+
+  prometheusConfigReloader:
+    image:
+      registry: quay.io
+      repository: prometheus-operator/prometheus-config-reloader
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    externalUrl: http://prometheus.default.k8s_project.k8s_domain
+#    nodeSelector:
+#      environment: monitoring
+#      team: devops
+#    podAntiAffinity: ""
+#    podAntiAffinityTopologyKey: kubernetes.io/hostname
+#    affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/e2e-az-name
+#             operator: In
+#             values:
+#             - e2e-az1
+#             - e2e-az2
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: nfs-client
+
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+
+    additionalScrapeConfigs:
+      - job_name: 'tz-blackbox-exporter'
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        static_configs:
+#            - http://devops-demo.devops-dev.k8s_project.k8s_domain
+          - targets:
+            - https://jenkins.default.k8s_project.k8s_domain
+            - https://argocd.default.k8s_project.k8s_domain
+            - https://grafana.default.k8s_project.k8s_domain
+            - http://prometheus.default.k8s_project.k8s_domain
+            - http://alertmanager.default.k8s_project.k8s_domain
+            - http://vault.default.k8s_project.k8s_domain
+            - http://consul.default.k8s_project.k8s_domain
+            - http://sonarqube.default.k8s_project.k8s_domain
+#            - http://kiali.istio-system.k8s_project.k8s_domain
+#            - http://jaeger.istio-system.k8s_project.k8s_domain
+            - http://kibana.elk.k8s_project.k8s_domain
+
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: tz-blackbox-exporter-prometheus-blackbox-exporter:9115
+
+#      - job_name: 'tz-kubernetes-pod-job'
+#        scrape_interval: 15s
+#        kubernetes_sd_configs:
+#        - role: pod
+#        # only scrape when annotation prometheus.io/scrape: 'true' is set
+#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+#          action: keep
+#          regex: true
+#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+#          action: replace
+#          target_label: __metrics_path__
+#          regex: (.+)
+#        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+#          action: replace
+#          regex: ([^:]+)(?::\d+)?;(\d+)
+#          replacement: $1:$2
+#          target_label: __address__
+#        - action: labelmap
+#          regex: __meta_kubernetes_pod_label_(.+)
+#        - source_labels: [__meta_kubernetes_namespace]
+#          action: replace
+#          target_label: kubernetes_namespace
+#        - source_labels: [__meta_kubernetes_pod_name]
+#          action: replace
+#          target_label: kubernetes_pod_name
+#      - job_name: 'tz-kubernetes-service-endpoints'
+#        kubernetes_sd_configs:
+#        - role: endpoints
+#        relabel_configs:
+##          annotation:
+##            prometheus.io/scrape: 'true'
+##            prometheus.io/path: /metrics
+##            prometheus.io/port: '9900'
+##            prometheus.io/scheme: http
+#        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+#          action: keep
+#          regex: true
+#        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+#          action: replace
+#          target_label: __metrics_path__
+#          regex: (.+)
+#        - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+#          action: replace
+#          regex: ([^:]+)(?::\d+)?;(\d+)
+#          replacement: $1:$2
+#          target_label: __address__
+#        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+#          action: replace
+#          target_label: __scheme__
+#          regex: (https?)
+#        - action: labelmap
+#          regex: __meta_kubernetes_service_label_(.+)
+#        - source_labels: [__meta_kubernetes_namespace]
+#          action: replace
+#          target_label: kubernetes_namespace
+#        - source_labels: [__meta_kubernetes_service_name]
+#          action: replace
+#          target_label: kubernetes_name
+#      - job_name: 'jenkins'
+#        metrics_path: /prometheus/
+#        static_configs:
+#          - targets: ['jenkins.k8s_domain:80']
+#        scheme: http
+#        tls_config:
+#          insecure_skip_verify: true
+#        basic_auth:
+#          username: 'devops'
+#          password: 'admin_password'
+#      - job_name: 'prometheus'
+#        metrics_path: /metrics
+#        static_configs:
+#          - targets:
+#            # jenkins
+#            - 20.10.11.28:9090
+#        scheme: http
+#      - job_name: 'node-exporter'
+#        scrape_interval: 5s
+#        static_configs:
+#          - targets:
+#            # jenkins
+#            - 20.10.11.28:9100

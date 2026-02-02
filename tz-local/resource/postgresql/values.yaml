@@ -1,0 +1,87 @@
+## PostgreSQL Helm Chart Values
+## 
+## 실제 devops 네임스페이스에 설치된 PostgreSQL의 values.yaml 추정 버전
+## 
+## 기본 values를 가져오려면 다음 명령어를 실행하세요:
+##   helm repo add bitnami https://charts.bitnami.com/bitnami
+##   helm repo update
+##   helm show values bitnami/postgresql > values.yaml
+##
+## 실제 적용된 설정을 확인하려면:
+##   helm get values devops-postgres -n devops
+
+## Architecture: standalone (단일 인스턴스)
+architecture: standalone
+
+## PostgreSQL Authentication parameters
+auth:
+  ## Password for the "postgres" admin user
+  ## 빈 값이면 enablePostgresUser가 true일 때 자동 생성
+  postgresPassword: "basic_password"
+  
+  ## Enable the postgres admin user
+  enablePostgresUser: true
+  
+  ## Username for a custom user to create
+  username: "admin"
+  
+  ## Password for the custom user to create
+  password: "basic_password"
+  
+  ## Name for a custom database to create
+  database: "k8s_project"
+  
+  ## Use password files instead of environment variables
+  usePasswordFiles: true
+
+## PostgreSQL Primary parameters
+primary:
+  ## PostgreSQL data persistence configuration
+  persistence:
+    enabled: true
+    ## 빈 값이면 기본 storageClass 사용 (실제로는 local-path 사용됨)
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+  
+  ## Resource requests and limits
+  ## resourcesPreset: nano 설정으로 다음 값들이 적용됨:
+  ##   requests: cpu=100m, memory=128Mi
+  ##   limits: cpu=150m, memory=192Mi
+  resourcesPreset: nano
+  
+  ## Initialize database with custom user
+  initdb:
+    user: "admin"
+    password: "basic_password"
+  
+  ## Service configuration
+  service:
+    type: ClusterIP
+    ports:
+      postgresql: 5432
+  
+  ## Pod Anti-Affinity
+  podAntiAffinityPreset: soft
+  
+  ## PersistentVolumeClaim retention policy
+  persistentVolumeClaimRetentionPolicy:
+    enabled: true
+    whenDeleted: Retain
+    whenScaled: Retain
+
+## PostgreSQL image
+image:
+  registry: docker.io
+  repository: bitnami/postgresql
+  tag: 17.5.0-debian-12-r18
+  pullPolicy: IfNotPresent
+
+## Audit configuration
+audit:
+  logConnections: false
+  logDisconnections: false
+  logHostname: false
+  clientMinMessages: error
+  pgAuditLogCatalog: "off"

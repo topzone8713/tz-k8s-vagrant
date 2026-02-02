@@ -1,0 +1,48 @@
+## Redis Helm Chart Values
+## Bitnami Redis Chart (redis-21.2.13)
+## 
+## 기본 values를 가져오려면 다음 명령어를 실행하세요:
+##   helm repo add bitnami https://charts.bitnami.com/bitnami
+##   helm repo update
+##   helm show values bitnami/redis > values.yaml
+##
+## 실제 적용된 설정을 확인하려면:
+##   helm get values redis-cluster-drillquiz -n devops
+
+## Redis Authentication
+## 인증 비활성화 (auth.enabled: false)
+auth:
+  enabled: false
+
+## Redis Cluster configuration
+cluster:
+  ## Replica count for cluster mode
+  replicaCount: 1
+
+## Redis Master configuration
+master:
+  ## Master persistence configuration
+  persistence:
+    enabled: true
+    path: /data
+    size: 1Gi
+    storageClass: local-path
+
+## Redis Replica configuration
+replica:
+  ## Replica persistence configuration
+  persistence:
+    enabled: true
+    path: /data
+    size: 1Gi
+    storageClass: local-path
+
+## Security Context
+securityContext:
+  enabled: true
+  fsGroup: 2000
+  runAsUser: 1000
+
+## Volume Permissions
+volumePermissions:
+  enabled: true

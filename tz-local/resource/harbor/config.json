@@ -1,0 +1,7 @@
+{
+	"auths": {
+		"harbor.harbor.topzone-k8s.topzone.me": {
+			"auth": "YWRtaW46SGFyYm9yMTIzNDU="
+		}
+	}
+}

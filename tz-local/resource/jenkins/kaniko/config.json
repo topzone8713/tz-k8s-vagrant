@@ -1,0 +1,9 @@
+{
+	"auths": {
+		"harbor.harbor.topzone-k8s.topzone.me": {
+			"username":"admin",
+			"password":"Harbor12345",
+			"auth": "YWRtaW46SGFyYm9yMTIzNDU="
+		}
+	}
+}

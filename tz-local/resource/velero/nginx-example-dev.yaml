@@ -1,0 +1,125 @@
+# nginx-example.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-example-dev
+  labels:
+    app: nginx
+    environment: dev
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nginx-log-pvc-dev
+  labels:
+    app: nginx
+    environment: dev
+  namespace: nginx-example-dev
+spec:
+  storageClassName: "nfs-client"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy-dev
+  labels:
+    app: nginx
+    environment: dev
+  namespace: nginx-example-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      environment: dev
+  template:
+    metadata:
+      labels:
+        app: nginx
+        environment: dev
+    spec:
+      volumes:
+        - name: nginx-logs-dev
+          persistentVolumeClaim:
+           claimName: nginx-log-pvc-dev
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/var/log/nginx"
+          name: nginx-logs-dev
+          readOnly: false
+        envFrom:
+          - configMapRef:
+              name: nginx-configmap-dev
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configmap-dev
+  labels:
+    app: nginx
+    environment: dev
+data:
+  TZ: 'Asia/Seoul'
+  NODE_ENV: 'development'
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-dev
+  labels:
+    app: nginx
+    environment: dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: 'nginx'
+    cert-manager.io/cluster-issuer: 'selfsigned-issuer'
+spec:
+  rules:
+    - host: nginx.eks-main-t.mirrorcity.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-dev
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - nginx.eks-main-t.mirrorcity.io
+      secretName: nginx-tls-dev
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-dev
+  labels:
+    app: nginx
+    environment: dev
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deploy-dev
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+

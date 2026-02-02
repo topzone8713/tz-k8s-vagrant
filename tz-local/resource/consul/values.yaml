@@ -1,0 +1,90 @@
+global:
+  name: consul
+  domain: consul
+  enabled: true
+  datacenter: tz-dc
+  tls:
+    enabled: false
+    httpsOnly: false
+  metrics:
+    enabled: false
+    enableAgentMetrics: false
+  scrape_interval:  5s
+  scrape_timeout: 3s
+
+server:
+  replicas: 1
+  bootstrapExpect: 1
+  storageClass: nfs-client
+  storage: 1Gi
+#  securityContext:
+#    runAsNonRoot: false
+#    runAsUser: 0
+#  disruptionBudget:
+#    enabled: true
+#    maxUnavailable: 0
+  service:
+    enabled: true
+  resources:
+    requests:
+      memory: "400Mi"
+      cpu: "400m"
+    limits:
+      memory: "3Gi"
+      cpu: "2"
+#  nodeSelector: |
+#    team: devops
+#    environment: consul
+  extraConfig: |
+    {
+      "enable_central_service_config": false,
+      "telemetry": {
+        "prometheus_retention_time": "30s"
+      },
+      "ui_config": {
+        "enabled": true,
+        "metrics_provider": "prometheus",
+        "metrics_proxy": {
+          "base_url": "http://prometheus-server.monitor.svc.cluster.local"
+        }
+      }
+    }
+  persistentVolume:
+    enabled: false
+
+alertmanager:
+  enabled: false
+
+ui:
+  enabled: true
+  service:
+    enabled: true
+    type: 'ClusterIP'
+
+connectInject:
+  enabled: false
+  default: false
+  logLevel: debug
+  metrics:
+    defaultEnableMerging: false
+
+# Enable CRD Controller
+controller:
+  enabled: true
+#  enabled: "-"
+
+prometheus:
+  enabled: false
+
+client:
+  enabled: true
+  extraConfig: |
+    {"enable_central_service_config": false}
+
+dns:
+  enabled: false
+#  type: ClusterIP
+#  clusterIP: 172.20.39.237
+
+syncCatalog:
+  enabled: true

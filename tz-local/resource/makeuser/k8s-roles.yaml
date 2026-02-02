@@ -1,0 +1,80 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ns-list
+rules:
+- apiGroups: [""]
+  resources: ["namespaces", "deployments", "deployments", "services", "ingress", "customresourcedefinitions"]
+  verbs: ["get", "list", "watch"]
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: devops-admin
+rules:
+- apiGroups: ["", "metrics.k8s.io", "extensions", "apps", "batch"]
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: devops
+  name: devops-manager
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: devops-dev
+  name: devops-developer
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "services", "endpoints", "events"]
+  verbs: ["get", "list", "watch", "update"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["secrets","persistentvolumeclaims", "daemonsets", "replicasets"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["batch", "extensions"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: ["apps", "extensions"]
+  resources: ["deployments", "services", "statefulsets", "events"]
+  verbs: ["get", "list", "watch", "update"]
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: lens-metrics
+  name: read-only-lens-metrics
+rules:
+- apiGroups:
+  - ""
+  - "apps"
+  resources:
+  - pods
+  - events
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - "services/proxy"6
+  verbs:
+  - create

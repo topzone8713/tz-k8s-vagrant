@@ -1,0 +1,160 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: prometheus-grafana
+data:
+  grafana.ini: |
+    [analytics]
+    check_for_updates = true
+    [grafana_net]
+    url = https://grafana.net
+    [log]
+    mode = console
+    [paths]
+    data = /var/lib/grafana/data
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+    [smtp]
+    enabled = true
+    host = smtp.gmail.com:587
+    user = topzone8713@gmail.com
+    password = admin_password
+    skip_verify = true
+    from_address = topzone8713@gmail.com
+    from_name = Grafana (k8s_project)
+    ehlo_identity = grafana.default.k8s_project.k8s_domain
+    [server]
+    protocol = http
+    domain = grafana.default.k8s_project.k8s_domain
+    root_url = https://grafana.default.k8s_project.k8s_domain
+    [users]
+    viewers_can_edit = true
+    [auth.google]
+    enabled: true
+    auto_login = false
+    client_id = grafana_goauth2_client_id
+    client_secret = grafana_goauth2_client_secret
+    scopes = https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
+    auth_url = https://accounts.google.com/o/oauth2/auth
+    token_url = https://oauth2.googleapis.com/token
+    allowed_domains = k8s_domain k8s_domain
+    allow_sigh_up = true
+    hosted_domain = k8s_domain
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: prometheus-kube-prometheus-grafana-datasource
+data:
+  datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+      - uid: prometheus
+        orgId: 1
+        name: Prometheus
+        type: prometheus
+        typeName: Prometheus
+        access: proxy
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        password: ''
+        user: ''
+        database: ''
+        basicAuth: false
+        isDefault: true
+        jsonData:
+          exemplarTraceIdDestinations:
+            - datasourceUid: tempo
+              name: TraceID
+          httpMethod: POST
+        readOnly: false
+        editable: true
+      - uid: tempo
+        orgId: 1
+        name: Tempo
+        type: tempo
+        typeName: Tempo
+        access: proxy
+        url: http://tempo-query-frontend-discovery.tempo:3100
+        password: ''
+        user: ''
+        database: ''
+        basicAuth: false
+        isDefault: false
+        jsonData:
+          nodeGraph:
+            enabled: true
+          search:
+            hide: false
+          lokiSearch:
+            datasourceUid: loki
+          tracesToLogs:
+            datasourceUid: loki
+            filterBySpanID: false
+            filterByTraceID: true
+            mapTagNamesEnabled: false
+            tags:
+              - compose_service
+        readOnly: false
+        editable: true
+      - uid: loki
+        orgId: 1
+        name: Loki
+        type: loki
+        typeName: Loki
+        access: proxy
+        url: http://loki.monitoring.svc.cluster.local:3100/
+        password: ''
+        user: ''
+        database: ''
+        basicAuth: false
+        isDefault: false
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: (?:trace_id)=(\w+)
+              name: TraceID
+              url: $${__value.raw}
+        readOnly: false
+        editable: true
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: loki-loki-stack
+data:
+  loki-stack-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Loki
+      type: loki
+      typeName: Loki
+      access: proxy
+      url: http://loki.monitoring.svc.cluster.local:3100/
+      password: ''
+      user: ''
+      database: ''
+      basicAuth: false
+      isDefault: false
+      jsonData:
+        derivedFields:
+          - datasourceUid: tempo
+            matcherRegex: (?:trace_id)=(\w+)
+            name: TraceID
+            url: $${__value.raw}
+      readOnly: false
+      editable: true
+
+#---
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  name: prometheus-grafana
+#  namespace: monitoring
+#type: Opaque
+#data:
+#  admin-password: admin_password

@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tz-nfs-pv
+spec:
+  capacity:
+    storage: 200Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.100
+    path: /home/topzone/data
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tz-nfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-demo
+spec:
+  selector:
+    matchLabels:
+      app: nginx-demo
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx-demo
+    spec:
+      containers:
+      - name: master
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /mnt
+          name: tz-nfs-pvc
+      volumes:
+      - name: tz-nfs-pvc
+        persistentVolumeClaim:
+          claimName: pvc

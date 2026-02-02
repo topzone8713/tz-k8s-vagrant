@@ -1,0 +1,76 @@
+global:
+  resolve_timeout: 20s
+  smtp_from: topzone8713@gmail.com
+  smtp_smarthost: smtp.gmail.com:587
+  smtp_auth_username: topzone8713@gmail.com
+  smtp_auth_password: "smtp_password"
+  smtp_require_tls: true
+  slack_api_url: https://hooks.slack.com/services/XXXXXX/XXXXXX/XXXXXX
+inhibit_rules:  # 중복된 알림이 발생할 경우 중복 금지를 위한 규칙 설정
+  - source_matchers:  # inhibit rule을 적용하기 위해 존재해야 하는 조건
+      - 'severity = critical'
+    target_matchers:  # 음소거가 되어야 할 대상
+      - 'severity =~ warning|info'
+    equal:            #value값과 동일한 값을 갖는 경우 inhibit rule 적용
+      - 'namespace'
+      - 'alertname'
+  - source_matchers:
+      - 'severity = warning'
+    target_matchers:
+      - 'severity = info'
+    equal:
+      - 'namespace'
+      - 'alertname'
+  - source_matchers:
+      - 'alertname = InfoInhibitor'
+    target_matchers:
+      - 'severity = info'
+    equal:
+      - 'namespace'
+route:
+  group_by: ['alertname', 'cluster', 'namespace', 'service']
+  receiver: devops-admin
+  group_wait: 20s  # inhibit 조건 발생에 대한 중복을 방지하기 위한 알림 발생 전 대기시간,
+  group_interval: 10s # 알림 간 시간 간격 설정
+  repeat_interval: 5m # 알림 재발생
+  routes:
+  - receiver: "null"
+    match_re:
+      alertname: "InfoInhibitor|Watchdog"
+  - receiver: devops-dev
+    match:
+      namespace: devops
+  - receiver: devops-admin
+    match_re:
+      namespace: "devops|devops-dev"
+  - receiver: devops-demo
+    match:
+      namespace: devops-dev
+      severity: "critical"
+receivers:
+- name: "null"
+- name: devops-dev
+  email_configs:
+  - send_resolved: true
+    to: topzone8713@gmail.com
+- name: devops-admin
+  slack_configs:
+  - api_url: 'https://hooks.slack.com/services/XXXXXX/XXXXXX/XXXXXX'
+    send_resolved: true
+    channel: devops-alert
+    title: |-
+      {{ range .Alerts }}{{ .Annotations.summary }}
+      {{ end }}
+    text: '{{ template "slack.default.text" . }}'
+  email_configs:
+  - send_resolved: true
+    to: doohee@k8s_domain
+- name: devops-demo
+  email_configs:
+  - send_resolved: true
+    to: topzone8713@gmail.com
+    headers:
+      subject: '{{ if eq .Status "firing" }} devops-demo 장애.. {{ else if eq .Status "resolved" }} devops-demo 정상.. {{end}}'
+templates:
+- /etc/alertmanager/config/*.tmpl
+

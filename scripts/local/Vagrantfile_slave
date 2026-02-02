@@ -1,0 +1,94 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+IMAGE_NAME = "bento/ubuntu-22.04"
+COUNTER = 3
+
+# Detect network interface: prefer "en0: Wi-Fi (AirPort)", fallback to "en0"
+def get_bridge_interface
+  # Find VBoxManage command
+  vboxmanage_cmd = nil
+  possible_paths = [
+    "VBoxManage",
+    "/Applications/VirtualBox.app/Contents/MacOS/VBoxManage",
+    "/usr/bin/VBoxManage",
+    "/usr/local/bin/VBoxManage"
+  ]
+  
+  possible_paths.each do |path|
+    if path == "VBoxManage"
+      # Check if command exists in PATH
+      if system("which #{path} > /dev/null 2>&1")
+        vboxmanage_cmd = path
+        break
+      end
+    elsif File.exist?(path) && File.executable?(path)
+      vboxmanage_cmd = path
+      break
+    end
+  end
+  
+  return "en0: Wi-Fi (AirPort)" unless vboxmanage_cmd  # Default fallback
+  
+  begin
+    # Try to get list of available interfaces using VBoxManage
+    output = `#{vboxmanage_cmd} list bridgedifs 2>/dev/null`
+    return "en0: Wi-Fi (AirPort)" unless $?.success?  # Default fallback if command fails
+    
+    # Extract interface names - VBoxManage output format: "Name:            en0: Wi-Fi (AirPort)"
+    interfaces = output.split("\n").grep(/^Name:/).map do |line|
+      # Extract everything after "Name:" and strip whitespace
+      line.sub(/^Name:\s+/, "").strip
+    end
+    
+    # Check if "en0: Wi-Fi (AirPort)" exists (exact match)
+    if interfaces.include?("en0: Wi-Fi (AirPort)")
+      return "en0: Wi-Fi (AirPort)"
+    # Check if any interface starts with "en0:"
+    elsif interfaces.any? { |iface| iface.start_with?("en0:") }
+      return interfaces.find { |iface| iface.start_with?("en0:") }
+    # Check if "en0" exists (without description)
+    elsif interfaces.include?("en0")
+      return "en0"
+    else
+      # If neither exists, use default
+      return "en0: Wi-Fi (AirPort)"
+    end
+  rescue => e
+    # If detection fails, use default
+    return "en0: Wi-Fi (AirPort)"
+  end
+end
+
+BRIDGE_INTERFACE = get_bridge_interface
+
+Vagrant.configure("2") do |config|
+  config.vm.box = IMAGE_NAME
+  config.ssh.insert_key=false
+  # Resource settings optimized for my-mac (8GB RAM, 4 CPUs)
+  # Each slave node: 2GB RAM, 1 CPU
+  # Total for 3 nodes: 6GB RAM, 3 CPUs (leaving 2GB RAM, 1 CPU for host)
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 1
+  end
+
+  # Define slave nodes with IPs matching inventory_add.ini
+  # kube-slave-1: 192.168.0.110
+  # kube-slave-2: 192.168.0.112
+  # kube-slave-3: 192.168.0.113
+  (1..COUNTER).each do |i|
+    config.vm.define "kube-slave-#{i}" do |node|
+        node.vm.box = IMAGE_NAME
+        # IP mapping: 1->110, 2->112, 3->113 (matching inventory_add.ini)
+        ip_map = {1 => "192.168.0.110", 2 => "192.168.0.112", 3 => "192.168.0.113"}
+        if BRIDGE_INTERFACE
+          node.vm.network "public_network", bridge: BRIDGE_INTERFACE, ip: ip_map[i]
+        else
+          node.vm.network "public_network", ip: ip_map[i]
+        end
+        node.vm.hostname = "kube-slave-#{i}"
+        node.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/node.sh"), :args => node.vm.hostname
+    end
+  end
+end

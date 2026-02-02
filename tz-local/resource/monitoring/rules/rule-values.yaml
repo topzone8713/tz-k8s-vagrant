@@ -1,0 +1,52 @@
+prometheus:
+  prometheusSpec:
+    externalUrl: https://prometheus.default.k8s_project.k8s_domain
+#    nodeSelector:
+#      environment: monitoring
+#      team: devops
+#    podAntiAffinity: ""
+#    podAntiAffinityTopologyKey: kubernetes.io/hostname
+#    affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/e2e-az-name
+#             operator: In
+#             values:
+#             - e2e-az1
+#             - e2e-az2
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 50Gi
+          storageClassName: nfs-client
+
+    additionalScrapeConfigs:
+      - job_name: 'tz-blackbox-exporter'
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        static_configs:
+#            - https://devops-demo.devops-dev.k8s_project.k8s_domain
+          - targets:
+            - https://jenkins.default.k8s_project.k8s_domain
+            - https://argocd.default.k8s_project.k8s_domain
+            - https://grafana.default.k8s_project.k8s_domain
+            - https://prometheus.default.k8s_project.k8s_domain
+            - https://alertmanager.default.k8s_project.k8s_domain
+            - http://vault.default.k8s_project.k8s_domain
+            - https://consul.default.k8s_project.k8s_domain
+#            - https://kiali.istio-system.k8s_project.k8s_domain
+#            - https://jaeger.istio-system.k8s_project.k8s_domain
+            - https://devops-demo-app.devops-dev.k8s_project.k8s_domain
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: tz-blackbox-exporter-prometheus-blackbox-exporter:9115

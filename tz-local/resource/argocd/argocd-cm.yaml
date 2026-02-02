@@ -1,0 +1,28 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  admin.enabled: 'true'
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  dex.config: |
+    connectors:
+    - config:
+        issuer: 'https://accounts.google.com'
+        clientID: "argocd_google_client_id"
+        clientSecret: "argocd_google_client_secret"
+      type: oidc
+      id: google
+      name: Google
+      url: https://argocd.default.topzone-k8s.topzone.me
+  exec.enabled: 'false'
+  server.rbac.log.enforce.enable: 'false'
+  timeout.hard.reconciliation: 0s
+  timeout.reconciliation: 180s
+  url: https://argocd.default.k8s_project.k8s_domain
+  accounts.tz-admin: apiKey, login

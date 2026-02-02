@@ -1,0 +1,38 @@
+# MinIO Ingress (External Access)
+# MinIO Console을 외부에서 접근하기 위한 Ingress 설정
+# 
+# ⚠️ WARNING: MinIO Console을 외부에 노출하는 것은 보안 위험이 있습니다.
+# 프로덕션 환경에서는 VPN, bastion host, 또는 port-forward 사용을 권장합니다.
+#
+# 접근 URL: https://minio.devops.k8s_project.k8s_domain
+# MinIO API는 클러스터 내부에서만 접근 가능합니다 (http://minio.devops.svc.cluster.local:9000)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: devops
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: minio.devops.k8s_project.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: minio-console
+            port:
+              number: 9001
+  tls:
+  - hosts:
+    - minio.devops.k8s_project.k8s_domain
+    secretName: minio-ingress-tls
+
+
+
+
+

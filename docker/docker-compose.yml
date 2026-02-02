@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  tz_main:
+    image: tz-main
+    container_name: docker-${tz_project}
+    build: ./
+    volumes:
+      - ../../:/vagrant/
+      - /var/run/docker.sock:/var/run/docker.sock
+#    ports:
+#      - "22:22"
+#      - "80:80"
+#      - "8080:8080"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    environment:
+      - "k8s_project=${k8s_project}"
+      - "k8s_domain=${k8s_domain}"
+      - "tz_project=${tz_project}"
+      - "docker_user=${docker_user}"
+      - "VAULT_TOKEN=${VAULT_TOKEN}"

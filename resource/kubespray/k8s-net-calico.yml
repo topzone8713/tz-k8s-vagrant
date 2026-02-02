@@ -1,0 +1,25 @@
+---
+# Calico network plugin configuration
+# Using VXLAN mode for cross-node Pod communication
+# VXLAN backend does not use BGP, so it won't modify the host's routing table
+# This prevents SSH connection loss when Calico Pod starts
+# see roles/network_plugin/calico/defaults/main.yml
+
+# Set calico network backend: "bird", "vxlan" or "none"
+# vxlan backend does NOT use BGP, avoiding routing table modifications that break SSH
+# bird backend uses BGP which modifies routing tables and breaks VirtualBox NAT connectivity
+calico_network_backend: "vxlan"
+
+# IP in IP and VXLAN is mutually exclusive modes.
+# set IP in IP encapsulation mode: "Always", "CrossSubnet", "Never"
+# Must be "Never" when using VXLAN
+calico_ipip_mode: "Never"
+
+# set VXLAN encapsulation mode: "Always", "CrossSubnet", "Never"
+# "Always" ensures cross-node Pod communication works via VXLAN overlay
+calico_vxlan_mode: "Always"
+
+# Calico IP auto-detection method
+# Explicitly use eth1 (bridge interface, 192.168.0.x) for node IP detection
+# This ensures Calico uses the correct interface for Pod-to-Pod communication
+calico_ip_auto_method: "interface=eth1"
