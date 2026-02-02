@@ -106,7 +106,7 @@ ingress_nginx_enabled: true
 # ingress_nginx_service_type: LoadBalancer
 # ingress_nginx_service_nodeport_http: 30080
 # ingress_nginx_service_nodeport_https: 30081
-ingress_publish_status_address:
+ingress_publish_status_address: ""
 # ingress_nginx_nodeselector:
 #   kubernetes.io/os: "linux"
 # ingress_nginx_tolerations:
@@ -114,7 +114,7 @@ ingress_publish_status_address:
 #     operator: "Equal"
 #     value: ""
 #     effect: "NoSchedule"
- ingress_nginx_namespace: "ingress-nginx"
+ingress_nginx_namespace: "ingress-nginx"
 # ingress_nginx_insecure_port: 80
 # ingress_nginx_secure_port: 443
 # ingress_nginx_configmap:
@@ -127,7 +127,7 @@ ingress_publish_status_address:
 # ingress_nginx_extra_args:
 #   - --default-ssl-certificate=default/foo-tls
 # ingress_nginx_termination_grace_period_seconds: 300
- ingress_nginx_class: nginx
+ingress_nginx_class: nginx
 # ingress_nginx_without_class: true
 # ingress_nginx_default: false
 
