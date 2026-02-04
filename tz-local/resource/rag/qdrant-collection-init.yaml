@@ -1,0 +1,30 @@
+# Job: Qdrant에 주제별 컬렉션 생성 (embedding dim=1536, Cosine)
+# rag_docs_cointutor, rag_docs_drillquiz (선택 B: 이름 통일)
+# install.sh에서 Qdrant Pod Ready 후 실행
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: qdrant-collection-init
+  namespace: rag
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 5
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: init
+        image: curlimages/curl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          until curl -sf "http://qdrant:6333/collections"; do echo "wait qdrant"; sleep 3; done
+          for c in rag_docs_cointutor rag_docs_drillquiz; do
+            curl -s -X PUT "http://qdrant:6333/collections/$c" \
+              -H "Content-Type: application/json" \
+              -d '{"vectors":{"size":1536,"distance":"Cosine"}}'
+            echo "created $c"
+          done
+          curl -s "http://qdrant:6333/collections" | head -20
+          echo "done"

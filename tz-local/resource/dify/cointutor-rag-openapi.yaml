@@ -1,0 +1,66 @@
+# CoinTutor RAG 백엔드 OpenAPI 스키마 (Dify 커스텀 도구용)
+# "커스텀 도구 만들기" → 스키마 칸에 이 내용 붙여넣기
+openapi: 3.0.0
+info:
+  title: CoinTutor RAG API
+  description: RAG 검색 API (Qdrant 기반)
+  version: 1.0.0
+servers:
+  - url: http://rag-backend.rag.svc.cluster.local:8000
+    description: RAG Backend (K8s 내부)
+paths:
+  /query:
+    post:
+      summary: 질문으로 지식 검색
+      description: 사용자 질문으로 벡터 검색 후 관련 청크 목록 반환
+      operationId: query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  description: 사용자 질문
+                top_k:
+                  type: integer
+                  default: 5
+                  description: 반환할 결과 개수
+                collection:
+                  type: string
+                  description: "주제별 컬렉션. 비우면 기본(rag_docs, CoinTutor) 사용"
+                  default: ""
+      responses:
+        "200":
+          description: 검색 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  question:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        source:
+                          type: string
+                        path:
+                          type: string
+                        score:
+                          type: number
+  /health:
+    get:
+      summary: 헬스체크
+      operationId: health
+      responses:
+        "200":
+          description: OK

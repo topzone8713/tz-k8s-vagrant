@@ -1,0 +1,40 @@
+# RAG Backend + Frontend Ingress (Jenkins ingress 스타일)
+# Backend: rag.default.k8s_project.k8s_domain, rag.k8s_domain
+# Frontend: rag-ui.default.k8s_project.k8s_domain, rag-ui.k8s_domain
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rag-ingress
+  namespace: rag
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: 'false'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    cert-manager.io/cluster-issuer: "selfsigned-issuer"
+spec:
+  rules:
+  - host: rag.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rag-backend
+            port:
+              number: 8000
+  - host: rag-ui.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rag-frontend
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - rag.k8s_domain
+    - rag-ui.k8s_domain
+    secretName: ingress-rag-tls

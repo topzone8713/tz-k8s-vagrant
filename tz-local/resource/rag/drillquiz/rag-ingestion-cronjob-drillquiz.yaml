@@ -1,0 +1,68 @@
+# CronJob: DrillQuiz 전용 인덱싱 (매일 02:30, raw/drillquiz/ -> rag_docs_drillquiz)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rag-ingestion-cronjob-drillquiz
+  namespace: rag
+spec:
+  schedule: "30 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: ingestion
+            image: python:3.11-slim
+            command:
+            - /bin/sh
+            - -c
+            - |
+              pip install --no-cache-dir minio qdrant-client openai pypdf google-genai -q
+              python /config/ingest.py
+            envFrom:
+            - secretRef:
+                name: rag-ingestion-secret
+            env:
+            - name: MINIO_ENDPOINT
+              value: "minio.devops.svc.cluster.local"
+            - name: MINIO_PORT
+              value: "9000"
+            - name: MINIO_BUCKET
+              value: "rag-docs"
+            - name: MINIO_PREFIX
+              value: "raw/drillquiz/"
+            - name: QDRANT_HOST
+              value: "qdrant"
+            - name: QDRANT_PORT
+              value: "6333"
+            - name: QDRANT_COLLECTION
+              value: "rag_docs_drillquiz"
+            - name: EMBEDDING_PROVIDER
+              value: "gemini"
+            - name: EMBEDDING_MODEL
+              value: "gemini-embedding-001"
+            - name: CHUNK_SIZE
+              value: "500"
+            - name: CHUNK_OVERLAP
+              value: "50"
+            volumeMounts:
+            - name: script
+              mountPath: /config
+              readOnly: true
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "200m"
+              limits:
+                memory: "2Gi"
+                cpu: "1000m"
+          volumes:
+          - name: script
+            configMap:
+              name: rag-ingestion-script

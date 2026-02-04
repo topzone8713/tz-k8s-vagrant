@@ -1,0 +1,313 @@
+app:
+  description: CoinTutor Service Supporter
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: CoinTutor
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/gemini:0.7.4@5faf411e694e0da130a337347a625a3812b1b7502a0183382d66d92c841bf05a
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: llm
+        targetType: answer
+      id: 1711528802931-1711528833796
+      selected: false
+      source: '1711528802931'
+      sourceHandle: source
+      target: '1711528833796'
+      targetHandle: target
+      type: custom
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: tool
+      id: 1711528708197--1770181014076-target
+      selected: false
+      source: '1711528708197'
+      sourceHandle: source
+      target: '1770181014076'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: llm
+      id: 1770181014076-source-1711528802931-target
+      selected: false
+      source: '1770181014076'
+      sourceHandle: source
+      target: '1711528802931'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: Define the initial parameters for launching a workflow
+        selected: false
+        title: Start
+        type: start
+        variables: []
+      height: 117
+      id: '1711528708197'
+      position:
+        x: 4.096783147582869
+        y: 624.796173054883
+      positionAbsolute:
+        x: 4.096783147582869
+        y: 624.796173054883
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1770181014076'
+          - text
+        desc: ''
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+            top_p: 1
+          mode: chat
+          name: gemini-2.5-flash
+          provider: langgenius/gemini/google
+        prompt_template:
+        - id: a50ef1e8-6092-4058-bf3e-70cce0407d05
+          role: system
+          text: 'Use the following context as your learned knowledge, inside <context></context>
+            XML tags.
+
+            <context>
+
+            {{#context#}}
+
+            </context>
+
+            When answer to user:
+
+            - If you don''t know, just say that you don''t know.
+
+            - If you don''t know when you are not sure, ask for clarification.
+
+            Avoid mentioning that you obtained the information from the context.
+
+            And answer according to the language of the user''s question.'
+        selected: false
+        structured_output_enabled: true
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      dragging: false
+      height: 88
+      id: '1711528802931'
+      position:
+        x: 713.3004309594536
+        y: 473.9559537854002
+      positionAbsolute:
+        x: 713.3004309594536
+        y: 473.9559537854002
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1711528802931.text#}}'
+        desc: ''
+        selected: false
+        title: Answer 2
+        type: answer
+        variables:
+        - value_selector:
+          - '1711528802931'
+          - text
+          variable: text
+      dragging: false
+      height: 103
+      id: '1711528833796'
+      position:
+        x: 1061.81306623036
+        y: 526.6725112624372
+      positionAbsolute:
+        x: 1061.81306623036
+        y: 526.6725112624372
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: 사용자 질문
+            ja_JP: 사용자 질문
+            pt_BR: 사용자 질문
+            zh_Hans: 사용자 질문
+          label:
+            en_US: question
+            ja_JP: question
+            pt_BR: question
+            zh_Hans: question
+          llm_description: 사용자 질문
+          max: null
+          min: null
+          name: question
+          options: []
+          placeholder:
+            en_US: 사용자 질문
+            ja_JP: 사용자 질문
+            pt_BR: 사용자 질문
+            zh_Hans: 사용자 질문
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: 5
+          form: llm
+          human_description:
+            en_US: 반환할 결과 개수
+            ja_JP: 반환할 결과 개수
+            pt_BR: 반환할 결과 개수
+            zh_Hans: 반환할 결과 개수
+          label:
+            en_US: top_k
+            ja_JP: top_k
+            pt_BR: top_k
+            zh_Hans: top_k
+          llm_description: 반환할 결과 개수
+          max: null
+          min: null
+          name: top_k
+          options: []
+          placeholder:
+            en_US: 반환할 결과 개수
+            ja_JP: 반환할 결과 개수
+            pt_BR: 반환할 결과 개수
+            zh_Hans: 반환할 결과 개수
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        params:
+          question: ''
+          top_k: ''
+        plugin_id: null
+        plugin_unique_identifier: null
+        provider_icon:
+          background: '#FEF7C3'
+          content: 🕵️
+        provider_id: a1744db9-36ab-44a2-abe2-20bcef718142
+        provider_name: CoinTutor RAG
+        provider_type: api
+        selected: false
+        title: query
+        tool_configurations: {}
+        tool_description: 사용자 질문으로 벡터 검색 후 관련 청크 목록 반환
+        tool_label: query
+        tool_name: query
+        tool_node_version: '2'
+        tool_parameters:
+          question:
+            type: mixed
+            value: '{{#sys.query#}}'
+          top_k:
+            type: constant
+            value: 5
+        type: tool
+      height: 52
+      id: '1770181014076'
+      position:
+        x: 340.93943744381
+        y: 689.3184638435275
+      positionAbsolute:
+        x: 340.93943744381
+        y: 689.3184638435275
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 104.42899394821461
+      y: -54.9848749469364
+      zoom: 0.6650002680124231
+  rag_pipeline_variables: []

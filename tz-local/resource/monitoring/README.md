@@ -77,5 +77,23 @@ kubectl rollout restart statefulset.apps/prometheus-prometheus-kube-prometheus-p
 sleep 20
 ```
 
+## Loki: 며칠 지나면 CrashLoopBackOff / read-only file system
+
+**원인**  
+Loki가 스토리지를 **EmptyDir**로 쓰고 있으면, WAL/청크가 쌓여 며칠 뒤 디스크가 가득 찬다.  
+이때 쓰기 실패가 "read-only file system"처럼 나오고, 재시작 probe 실패 → CrashLoopBackOff가 반복된다.  
+재시작하면 EmptyDir이 비워져서 잠시 정상이다가, 다시 쌓이면 같은 현상이 반복된다.
+
+**해결**  
+스토리지를 **PVC**로 바꿔야 한다.
+
+- **신규 설치**: `install.sh`가 `loki-stack-values.yaml`(PVC 10Gi, storageClassName: nfs-client)을 사용하므로, 그대로 설치하면 PVC로 올라간다.
+- **이미 EmptyDir로 떠 있는 클러스터**  
+  - StatefulSet에는 **이미 만든 뒤에는 volumeClaimTemplate 추가가 불가**하다.  
+  - 따라서 **StatefulSet 삭제 후 재설치**가 필요하다.  
+    1. `kubectl delete statefulset loki -n monitoring`  
+    2. `cd /vagrant/tz-local/resource/monitoring && bash install.sh` (또는 Loki 설치 부분만 helm upgrade --install loki ... -f loki-stack-values.yaml)  
+  - 재설치 후 Pod는 새 PVC에 붙어 올라가고, retention(loki_storage.yaml 336h)에 따라 오래된 데이터는 정리된다.
+
 
 

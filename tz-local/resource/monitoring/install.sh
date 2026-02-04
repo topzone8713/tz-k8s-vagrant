@@ -87,9 +87,10 @@ sed -i "s/k8s_project/${k8s_project}/g" values.yaml_bak
 #helm show chart grafana/loki-stack
 #--reuse-values
 #2.9.9
+# PVC 사용 필수: EmptyDir는 며칠 지나면 가득 차서 read-only/CrashLoopBackOff 발생 (loki-stack-values.yaml 참고)
 helm upgrade --install loki grafana/loki-stack --version 2.9.11 \
   -n ${NS} \
-  --set persistence.enabled=true,persistence.type=pvc,persistence.size=10Gi
+  -f loki-stack-values.yaml
 #k patch statefulset/loki -p '{"spec": {"template": {"spec": {"nodeSelector": {"team": "devops"}}}}}' -n ${NS}
 #k patch statefulset/loki -p '{"spec": {"template": {"spec": {"nodeSelector": {"environment": "monitoring"}}}}}' -n ${NS}
 k patch statefulset/loki -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "tz-registrykey"}]}}}}' -n ${NS}

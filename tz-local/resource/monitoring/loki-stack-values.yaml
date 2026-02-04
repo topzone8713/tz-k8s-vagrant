@@ -1,0 +1,16 @@
+# Loki (loki-stack) persistence - EmptyDir가 며칠 지나면 가득 차서
+# "read-only file system" / CrashLoopBackOff 가 발생하므로 PVC 사용 필수.
+# 서브차트(loki)에 전달되도록 loki.persistence 로 설정.
+loki:
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: nfs-client
+    # type: pvc  # 차트에 따라 필요 시 주석 해제
+
+# 구버전 loki-stack 차트가 상위 persistence 키를 쓰는 경우 대비
+persistence:
+  enabled: true
+  type: pvc
+  size: 10Gi
+  storageClassName: nfs-client

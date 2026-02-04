@@ -1,0 +1,71 @@
+# RAG Backend DrillQuiz 전용 (방법 A: 백엔드 2개 배포)
+# ConfigMap rag-backend-script, Secret rag-ingestion-secret 공유
+# COLLECTION=rag_docs_drillquiz 고정
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-backend-drillquiz
+  namespace: rag
+  labels:
+    app: rag-backend-drillquiz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-backend-drillquiz
+  template:
+    metadata:
+      labels:
+        app: rag-backend-drillquiz
+    spec:
+      containers:
+      - name: backend
+        image: python:3.11-slim
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          pip install --no-cache-dir fastapi uvicorn qdrant-client google-genai 2>/dev/null
+          cp /config/main.py /tmp/main.py && exec python /tmp/main.py
+        envFrom:
+        - secretRef:
+            name: rag-ingestion-secret
+        env:
+        - name: QDRANT_HOST
+          value: "qdrant"
+        - name: QDRANT_PORT
+          value: "6333"
+        - name: QDRANT_COLLECTION
+          value: "rag_docs_drillquiz"
+        - name: EMBEDDING_MODEL
+          value: "gemini-embedding-001"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: true
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: config
+        configMap:
+          name: rag-backend-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-backend-drillquiz
+  namespace: rag
+spec:
+  selector:
+    app: rag-backend-drillquiz
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http

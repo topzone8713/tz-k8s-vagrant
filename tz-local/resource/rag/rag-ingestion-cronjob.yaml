@@ -1,0 +1,70 @@
+# CronJob: MinIO raw/ -> 청킹 -> 임베딩 -> Qdrant rag_docs (주기 실행)
+# 스케줄: 매일 02:00. Secret rag-ingestion-secret, ConfigMap rag-ingestion-script 필요.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rag-ingestion
+  namespace: rag
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: ingestion
+            image: python:3.11-slim
+            command:
+            - /bin/sh
+            - -c
+            - |
+              pip install --no-cache-dir minio qdrant-client openai pypdf google-genai -q
+              python /config/ingest.py
+            envFrom:
+            - secretRef:
+                name: rag-ingestion-secret
+            env:
+            - name: MINIO_ENDPOINT
+              value: "minio.devops.svc.cluster.local"
+            - name: MINIO_PORT
+              value: "9000"
+            - name: MINIO_BUCKET
+              value: "rag-docs"
+            - name: MINIO_PREFIX
+              value: "raw/"
+            - name: QDRANT_HOST
+              value: "qdrant"
+            - name: QDRANT_PORT
+              value: "6333"
+            - name: QDRANT_COLLECTION
+              value: "rag_docs"
+            # OpenAI: value "openai". Gemini: value "gemini", Secret에 GEMINI_API_KEY
+            - name: EMBEDDING_PROVIDER
+              value: "gemini"
+            - name: EMBEDDING_MODEL
+              value: "gemini-embedding-001"
+            - name: CHUNK_SIZE
+              value: "500"
+            - name: CHUNK_OVERLAP
+              value: "50"
+            volumeMounts:
+            - name: script
+              mountPath: /config
+              readOnly: true
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "200m"
+              limits:
+                memory: "2Gi"
+                cpu: "1000m"
+          volumes:
+          - name: script
+            configMap:
+              name: rag-ingestion-script

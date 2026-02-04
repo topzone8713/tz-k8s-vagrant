@@ -1,0 +1,27 @@
+# Dify Ingress (Jenkins 스타일) — Helm chart에 ingress 포함 시 선택 적용
+# Host: dify.default.k8s_project.k8s_domain, dify.k8s_domain
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dify-ingress
+  namespace: dify
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: dify.k8s_domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dify
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - dify.k8s_domain
+    secretName: ingress-dify-tls

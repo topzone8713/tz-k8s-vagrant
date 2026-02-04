@@ -1,0 +1,66 @@
+# DrillQuiz RAG 백엔드 OpenAPI 스키마 (Dify 커스텀 도구용)
+# "커스텀 도구 만들기" → 이름 "DrillQuiz RAG", 스키마에 이 내용 붙여넣기
+openapi: 3.0.0
+info:
+  title: DrillQuiz RAG API
+  description: DrillQuiz 전용 RAG 검색 API (Qdrant rag_docs_drillquiz)
+  version: 1.0.0
+servers:
+  - url: http://rag-backend-drillquiz.rag.svc.cluster.local:8000
+    description: RAG Backend DrillQuiz (K8s 내부, 방법 A)
+paths:
+  /query:
+    post:
+      summary: 질문으로 지식 검색 (DrillQuiz)
+      description: DrillQuiz 문서만 검색
+      operationId: query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  description: 사용자 질문
+                top_k:
+                  type: integer
+                  default: 5
+                  description: 반환할 결과 개수
+                collection:
+                  type: string
+                  description: DrillQuiz 컬렉션 (고정)
+                  default: rag_docs_drillquiz
+      responses:
+        "200":
+          description: 검색 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  question:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        source:
+                          type: string
+                        path:
+                          type: string
+                        score:
+                          type: number
+  /health:
+    get:
+      summary: 헬스체크
+      operationId: health
+      responses:
+        "200":
+          description: OK

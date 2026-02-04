@@ -1,0 +1,24 @@
+# MinIO 버킷 "dify" 생성 (1회 Job). dify-minio-secret 존재 시 install.sh에서 적용
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-create-bucket-dify
+  namespace: dify
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: mc
+        image: minio/mc:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          mc alias set myminio http://minio.devops.svc.cluster.local:9000 "$S3_ACCESS_KEY" "$S3_SECRET_KEY" || exit 1
+          mc mb myminio/dify --ignore-existing || true
+        envFrom:
+        - secretRef:
+            name: dify-minio-secret

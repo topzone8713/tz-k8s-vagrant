@@ -1,0 +1,109 @@
+# RAG Frontend: static UI (calls backend /query)
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-frontend-html
+  namespace: rag
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><title>RAG</title></head>
+    <body>
+    <h1>RAG Query</h1>
+    <p>
+      <label>주제: </label>
+      <select id="topic">
+        <option value="rag_docs_cointutor">CoinTutor</option>
+        <option value="rag_docs_drillquiz">DrillQuiz</option>
+      </select>
+    </p>
+    <p>
+      <input id="q" placeholder="질문 입력" style="width:300px" />
+      <button onclick="query()">검색</button>
+    </p>
+    <pre id="out"></pre>
+    <script>
+    function query() {
+      var q = document.getElementById('q').value;
+      var coll = document.getElementById('topic').value;
+      var out = document.getElementById('out');
+      out.textContent = '요청 중...';
+      fetch('/query', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({question: q, top_k: 5, collection: coll}) })
+        .then(r=>r.json()).then(d=> { out.textContent = JSON.stringify(d, null, 2); })
+        .catch(e=> { out.textContent = 'Error: ' + e.message; });
+    }
+    </script>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-frontend
+  namespace: rag
+  labels:
+    app: rag-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-frontend
+  template:
+    metadata:
+      labels:
+        app: rag-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: nginx:alpine
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+      volumes:
+      - name: html
+        configMap:
+          name: rag-frontend-html
+      - name: nginx-conf
+        configMap:
+          name: rag-frontend-nginx
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-frontend-nginx
+  namespace: rag
+data:
+  default.conf: |
+    server {
+      listen 80;
+      root /usr/share/nginx/html;
+      index index.html;
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+      location /query {
+        proxy_pass http://rag-backend:8000/query;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Content-Type application/json;
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-frontend
+  namespace: rag
+spec:
+  selector:
+    app: rag-frontend
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http

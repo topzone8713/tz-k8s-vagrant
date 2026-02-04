@@ -1,0 +1,155 @@
+# RAG Backend: minimal API (Qdrant search + optional LLM)
+# Env: QDRANT_HOST, MINIO_* from secret or env
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-backend-script
+  namespace: rag
+data:
+  main.py: |
+    from fastapi import FastAPI, HTTPException
+    from fastapi.responses import JSONResponse
+    from pydantic import BaseModel
+    import os
+    import uvicorn
+    from qdrant_client import QdrantClient
+
+    app = FastAPI(title="RAG Backend")
+    QDRANT_HOST = os.environ.get("QDRANT_HOST", "qdrant")
+    QDRANT_PORT = int(os.environ.get("QDRANT_PORT", "6333"))
+    COLLECTION = os.environ.get("QDRANT_COLLECTION", "rag_docs")
+    GEMINI_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    EMBED_MODEL = os.environ.get("EMBEDDING_MODEL", "gemini-embedding-001")
+
+    def get_qdrant():
+        return QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, check_compatibility=False)
+
+    def embed_query(text: str) -> list[float]:
+        if not GEMINI_KEY:
+            raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY required")
+        from google import genai
+        from google.genai import types
+        client = genai.Client(api_key=GEMINI_KEY)
+        result = client.models.embed_content(
+            model=EMBED_MODEL,
+            contents=text,
+            config=types.EmbedContentConfig(
+                task_type="RETRIEVAL_QUERY",
+                output_dimensionality=1536,
+            ),
+        )
+        e = result.embeddings[0]
+        v = getattr(e, "values", e)
+        return list(v) if not isinstance(v, list) else v
+
+    class QueryRequest(BaseModel):
+        question: str
+        top_k: int = 5
+        collection: str | None = None  # 주제별 분리: rag_docs_cointutor, rag_docs_drillquiz 등
+
+    @app.get("/health")
+    def health():
+        return {"status": "ok"}
+
+    @app.post("/query")
+    def query(req: QueryRequest):
+        try:
+            coll = (req.collection or "").strip() or COLLECTION
+            if coll == "rag_docs":
+                coll = "rag_docs_cointutor"
+            query_vector = embed_query(req.question)
+            client = get_qdrant()
+            response = client.query_points(
+                collection_name=coll,
+                query=query_vector,
+                limit=req.top_k,
+            )
+            points = getattr(response, "points", None) or getattr(response, "result", []) or []
+            results = [
+                {
+                    "text": (getattr(p, "payload", None) or {}).get("text", ""),
+                    "source": (getattr(p, "payload", None) or {}).get("source", ""),
+                    "path": (getattr(p, "payload", None) or {}).get("path", ""),
+                    "score": getattr(p, "score", None),
+                }
+                for p in points
+            ]
+            body = {"question": req.question, "results": results}
+            return JSONResponse(
+                content=body,
+                headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    if __name__ == "__main__":
+        uvicorn.run(app, host="0.0.0.0", port=8000)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-backend
+  namespace: rag
+  labels:
+    app: rag-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-backend
+  template:
+    metadata:
+      labels:
+        app: rag-backend
+    spec:
+      containers:
+      - name: backend
+        image: python:3.11-slim
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          pip install --no-cache-dir fastapi uvicorn qdrant-client google-genai 2>/dev/null
+          cp /config/main.py /tmp/main.py && exec python /tmp/main.py
+        envFrom:
+        - secretRef:
+            name: rag-ingestion-secret
+        env:
+        - name: QDRANT_HOST
+          value: "qdrant"
+        - name: QDRANT_PORT
+          value: "6333"
+        - name: QDRANT_COLLECTION
+          value: "rag_docs_cointutor"
+        - name: EMBEDDING_MODEL
+          value: "gemini-embedding-001"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: true
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: config
+        configMap:
+          name: rag-backend-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-backend
+  namespace: rag
+spec:
+  selector:
+    app: rag-backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http

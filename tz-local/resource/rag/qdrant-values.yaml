@@ -1,0 +1,38 @@
+# Qdrant Helm values (rag namespace)
+# ref: helm repo add qdrant https://qdrant.github.io/qdrant-helm
+
+replicaCount: 1
+
+image:
+  repository: docker.io/qdrant/qdrant
+  pullPolicy: IfNotPresent
+  tag: "v1.12.4"
+
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 6333
+      targetPort: 6333
+
+persistence:
+  accessModes: ["ReadWriteOnce"]
+  size: 10Gi
+  storageClassName: ""
+
+resources:
+  requests:
+    memory: "2Gi"
+    cpu: "500m"
+  limits:
+    memory: "4Gi"
+    cpu: "2000m"
+
+# single-node; cluster disabled
+config:
+  cluster:
+    enabled: false
+
+# optional: pin to specific node (set in install.sh via sed)
+# nodeSelector: {}
+# affinity: {}
