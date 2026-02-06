@@ -23,7 +23,7 @@ to project root directory.
        git clone https://github.com/topzone8713/tz-k8s-vagrant.git
        cd tz-k8s-vagrant
 
-    -. Windows 사용자: Git Bash 또는 MSYS2에서 실행. 자세한 내용은 docs/windows-setup.md 참조
+    -. Windows 사용자: Git Bash 또는 MSYS2에서 실행. **Cursor IDE** 사용 시 기본 터미널을 Git Bash로 설정하면 편함. 자세한 내용은 docs/windows-setup.md 참조
 
     -. copy resources like this,
         tz-k8s-vagrant/resources

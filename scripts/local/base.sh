@@ -305,3 +305,5 @@ cat <<EOF | sudo tee -a /etc/hosts > /dev/null
 EOF
 fi
 
+# Explicit exit 0 so provision is not marked failed by last command (e.g. tee) exit code
+exit 0

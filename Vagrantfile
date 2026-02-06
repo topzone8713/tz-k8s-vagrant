@@ -3,6 +3,63 @@
 
 IMAGE_NAME = "bento/ubuntu-22.04"
 COUNTER = 2
+
+# Detect network interface: Mac (en0), Linux, or Windows
+def get_bridge_interface
+  # Find VBoxManage command
+  vboxmanage_cmd = nil
+  possible_paths = [
+    "VBoxManage",
+    "/Applications/VirtualBox.app/Contents/MacOS/VBoxManage",
+    "/usr/bin/VBoxManage",
+    "/usr/local/bin/VBoxManage",
+    "C:/Program Files/Oracle/VirtualBox/VBoxManage.exe",
+    "C:/Program Files (x86)/Oracle/VirtualBox/VBoxManage.exe",
+    (ENV["ProgramFiles"] || "C:/Program Files") + "/Oracle/VirtualBox/VBoxManage.exe"
+  ].compact.uniq
+
+  possible_paths.each do |path|
+    if path == "VBoxManage"
+      if system("which #{path} > /dev/null 2>&1") || system("where #{path} > nul 2>&1")
+        vboxmanage_cmd = path
+        break
+      end
+    elsif File.exist?(path) && File.executable?(path)
+      vboxmanage_cmd = path
+      break
+    end
+  end
+
+  mac_default = "en0: Wi-Fi (AirPort)"
+  return mac_default unless vboxmanage_cmd
+
+  begin
+    output = `"#{vboxmanage_cmd}" list bridgedifs 2>nul 2>/dev/null`
+    return mac_default unless $?.success?
+
+    interfaces = output.split("\n").grep(/^Name:/).map do |line|
+      line.sub(/^Name:\s+/, "").strip
+    end
+
+    # Mac: prefer en0
+    if interfaces.include?("en0: Wi-Fi (AirPort)")
+      return "en0: Wi-Fi (AirPort)"
+    elsif interfaces.any? { |iface| iface.start_with?("en0:") }
+      return interfaces.find { |iface| iface.start_with?("en0:") }
+    elsif interfaces.include?("en0")
+      return "en0"
+    end
+
+    # Windows/Linux: use first available interface
+    return interfaces.first if interfaces.any?
+    mac_default
+  rescue
+    mac_default
+  end
+end
+
+BRIDGE_INTERFACE = get_bridge_interface
+
 Vagrant.configure("2") do |config|
   config.vm.box = IMAGE_NAME
   config.ssh.insert_key=false
@@ -11,14 +68,17 @@ Vagrant.configure("2") do |config|
   #   v.cpus = 2
   # end
 
-  # VM memory tuned for ~16GB host: total ~11GB for VMs, ~5GB headroom for host/network
   config.vm.define "kube-master" do |master|
     master.vm.box = IMAGE_NAME
     master.vm.provider "virtualbox" do |vb|
-      vb.memory = 4096
-      vb.cpus = 2
+      vb.memory = 5096
+      vb.cpus = 3
     end
-    master.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.100"
+    if BRIDGE_INTERFACE
+      master.vm.network "public_network", bridge: BRIDGE_INTERFACE, ip: "192.168.0.100"
+    else
+      master.vm.network "public_network", ip: "192.168.0.100"
+    end
     master.vm.hostname = "kube-master"
     master.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/master.sh"), :args => master.vm.hostname
   end
@@ -27,10 +87,14 @@ Vagrant.configure("2") do |config|
     config.vm.define "kube-node-#{i}" do |node|
         node.vm.box = IMAGE_NAME
         node.vm.provider "virtualbox" do |vb|
-          vb.memory = 3584
+          vb.memory = 3072
           vb.cpus = 2
         end
-        node.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.10#{i}"
+        if BRIDGE_INTERFACE
+          node.vm.network "public_network", bridge: BRIDGE_INTERFACE, ip: "192.168.0.10#{i}"
+        else
+          node.vm.network "public_network", ip: "192.168.0.10#{i}"
+        end
         node.vm.hostname = "kube-node-#{i}"
         node.vm.provision "shell", :path => File.join(File.dirname(__FILE__),"scripts/local/node.sh"), :args => node.vm.hostname
     end

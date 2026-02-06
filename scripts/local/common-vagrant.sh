@@ -57,7 +57,8 @@ find_vagrant_cmd() {
     
     local VAGRANT_CMD=$(which vagrant 2>/dev/null || find /usr/local -name vagrant 2>/dev/null | head -1 || echo "vagrant")
     
-    if [ ! -x "$(which $VAGRANT_CMD 2>/dev/null)" ] && [ ! -f "$VAGRANT_CMD" ]; then
+    # Quote-friendly check: path may contain spaces (e.g. "C:\Program Files (x86)\Vagrant\bin\vagrant" on Windows)
+    if [ ! -f "$VAGRANT_CMD" ] && ! command -v vagrant >/dev/null 2>&1; then
         echo "Error: vagrant command not found. Please install Vagrant or set PATH." >&2
         return 1
     fi
@@ -79,9 +80,9 @@ ssh_vm() {
     fi
     
     if [ "$SUPPRESS_WARNINGS" = "true" ]; then
-        $VAGRANT_CMD ssh "$VM_NAME" -- -t "$COMMAND" 2>&1 | grep -v "Warning: Permanently added" || return ${PIPESTATUS[0]}
+        "$VAGRANT_CMD" ssh "$VM_NAME" -- -t "$COMMAND" 2>&1 | grep -v "Warning: Permanently added" || return ${PIPESTATUS[0]}
     else
-        $VAGRANT_CMD ssh "$VM_NAME" -- -t "$COMMAND"
+        "$VAGRANT_CMD" ssh "$VM_NAME" -- -t "$COMMAND"
     fi
 }
 
@@ -96,15 +97,25 @@ get_vm_status() {
         return 1
     fi
     
-    $VAGRANT_CMD status "$VM_NAME" 2>/dev/null | grep "$VM_NAME" | awk '{print $2}' || echo "unknown"
+    "$VAGRANT_CMD" status "$VM_NAME" 2>/dev/null | grep "$VM_NAME" | awk '{print $2}' || echo "unknown"
 }
 
 # Get list of running VMs
 # Usage: get_running_vms
 get_running_vms() {
     local VAGRANT_CMD="${1:-$(find_vagrant_cmd)}"
+    local list=""
     
-    $VAGRANT_CMD status --machine-readable 2>/dev/null | grep ",state,running" | cut -d',' -f2 | sort -u
+    # Try machine-readable first (timestamp,target,type,data -> field 2 = target)
+    list=$("$VAGRANT_CMD" status --machine-readable 2>&1 | tr -d '\r' | grep ",state,running" | cut -d',' -f2 | sort -u)
+    
+    # Fallback: parse human-readable output (e.g. "kube-master   running (virtualbox)")
+    # Needed on Windows where machine-readable format can differ or go to stderr
+    if [ -z "$list" ]; then
+        list=$("$VAGRANT_CMD" status 2>&1 | tr -d '\r' | awk '/running\s*\(/ {print $1}' | sort -u)
+    fi
+    
+    echo "$list"
 }
 
 # Check if tool is installed

@@ -15,7 +15,8 @@
 set +e  # Don't exit on error for host-side operations
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+# scripts/local -> ../.. = project root (one level up from scripts/)
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Source common utilities
 if [ -f "$SCRIPT_DIR/common-vagrant.sh" ]; then
@@ -174,6 +175,9 @@ apply_static_ip() {
     echo "Detected host: $DETECTED_HOST"
     echo "Using vagrant: $VAGRANT_CMD"
     echo ""
+    
+    # Ensure we run vagrant from project root (required for paths with spaces on Windows)
+    cd "$PROJECT_ROOT" || { echo "Error: Cannot cd to project root $PROJECT_ROOT"; exit 1; }
     
     # Get list of running VMs
     echo "Checking running VMs..."
@@ -354,7 +358,7 @@ restore_mac2_node() {
         if [ "$VM_STATUS" != "running" ]; then
             echo "  ⚠ Warning: VM is not running. Status: $VM_STATUS"
             echo "  -> Starting VM..."
-            $VAGRANT_CMD up "$vm_name" 2>&1 | grep -v "Warning: Permanently added" || {
+            "$VAGRANT_CMD" up "$vm_name" 2>&1 | grep -v "Warning: Permanently added" || {
                 echo "    ✗ Failed to start VM"
                 return 1
             }
