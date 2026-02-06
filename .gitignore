@@ -2,6 +2,9 @@
 .idea
 .project
 .DS_Store
+# Windows device name - do not commit if created on Mac/Linux by redirect
+/nul
+nul
 *.pub
 *.crt
 *.tfstate*

@@ -1,7 +1,9 @@
 # tz-k8s-vagrant
 
 It supports two version of k8s installation in terraform or local VMs.
-to project root directory. 
+to project root directory.
+
+**Windows 사용자**: Mac/Linux와 동일하게 Git Bash 또는 MSYS2에서 `bash bootstrap.sh`로 실행할 수 있습니다. VirtualBox·Vagrant·Git for Windows 설치 후 사용하며, 자세한 설정은 [docs/windows-setup.md](docs/windows-setup.md)를 참조하세요.
 
 ![Architecture1](./resource/tz-k8s-vagrant-env.png)
 ![Architecture2](./resource/tz-k8s-vagrant-env1.png)

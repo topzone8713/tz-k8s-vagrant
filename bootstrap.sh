@@ -155,6 +155,10 @@ elif [[ "$1" == "remove" ]]; then
       VBOXMANAGE_CMD="/Applications/VirtualBox.app/Contents/MacOS/VBoxManage"
     elif [ -f "/usr/bin/VBoxManage" ]; then
       VBOXMANAGE_CMD="/usr/bin/VBoxManage"
+    elif [ -f "/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" ]; then
+      VBOXMANAGE_CMD="/c/Program Files/Oracle/VirtualBox/VBoxManage.exe"
+    elif [ -f "/mingw64/bin/VBoxManage.exe" ]; then
+      VBOXMANAGE_CMD="/mingw64/bin/VBoxManage.exe"
     fi
     if [ -n "$VBOXMANAGE_CMD" ] && [ -d .vagrant/machines ]; then
       for machine_dir in .vagrant/machines/*/; do
