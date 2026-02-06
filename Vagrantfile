@@ -4,6 +4,17 @@
 IMAGE_NAME = "bento/ubuntu-22.04"
 COUNTER = 2
 
+# Windows only: avoid using "nul" on Mac/Linux (creates a file named "nul")
+def vbox_in_path?
+  return true if system("which VBoxManage > /dev/null 2>&1")
+  return system("where VBoxManage > nul 2>&1") if Gem.win_platform?
+  false
+end
+
+def vbox_null_redirect
+  Gem.win_platform? ? "2>nul" : "2>/dev/null"
+end
+
 # Detect network interface: Mac (en0), Linux, or Windows
 def get_bridge_interface
   # Find VBoxManage command
@@ -20,7 +31,7 @@ def get_bridge_interface
 
   possible_paths.each do |path|
     if path == "VBoxManage"
-      if system("which #{path} > /dev/null 2>&1") || system("where #{path} > nul 2>&1")
+      if vbox_in_path?
         vboxmanage_cmd = path
         break
       end
@@ -34,7 +45,7 @@ def get_bridge_interface
   return mac_default unless vboxmanage_cmd
 
   begin
-    output = `"#{vboxmanage_cmd}" list bridgedifs 2>nul 2>/dev/null`
+    output = `"#{vboxmanage_cmd}" list bridgedifs #{vbox_null_redirect}`
     return mac_default unless $?.success?
 
     interfaces = output.split("\n").grep(/^Name:/).map do |line|

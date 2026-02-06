@@ -145,6 +145,35 @@ elif [[ "$1" == "remove" ]]; then
     # Try destroy again
     echo "Retrying vagrant destroy..."
     vagrant destroy -f
+  elif [ $VAGRANT_DESTROY_EXIT -ne 0 ] && echo "$VAGRANT_DESTROY_OUTPUT" | grep -qi "E_ACCESSDENIED\|LockMachine\|object functionality is limited"; then
+    # VirtualBox VM lock (e.g. VM in use or corrupted state) - try VBoxManage unregistervm
+    echo "WARNING: VirtualBox VM lock detected (E_ACCESSDENIED). Attempting to remove VMs via VBoxManage..."
+    VBOXMANAGE_CMD=""
+    if command -v VBoxManage > /dev/null 2>&1; then
+      VBOXMANAGE_CMD="VBoxManage"
+    elif [ -f "/Applications/VirtualBox.app/Contents/MacOS/VBoxManage" ]; then
+      VBOXMANAGE_CMD="/Applications/VirtualBox.app/Contents/MacOS/VBoxManage"
+    elif [ -f "/usr/bin/VBoxManage" ]; then
+      VBOXMANAGE_CMD="/usr/bin/VBoxManage"
+    fi
+    if [ -n "$VBOXMANAGE_CMD" ] && [ -d .vagrant/machines ]; then
+      for machine_dir in .vagrant/machines/*/; do
+        [ -d "$machine_dir" ] || continue
+        id_file="${machine_dir}virtualbox/id"
+        if [ -f "$id_file" ]; then
+          UUID=$(cat "$id_file" 2>/dev/null | tr -d ' \r\n')
+          if [ -n "$UUID" ]; then
+            echo "  Unregistering VM UUID: $UUID"
+            $VBOXMANAGE_CMD unregistervm "$UUID" --delete 2>/dev/null || $VBOXMANAGE_CMD unregistervm "$UUID" 2>/dev/null || true
+          fi
+        fi
+      done
+      rm -Rf .vagrant
+      echo "VMs unregistered and .vagrant removed."
+    else
+      echo "WARNING: vagrant destroy failed. Try: 1) Quit VirtualBox GUI, 2) bash bootstrap.sh remove again, or 3) VBoxManage unregistervm <UUID> --delete"
+      echo "Output: $VAGRANT_DESTROY_OUTPUT"
+    fi
   elif [ $VAGRANT_DESTROY_EXIT -ne 0 ]; then
     echo "WARNING: vagrant destroy returned non-zero exit code: $VAGRANT_DESTROY_EXIT"
     echo "Output: $VAGRANT_DESTROY_OUTPUT"
@@ -209,6 +238,14 @@ else
   echo "Use existing ssh key files: ${MYKEY}"
 fi
 
+# Copy Vagrantfile from scripts/local before any vagrant command (avoids stale root Vagrantfile creating e.g. "nul" on Mac)
+if [[ "${A_ENV}" == "M" ]]; then
+  cp -Rf ./scripts/local/Vagrantfile Vagrantfile
+elif [[ "${A_ENV}" == "S" ]]; then
+  cp -Rf ./scripts/local/Vagrantfile_slave Vagrantfile
+elif [[ "${A_ENV}" == "S2" ]]; then
+  cp -Rf ./scripts/local/Vagrantfile_slave2 Vagrantfile
+fi
 cp -Rf Vagrantfile Vagrantfile.bak
 if [[ "${1}" == "save" || "${1}" == "restore" || "${1}" == "delete" || "${1}" == "list" ]]; then
   EVENT=${1}
