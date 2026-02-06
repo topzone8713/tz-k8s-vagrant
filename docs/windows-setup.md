@@ -160,9 +160,9 @@ kubectl get nodes
 
 ### "The system cannot find the path specified" (vagrant ssh 시)
 
-- `vagrant ssh kube-master` 또는 kubespray.sh 실행 시 위 메시지가 **두 번** 나올 수 있습니다.
-- Vagrant/SSH가 Windows에서 경로를 찾다가 뜨는 메시지이며, **그 다음에 VM 안에서 스크립트가 정상 실행되면 무시해도 됩니다.**
-- "Checking internet connectivity...", "Cloning into 'kubespray'..." 등이 이어지면 정상 동작입니다.
+- **원인**: Git Bash에서 `vagrant ssh`를 호출할 때, Vagrant가 Windows 쪽 경로를 제대로 찾지 못해 발생할 수 있습니다.
+- **대응**: `bootstrap.sh`와 `common-vagrant.sh`에서 Windows일 때 **cmd.exe**로 작업 디렉터리를 Windows 경로로 바꾼 뒤 `vagrant ssh`를 실행하도록 되어 있습니다. 최신 코드를 pull한 상태라면 해당 경고는 줄어들거나 사라질 수 있습니다.
+- 이전 버전 사용 중이라면 위 메시지가 나와도, 그 다음에 VM 안에서 스크립트가 실행되면(**Checking internet connectivity...**, **Cloning into 'kubespray'...** 등) 정상 동작으로 보면 됩니다.
 
 ### "No running VMs found" (vm-network.sh)
 

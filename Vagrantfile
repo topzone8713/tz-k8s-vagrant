@@ -15,6 +15,12 @@ def vbox_null_redirect
   Gem.win_platform? ? "2>nul" : "2>/dev/null"
 end
 
+# Detect if host is Windows (Vagrantfile runs on host)
+def host_windows?
+  return false unless defined?(RbConfig) && RbConfig::CONFIG
+  RbConfig::CONFIG["host_os"].to_s =~ /mswin|mingw|msys/i
+end
+
 # Detect network interface: Mac (en0), Linux, or Windows
 def get_bridge_interface
   # Find VBoxManage command
@@ -42,11 +48,13 @@ def get_bridge_interface
   end
 
   mac_default = "en0: Wi-Fi (AirPort)"
-  return mac_default unless vboxmanage_cmd
+  # On Windows, never return Mac default; return nil so Vagrant can prompt or auto-select bridge
+  default_fallback = host_windows? ? nil : mac_default
+  return default_fallback unless vboxmanage_cmd
 
   begin
     output = `"#{vboxmanage_cmd}" list bridgedifs #{vbox_null_redirect}`
-    return mac_default unless $?.success?
+    return default_fallback unless $?.success?
 
     interfaces = output.split("\n").grep(/^Name:/).map do |line|
       line.sub(/^Name:\s+/, "").strip
@@ -63,9 +71,9 @@ def get_bridge_interface
 
     # Windows/Linux: use first available interface
     return interfaces.first if interfaces.any?
-    mac_default
+    default_fallback
   rescue
-    mac_default
+    default_fallback
   end
 end
 
