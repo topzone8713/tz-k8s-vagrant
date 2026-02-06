@@ -2,8 +2,8 @@
 
 ################################################################################
 # Vagrant VM 백업 스크립트
-# 
-# 이 스크립트는 my-mac의 Vagrant VM들을 안정적으로 백업합니다.
+#
+# 호스트(mac / Linux / Windows Git Bash)에서 실행합니다.
 # 스냅샷 대신 VM 전체를 복사하는 방식을 사용하여 더 안정적입니다.
 #
 # 사용법:
@@ -32,8 +32,25 @@ BACKUP_NAME="vagrant-vms-${TIMESTAMP}"
 BACKUP_DIR="${BACKUP_BASE_DIR}/${BACKUP_NAME}"
 MAX_BACKUP_COUNT="${MAX_BACKUP_COUNT:-10}"  # 최대 백업 개수
 
-# VirtualBox 경로 (macOS)
-export PATH="/Applications/VirtualBox.app/Contents/MacOS:${PATH}"
+# 플랫폼 감지 (mac, linux, windows)
+detect_platform() {
+    case "${OSTYPE:-}" in
+        darwin*)  echo "mac" ;;
+        linux-gnu*) echo "linux" ;;
+        msys|cygwin|msys2) echo "windows" ;;
+        *) echo "linux" ;;
+    esac
+}
+PLATFORM=$(detect_platform)
+
+# VirtualBox PATH: macOS / Windows / Linux
+if [ "${PLATFORM}" = "mac" ]; then
+    export PATH="/Applications/VirtualBox.app/Contents/MacOS:${PATH}"
+elif [ "${PLATFORM}" = "windows" ]; then
+    for vbox in "/c/Program Files/Oracle/VirtualBox" "/c/Program Files (x86)/Oracle/VirtualBox"; do
+        [ -d "${vbox}" ] && export PATH="${vbox}:${PATH}" && break
+    done
+fi
 
 # 로그 함수
 log_info() {
@@ -62,20 +79,28 @@ check_virtualbox() {
 
 # Vagrant 확인
 check_vagrant() {
-    # 여러 경로에서 vagrant 찾기
     VAGRANT_CMD=""
-    for path in "/usr/local/bin/vagrant" "/opt/homebrew/bin/vagrant" "$(which vagrant)"; do
-        if [ -x "${path}" ]; then
-            VAGRANT_CMD="${path}"
-            break
-        fi
-    done
+    if [ "${PLATFORM}" = "windows" ]; then
+        # Windows: which만 사용 (경로에 공백 가능), -x 검사 생략
+        VAGRANT_CMD=$(which vagrant 2>/dev/null) || true
+        [ -z "${VAGRANT_CMD}" ] && VAGRANT_CMD="/c/Program Files (x86)/Vagrant/bin/vagrant"
+        [ ! -f "${VAGRANT_CMD}" ] && VAGRANT_CMD="/c/Program Files/Vagrant/bin/vagrant"
+    else
+        for path in "/usr/local/bin/vagrant" "/opt/homebrew/bin/vagrant" "$(which vagrant 2>/dev/null)"; do
+            [ -z "${path}" ] && continue
+            if [ -x "${path}" ] 2>/dev/null || [ -f "${path}" ]; then
+                VAGRANT_CMD="${path}"
+                break
+            fi
+        done
+    fi
     
-    if [ -z "${VAGRANT_CMD}" ]; then
+    if [ -z "${VAGRANT_CMD}" ] || [ ! -f "${VAGRANT_CMD}" ]; then
         log_error "vagrant 명령어를 찾을 수 없습니다."
         log_info "다음 경로에서 vagrant를 찾아보세요:"
-        log_info "  - /usr/local/bin/vagrant"
-        log_info "  - /opt/homebrew/bin/vagrant"
+        log_info "  - /usr/local/bin/vagrant (mac/linux)"
+        log_info "  - /opt/homebrew/bin/vagrant (mac)"
+        log_info "  - C:\\Program Files (x86)\\Vagrant\\bin\\vagrant (windows)"
         exit 1
     fi
     
@@ -120,8 +145,8 @@ backup_virtualbox_vms() {
     
     cd "${VAGRANT_DIR}"
     
-    # Vagrant로 관리되는 VM 목록 가져오기
-    VM_NAMES=$(${VAGRANT_CMD} status --machine-readable 2>/dev/null | grep ",state," | cut -d',' -f2 | sort -u || true)
+    # Vagrant로 관리되는 VM 목록 가져오기 (Windows: CRLF 제거, 경로 공백 대비 따옴표)
+    VM_NAMES=$("${VAGRANT_CMD}" status --machine-readable 2>&1 | tr -d '\r' | grep ",state," | cut -d',' -f2 | sort -u || true)
     
     if [ -z "${VM_NAMES}" ]; then
         log_warning "Vagrant VM을 찾을 수 없습니다."
@@ -195,11 +220,11 @@ create_backup_metadata() {
 백업 디렉토리: ${BACKUP_DIR}
 호스트: $(hostname)
 사용자: $(whoami)
-Vagrant 버전: $(${VAGRANT_CMD} --version 2>/dev/null || echo "N/A")
+Vagrant 버전: $("${VAGRANT_CMD}" --version 2>/dev/null || echo "N/A")
 VirtualBox 버전: $(VBoxManage --version 2>/dev/null || echo "N/A")
 
 VM 목록:
-$(${VAGRANT_CMD} status 2>/dev/null | grep -E "(kube-master2|kube-node2)" || echo "N/A")
+$("${VAGRANT_CMD}" status 2>/dev/null | grep -E "(kube-master2|kube-node2)" || echo "N/A")
 
 백업 방법:
 - Vagrantfile 및 설정 파일: 직접 복사
@@ -237,11 +262,16 @@ do_backup() {
     log_info "백업 크기: ${BACKUP_SIZE}"
     log_info "=========================================="
     
-    # 심볼릭 링크 생성 (최신 백업)
+    # 최신 백업 참조 (Windows: symlink 대신 파일에 경로 저장)
     LATEST_LINK="${BACKUP_BASE_DIR}/latest"
-    rm -f "${LATEST_LINK}"
-    ln -s "${BACKUP_DIR}" "${LATEST_LINK}"
-    log_info "최신 백업 링크: ${LATEST_LINK}"
+    if [ "${PLATFORM}" = "windows" ]; then
+        echo "${BACKUP_DIR}" > "${BACKUP_BASE_DIR}/latest.txt"
+        log_info "최신 백업 경로 저장: ${BACKUP_BASE_DIR}/latest.txt"
+    else
+        rm -f "${LATEST_LINK}"
+        ln -s "${BACKUP_DIR}" "${LATEST_LINK}"
+        log_info "최신 백업 링크: ${LATEST_LINK}"
+    fi
     
     # 백업 개수 제한 (최대 개수 유지)
     limit_backup_count "${MAX_BACKUP_COUNT}"
@@ -266,7 +296,14 @@ list_backups() {
             BACKUP_SIZE=$(du -sh "${backup_dir}" 2>/dev/null | cut -f1)
             
             # 최신 백업 표시
-            if [ -L "${BACKUP_BASE_DIR}/latest" ] && [ "$(readlink "${BACKUP_BASE_DIR}/latest")" = "${backup_dir}" ]; then
+            IS_LATEST=0
+            if [ "${PLATFORM}" = "windows" ] && [ -f "${BACKUP_BASE_DIR}/latest.txt" ]; then
+                LATEST_PATH=$(cat "${BACKUP_BASE_DIR}/latest.txt" 2>/dev/null | tr -d '\r\n')
+                [ "${LATEST_PATH}" = "${backup_dir}" ] && IS_LATEST=1
+            elif [ -L "${BACKUP_BASE_DIR}/latest" ] && [ "$(readlink "${BACKUP_BASE_DIR}/latest")" = "${backup_dir}" ]; then
+                IS_LATEST=1
+            fi
+            if [ ${IS_LATEST} -eq 1 ]; then
                 echo -e "  ${GREEN}*${NC} ${BACKUP_NAME} (${BACKUP_SIZE}) [최신]"
             else
                 echo "    ${BACKUP_NAME} (${BACKUP_SIZE})"
@@ -294,12 +331,17 @@ restore_backup() {
     
     # 백업 경로 찾기
     if [ "${restore_name}" = "latest" ]; then
-        RESTORE_DIR="${BACKUP_BASE_DIR}/latest"
-        if [ ! -L "${RESTORE_DIR}" ]; then
-            log_error "최신 백업 링크를 찾을 수 없습니다."
-            exit 1
+        if [ "${PLATFORM}" = "windows" ] && [ -f "${BACKUP_BASE_DIR}/latest.txt" ]; then
+            RESTORE_DIR=$(cat "${BACKUP_BASE_DIR}/latest.txt" 2>/dev/null | tr -d '\r\n')
+        else
+            RESTORE_DIR="${BACKUP_BASE_DIR}/latest"
+            if [ ! -L "${RESTORE_DIR}" ]; then
+                log_error "최신 백업 링크를 찾을 수 없습니다."
+                exit 1
+            fi
+            RESTORE_DIR=$(readlink "${RESTORE_DIR}")
         fi
-        RESTORE_DIR=$(readlink "${RESTORE_DIR}")
+        [ -z "${RESTORE_DIR}" ] && { log_error "최신 백업 경로를 읽을 수 없습니다."; exit 1; }
     else
         RESTORE_DIR="${BACKUP_BASE_DIR}/${restore_name}"
     fi
@@ -325,7 +367,7 @@ restore_backup() {
     
     log_info "VM 종료 중..."
     cd "${VAGRANT_DIR}"
-    vagrant halt 2>/dev/null || true
+    "${VAGRANT_CMD}" halt 2>/dev/null || true
     
     log_info "설정 파일 복원 중..."
     # Vagrantfile 복원
@@ -414,15 +456,15 @@ limit_backup_count() {
     
     # 백업 디렉토리 목록 가져오기 (최신 순으로 정렬)
     BACKUP_LIST=()
-    if [ "$(uname)" = "Darwin" ]; then
-        # macOS: stat -f %m 사용
+    if [ "$(uname)" = "Darwin" ] || [ "${PLATFORM}" = "windows" ]; then
+        # macOS / Windows: ls -td (시간순 정렬)
         while IFS= read -r backup_dir; do
             if [ -d "${backup_dir}" ] && [ ! -L "${backup_dir}" ]; then
                 BACKUP_LIST+=("${backup_dir}")
             fi
         done < <(ls -td "${BACKUP_BASE_DIR}"/vagrant-vms-* 2>/dev/null || true)
     else
-        # Linux: find 사용
+        # Linux: find -printf
         while IFS= read -r backup_dir; do
             if [ -d "${backup_dir}" ] && [ ! -L "${backup_dir}" ]; then
                 BACKUP_LIST+=("${backup_dir}")
@@ -439,9 +481,11 @@ limit_backup_count() {
     
     log_info "백업 개수: ${BACKUP_TOTAL}/${max_count} (제한 초과, 오래된 백업 삭제 중...)"
     
-    # 최신 링크 확인
+    # 최신 백업 경로 확인 (Windows: latest.txt / 그 외: symlink)
     LATEST_LINK=""
-    if [ -L "${BACKUP_BASE_DIR}/latest" ]; then
+    if [ "${PLATFORM}" = "windows" ] && [ -f "${BACKUP_BASE_DIR}/latest.txt" ]; then
+        LATEST_LINK=$(cat "${BACKUP_BASE_DIR}/latest.txt" 2>/dev/null | tr -d '\r\n')
+    elif [ -L "${BACKUP_BASE_DIR}/latest" ]; then
         LATEST_LINK=$(readlink "${BACKUP_BASE_DIR}/latest")
     fi
     
@@ -487,17 +531,24 @@ clean_old_backups() {
         return
     fi
     
+    # 최신 백업 경로 (삭제 제외용)
+    LATEST_PATH=""
+    if [ "${PLATFORM}" = "windows" ] && [ -f "${BACKUP_BASE_DIR}/latest.txt" ]; then
+        LATEST_PATH=$(cat "${BACKUP_BASE_DIR}/latest.txt" 2>/dev/null | tr -d '\r\n')
+    elif [ -L "${BACKUP_BASE_DIR}/latest" ]; then
+        LATEST_PATH=$(readlink "${BACKUP_BASE_DIR}/latest")
+    fi
+
     DELETED_COUNT=0
     for backup_dir in "${BACKUP_BASE_DIR}"/vagrant-vms-*; do
         if [ -d "${backup_dir}" ] && [ ! -L "${backup_dir}" ]; then
-            # 최신 링크가 아닌 경우에만 삭제
-            if [ -L "${BACKUP_BASE_DIR}/latest" ] && [ "$(readlink "${BACKUP_BASE_DIR}/latest")" = "${backup_dir}" ]; then
+            if [ -n "${LATEST_PATH}" ] && [ "${backup_dir}" = "${LATEST_PATH}" ]; then
                 continue
             fi
-            
-            # 파일 수정 시간 확인
-            if [ "$(find "${backup_dir}" -type f -mtime +${days} 2>/dev/null | wc -l)" -gt 0 ] || \
-               [ "$(( $(date +%s) - $(stat -f %m "${backup_dir}" 2>/dev/null || echo 0) ))" -gt $((days * 86400)) ]; then
+            # 디렉터리 mtime으로 오래된 것만 삭제 (stat: GNU -c %Y / BSD -f %m)
+            DIR_MTIME=$(stat -c %Y "${backup_dir}" 2>/dev/null || stat -f %m "${backup_dir}" 2>/dev/null || echo 0)
+            NOW=$(date +%s)
+            if [ "${DIR_MTIME}" != "0" ] && [ "$(( NOW - DIR_MTIME ))" -gt $((days * 86400)) ]; then
                 log_info "  삭제: $(basename "${backup_dir}")"
                 rm -rf "${backup_dir}"
                 DELETED_COUNT=$((DELETED_COUNT + 1))

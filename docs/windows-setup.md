@@ -83,6 +83,11 @@ cd /c/path/to/tz-k8s-vagrant
 bash bootstrap.sh
 ```
 
+### 호스트 스크립트 (백업)
+
+`scripts/backup-vms.sh`는 호스트에서 실행하는 백업 스크립트이며, **Windows(Git Bash)** 에서도 동작합니다.  
+- VirtualBox/Vagrant 경로 자동 감지, 최신 백업은 symlink 대신 `~/vagrant-backups/latest.txt`에 경로 저장.
+
 ### 대안: WSL2
 
 WSL2(Windows Subsystem for Linux)를 사용하면 Linux와 동일하게 동작합니다.
