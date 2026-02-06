@@ -9,6 +9,18 @@ WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd ${WORKING_DIR}
 echo "WORKING_DIR: ${WORKING_DIR}"
 
+# OS detection (mac, linux, windows for Git Bash/MSYS2)
+detect_platform() {
+  case "$OSTYPE" in
+    darwin*)  echo "mac" ;;
+    linux-gnu*) echo "linux" ;;
+    msys|cygwin|msys2) echo "windows" ;;
+    *) echo "linux" ;;  # default to linux semantics
+  esac
+}
+PLATFORM=$(detect_platform)
+echo "PLATFORM: ${PLATFORM}"
+
 if [[ "$1" == "help" || "$1" == "-h" || "$1" == "/help" ]]; then
 cat <<EOF
   - bash bootstrap.sh
@@ -74,19 +86,35 @@ elif [[ "$1" == "remove" ]]; then
   
   # Kill any stuck vagrant/ruby processes before destroy
   echo "Checking for stuck vagrant processes..."
-  STUCK_PROCESSES=$(ps aux | grep -E '[v]agrant|[r]uby.*vagrant' | grep -v grep || true)
-  if [ -n "$STUCK_PROCESSES" ]; then
-    echo "Found stuck vagrant processes. Killing them..."
-    pkill -9 -f 'vagrant|ruby.*vagrant' 2>/dev/null || true
-    sleep 2
+  if [[ "$PLATFORM" == "windows" ]]; then
+    STUCK_PROCESSES=$(tasklist 2>/dev/null | grep -iE 'vagrant|ruby' || true)
+    if [ -n "$STUCK_PROCESSES" ]; then
+      echo "Found stuck vagrant processes. Killing them..."
+      taskkill //F //IM vagrant.exe 2>/dev/null || true
+      taskkill //F //IM ruby.exe 2>/dev/null || true
+      sleep 2
+    fi
+  else
+    STUCK_PROCESSES=$(ps aux | grep -E '[v]agrant|[r]uby.*vagrant' | grep -v grep || true)
+    if [ -n "$STUCK_PROCESSES" ]; then
+      echo "Found stuck vagrant processes. Killing them..."
+      pkill -9 -f 'vagrant|ruby.*vagrant' 2>/dev/null || true
+      sleep 2
+    fi
   fi
   
   # Wait for locks to be released (max 30 seconds)
   LOCK_WAIT=0
   MAX_LOCK_WAIT=30
   while [ $LOCK_WAIT -lt $MAX_LOCK_WAIT ]; do
-    if ! ps aux | grep -E '[v]agrant|[r]uby.*vagrant' | grep -v grep > /dev/null 2>&1; then
-      break
+    if [[ "$PLATFORM" == "windows" ]]; then
+      if ! tasklist 2>/dev/null | grep -qiE 'vagrant|ruby'; then
+        break
+      fi
+    else
+      if ! ps aux | grep -E '[v]agrant|[r]uby.*vagrant' | grep -v grep > /dev/null 2>&1; then
+        break
+      fi
     fi
     echo "Waiting for vagrant processes to finish... (${LOCK_WAIT}s/${MAX_LOCK_WAIT}s)"
     sleep 2
@@ -102,8 +130,13 @@ elif [[ "$1" == "remove" ]]; then
     echo "WARNING: Vagrant lock detected. Attempting to resolve..."
     
     # Kill all vagrant/ruby processes more aggressively
-    pkill -9 -f 'vagrant' 2>/dev/null || true
-    pkill -9 -f 'ruby.*vagrant' 2>/dev/null || true
+    if [[ "$PLATFORM" == "windows" ]]; then
+      taskkill //F //IM vagrant.exe 2>/dev/null || true
+      taskkill //F //IM ruby.exe 2>/dev/null || true
+    else
+      pkill -9 -f 'vagrant' 2>/dev/null || true
+      pkill -9 -f 'ruby.*vagrant' 2>/dev/null || true
+    fi
     sleep 3
     
     # Remove lock files if they exist
@@ -253,6 +286,10 @@ if [[ "${EVENT}" == "up" ]]; then
     VBOXMANAGE_CMD="/Applications/VirtualBox.app/Contents/MacOS/VBoxManage"
   elif [ -f "/usr/bin/VBoxManage" ]; then
     VBOXMANAGE_CMD="/usr/bin/VBoxManage"
+  elif [ -f "/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" ]; then
+    VBOXMANAGE_CMD="/c/Program Files/Oracle/VirtualBox/VBoxManage.exe"
+  elif [ -f "/mingw64/bin/VBoxManage.exe" ]; then
+    VBOXMANAGE_CMD="/mingw64/bin/VBoxManage.exe"
   fi
 
   for item in "${PROJECTS[@]}"; do
@@ -365,6 +402,10 @@ if [[ "${EVENT}" == "up" ]]; then
       BASH4_CMD="/opt/homebrew/bin/bash"
     elif [ -f "/usr/local/bin/bash" ]; then
       BASH4_CMD="/usr/local/bin/bash"
+    elif [ -f "/usr/bin/bash" ]; then
+      BASH4_CMD="/usr/bin/bash"
+    elif [ -f "/mingw64/bin/bash.exe" ]; then
+      BASH4_CMD="/mingw64/bin/bash.exe"
     fi
     
     if [ -n "$BASH4_CMD" ]; then
@@ -466,7 +507,7 @@ if [[ "${EVENT}" == "up" ]]; then
       if grep -q "server: https://" ~/.kube/config; then
         # Check if server is already set to 192.168.0.100, if not update it
         if ! grep -q "server: https://192.168.0.100:6443" ~/.kube/config; then
-          if [[ "$OSTYPE" == "darwin"* ]]; then
+          if [[ "$PLATFORM" == "mac" ]]; then
             sed -i '' "s|server: https://.*:6443|server: https://192.168.0.100:6443|g" ~/.kube/config
           else
             sed -i "s|server: https://.*:6443|server: https://192.168.0.100:6443|g" ~/.kube/config
@@ -478,7 +519,7 @@ if [[ "${EVENT}" == "up" ]]; then
       # This is safe for development environments
       if ! grep -q "insecure-skip-tls-verify" ~/.kube/config; then
         # Find the cluster section and add insecure-skip-tls-verify after server line
-        if [[ "$OSTYPE" == "darwin"* ]]; then
+        if [[ "$PLATFORM" == "mac" ]]; then
           sed -i '' '/server: https:\/\/192\.168\.0\.100:6443/a\
     insecure-skip-tls-verify: true
 ' ~/.kube/config
@@ -553,7 +594,7 @@ else
         if grep -q "server: https://" ~/.kube/config; then
           # Check if server is already set to 192.168.0.100, if not update it
           if ! grep -q "server: https://192.168.0.100:6443" ~/.kube/config; then
-            if [[ "$OSTYPE" == "darwin"* ]]; then
+            if [[ "$PLATFORM" == "mac" ]]; then
               sed -i '' "s|server: https://.*:6443|server: https://192.168.0.100:6443|g" ~/.kube/config
             else
               sed -i "s|server: https://.*:6443|server: https://192.168.0.100:6443|g" ~/.kube/config
@@ -565,7 +606,7 @@ else
         # This is safe for development environments
         if ! grep -q "insecure-skip-tls-verify" ~/.kube/config; then
           # Find the cluster section and add insecure-skip-tls-verify after server line
-          if [[ "$OSTYPE" == "darwin"* ]]; then
+          if [[ "$PLATFORM" == "mac" ]]; then
             sed -i '' '/server: https:\/\/192\.168\.0\.100:6443/a\
     insecure-skip-tls-verify: true
 ' ~/.kube/config

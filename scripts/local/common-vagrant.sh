@@ -3,7 +3,7 @@
 # Common Vagrant utility functions
 # This script provides reusable functions for Vagrant operations across all scripts
 
-# Detect host type (my-ubuntu, my-mac, my-mac2, etc.)
+# Detect host type (my-ubuntu, my-mac, my-mac2, my-windows, etc.)
 # Usage: detect_host
 detect_host() {
     local hostname=$(hostname 2>/dev/null || echo "")
@@ -33,6 +33,12 @@ detect_host() {
         return
     fi
     
+    # Check for Windows (Git Bash, MSYS2, Cygwin)
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys2" ]]; then
+        echo "my-windows"
+        return
+    fi
+    
     # Default
     echo "unknown"
 }
@@ -43,6 +49,10 @@ find_vagrant_cmd() {
     # Set PATH to include VirtualBox (for macOS)
     if [[ "$OSTYPE" == "darwin"* ]]; then
         export PATH="/Applications/VirtualBox.app/Contents/MacOS:$PATH:/usr/local/bin"
+    fi
+    # Set PATH to include VirtualBox (for Windows)
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys2" ]]; then
+        export PATH="/c/Program Files/Oracle/VirtualBox:$PATH:${PATH}"
     fi
     
     local VAGRANT_CMD=$(which vagrant 2>/dev/null || find /usr/local -name vagrant 2>/dev/null | head -1 || echo "vagrant")

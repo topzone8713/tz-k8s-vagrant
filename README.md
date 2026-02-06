@@ -23,6 +23,8 @@ to project root directory.
        git clone https://github.com/topzone8713/tz-k8s-vagrant.git
        cd tz-k8s-vagrant
 
+    -. Windows 사용자: Git Bash 또는 MSYS2에서 실행. 자세한 내용은 docs/windows-setup.md 참조
+
     -. copy resources like this,
         tz-k8s-vagrant/resources
             project             # change your project name, it'll be a eks cluster name.

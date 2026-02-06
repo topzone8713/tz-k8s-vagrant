@@ -137,6 +137,10 @@ apply_static_ip() {
     VM_CONFIGS["my-ubuntu:kube-master"]="192.168.0.100:192.168.0.100"
     VM_CONFIGS["my-ubuntu:kube-node-1"]="192.168.0.101:192.168.0.101"
     VM_CONFIGS["my-ubuntu:kube-node-2"]="192.168.0.102:192.168.0.102"
+    # Windows (Git Bash/MSYS2) - same as my-ubuntu for default master setup
+    VM_CONFIGS["my-windows:kube-master"]="192.168.0.100:192.168.0.100"
+    VM_CONFIGS["my-windows:kube-node-1"]="192.168.0.101:192.168.0.101"
+    VM_CONFIGS["my-windows:kube-node-2"]="192.168.0.102:192.168.0.102"
     VM_CONFIGS["my-mac:kube-master2"]="192.168.0.103:192.168.0.103"
     VM_CONFIGS["my-mac:kube-node2-1"]="192.168.0.104:192.168.0.104"
     VM_CONFIGS["my-mac:kube-node2-2"]="192.168.0.105:192.168.0.105"

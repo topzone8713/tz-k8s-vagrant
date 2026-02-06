@@ -4,7 +4,7 @@
 IMAGE_NAME = "bento/ubuntu-22.04"
 COUNTER = 2
 
-# Detect network interface: prefer "en0: Wi-Fi (AirPort)", fallback to "en0"
+# Detect network interface: Mac (en0), Linux, or Windows
 def get_bridge_interface
   # Find VBoxManage command
   vboxmanage_cmd = nil
@@ -12,13 +12,15 @@ def get_bridge_interface
     "VBoxManage",
     "/Applications/VirtualBox.app/Contents/MacOS/VBoxManage",
     "/usr/bin/VBoxManage",
-    "/usr/local/bin/VBoxManage"
-  ]
-  
+    "/usr/local/bin/VBoxManage",
+    "C:/Program Files/Oracle/VirtualBox/VBoxManage.exe",
+    "C:/Program Files (x86)/Oracle/VirtualBox/VBoxManage.exe",
+    (ENV["ProgramFiles"] || "C:/Program Files") + "/Oracle/VirtualBox/VBoxManage.exe"
+  ].compact.uniq
+
   possible_paths.each do |path|
     if path == "VBoxManage"
-      # Check if command exists in PATH
-      if system("which #{path} > /dev/null 2>&1")
+      if system("which #{path} > /dev/null 2>&1") || system("where #{path} > nul 2>&1")
         vboxmanage_cmd = path
         break
       end
@@ -27,36 +29,32 @@ def get_bridge_interface
       break
     end
   end
-  
-  return "en0: Wi-Fi (AirPort)" unless vboxmanage_cmd  # Default fallback
-  
+
+  mac_default = "en0: Wi-Fi (AirPort)"
+  return mac_default unless vboxmanage_cmd
+
   begin
-    # Try to get list of available interfaces using VBoxManage
-    output = `#{vboxmanage_cmd} list bridgedifs 2>/dev/null`
-    return "en0: Wi-Fi (AirPort)" unless $?.success?  # Default fallback if command fails
-    
-    # Extract interface names - VBoxManage output format: "Name:            en0: Wi-Fi (AirPort)"
+    output = `"#{vboxmanage_cmd}" list bridgedifs 2>nul 2>/dev/null`
+    return mac_default unless $?.success?
+
     interfaces = output.split("\n").grep(/^Name:/).map do |line|
-      # Extract everything after "Name:" and strip whitespace
       line.sub(/^Name:\s+/, "").strip
     end
-    
-    # Check if "en0: Wi-Fi (AirPort)" exists (exact match)
+
+    # Mac: prefer en0
     if interfaces.include?("en0: Wi-Fi (AirPort)")
       return "en0: Wi-Fi (AirPort)"
-    # Check if any interface starts with "en0:"
     elsif interfaces.any? { |iface| iface.start_with?("en0:") }
       return interfaces.find { |iface| iface.start_with?("en0:") }
-    # Check if "en0" exists (without description)
     elsif interfaces.include?("en0")
       return "en0"
-    else
-      # If neither exists, use default
-      return "en0: Wi-Fi (AirPort)"
     end
-  rescue => e
-    # If detection fails, use default
-    return "en0: Wi-Fi (AirPort)"
+
+    # Windows/Linux: use first available interface
+    return interfaces.first if interfaces.any?
+    mac_default
+  rescue
+    mac_default
   end
 end
 
