@@ -16,16 +16,18 @@ alias ll='ls -al'
 
 # Ensure /root/.k8s directory exists (created by master.sh)
 if [ ! -d /root/.k8s ]; then
-  echo "WARNING: /root/.k8s directory does not exist. Creating from /vagrant/resources..."
+  echo "WARNING: /root/.k8s directory does not exist. Creating from /vagrant/resources or empty..."
   if [ -d /vagrant/resources ]; then
     sudo rm -Rf /root/.k8s
     sudo cp -Rf /vagrant/resources /root/.k8s
     sudo chown -R root:root /root/.k8s
     echo "✓ /root/.k8s directory created"
   else
-    echo "ERROR: /vagrant/resources directory does not exist!"
-    echo "Cannot create /root/.k8s. The prop function will not work."
-    exit 1
+    # First install: resources may not exist yet; create empty .k8s and continue (normal)
+    echo "NOTE: /vagrant/resources not found (normal on first install). Creating empty /root/.k8s..."
+    sudo mkdir -p /root/.k8s
+    sudo chown -R root:root /root/.k8s
+    echo "✓ /root/.k8s ready"
   fi
 fi
 

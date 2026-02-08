@@ -66,11 +66,6 @@ if [ -d /vagrant/resources ]; then
   else
     echo "⚠ WARNING: /root/.k8s/project file not found after copy"
   fi
-else
-  echo "ERROR: /vagrant/resources directory does not exist!"
-  echo "This directory is required for Kubernetes configuration."
-  echo "Please ensure resources directory exists in the Vagrant project root."
-  exit 1
 fi
 
 exit 0
