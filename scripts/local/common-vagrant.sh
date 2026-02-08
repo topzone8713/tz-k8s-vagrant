@@ -67,6 +67,7 @@ find_vagrant_cmd() {
 }
 
 # Execute command on VM via SSH
+# On Windows (Git Bash), use PowerShell + Windows cwd so vagrant ssh finds project (avoids "path specified")
 # Usage: ssh_vm <vm_name> <command> [suppress_warnings]
 ssh_vm() {
     local VM_NAME="$1"
@@ -77,6 +78,22 @@ ssh_vm() {
     if [ -z "$VM_NAME" ] || [ -z "$COMMAND" ]; then
         echo "Error: ssh_vm requires vm_name and command" >&2
         return 1
+    fi
+    
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys2" ]]; then
+        local win_path
+        win_path=$(cygpath -w "$(pwd)" 2>/dev/null) || win_path=$(echo "$(pwd)" | sed 's|^/\([a-zA-Z]\)/|\1:\\|' | sed 's|/|\\|g')
+        local vagrant_dir; vagrant_dir=$(dirname "$VAGRANT_CMD" 2>/dev/null)
+        local win_vagrant_dir
+        win_vagrant_dir=$(cygpath -w "$vagrant_dir" 2>/dev/null) || win_vagrant_dir=$(echo "$vagrant_dir" | sed 's|^/\([a-zA-Z]\)/|\1:\\|' | sed 's|/|\\|g')
+        local win_path_ps="${win_path//\'/\'\'}"; local win_vagrant_ps="${win_vagrant_dir//\'/\'\'}"
+        local cmd_esc_ps="${COMMAND//\'/\'\'}"
+        if [ "$SUPPRESS_WARNINGS" = "true" ]; then
+            powershell -NoProfile -NonInteractive -Command "\$env:PATH = '$win_vagrant_ps' + ';' + \$env:PATH; Set-Location -LiteralPath '$win_path_ps'; vagrant ssh '$VM_NAME' -- -t '$cmd_esc_ps'" 2>&1 | grep -v "Warning: Permanently added" || return ${PIPESTATUS[0]}
+        else
+            powershell -NoProfile -NonInteractive -Command "\$env:PATH = '$win_vagrant_ps' + ';' + \$env:PATH; Set-Location -LiteralPath '$win_path_ps'; vagrant ssh '$VM_NAME' -- -t '$cmd_esc_ps'"
+        fi
+        return $?
     fi
     
     if [ "$SUPPRESS_WARNINGS" = "true" ]; then
