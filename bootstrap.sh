@@ -18,53 +18,8 @@ detect_platform() {
     *) echo "linux" ;;  # default to linux semantics
   esac
 }
-PLATFORM=$(detect_platform | tr -d '\r')
+PLATFORM=$(detect_platform)
 echo "PLATFORM: ${PLATFORM}"
-
-# Windows: VAGRANT_CWD so vagrant sees Windows path (avoids "path specified")
-if [[ "$PLATFORM" == "windows" ]]; then
-  VAGRANT_CWD_WIN=$(cygpath -w "$WORKING_DIR" 2>/dev/null)
-  [ -z "$VAGRANT_CWD_WIN" ] && VAGRANT_CWD_WIN=$(echo "$WORKING_DIR" | sed 's|^/\([a-zA-Z]\)/|\1:\\|' | sed 's|/|\\|g')
-  export VAGRANT_CWD="$VAGRANT_CWD_WIN"
-fi
-
-# Windows: run vagrant via PowerShell so cwd is Windows path (progress logs stream correctly)
-run_vagrant() {
-  if [[ "$PLATFORM" != "windows" ]]; then
-    vagrant "$@"
-    return $?
-  fi
-  win_path=$(cygpath -w "$WORKING_DIR" 2>/dev/null) || win_path=$(echo "$WORKING_DIR" | sed 's|^/\([a-zA-Z]\)/|\1:\\|' | sed 's|/|\\|g')
-  win_path_ps="${win_path//\'/\'\'}"
-  powershell -NoProfile -NonInteractive -Command "Set-Location -LiteralPath '$win_path_ps'; vagrant $*"
-  return $?
-}
-
-# Windows: run vagrant ssh via cmd; for -c "cmd" use -T so SSH does not hang waiting for TTY
-run_vagrant_ssh() {
-  if [[ $# -ge 3 ]] && [[ "$2" == "-c" ]]; then
-    vm_name="$1"; cmd="$3"
-    if [[ "$PLATFORM" == "windows" ]]; then
-      win_path=$(cygpath -w "$WORKING_DIR" 2>/dev/null) || win_path=$(echo "$WORKING_DIR" | sed 's|^/\([a-zA-Z]\)/|\1:\\|' | sed 's|/|\\|g')
-      cmd //c "cd /d \"$win_path\" && vagrant ssh \"$vm_name\" -- -T \"$cmd\""
-    else
-      vagrant ssh "$vm_name" -- -T "$cmd"
-    fi
-    return $?
-  fi
-  if [[ "$PLATFORM" != "windows" ]]; then
-    vagrant ssh "$@"
-    return $?
-  fi
-  win_path=$(cygpath -w "$WORKING_DIR" 2>/dev/null) || win_path=$(echo "$WORKING_DIR" | sed 's|^/\([a-zA-Z]\)/|\1:\\|' | sed 's|/|\\|g')
-  if [ $# -ge 4 ]; then
-    cmd //c "cd /d \"$win_path\" && vagrant ssh $1 $2 $3 \"$4\""
-  elif [ $# -eq 3 ]; then
-    cmd //c "cd /d \"$win_path\" && vagrant ssh $1 $2 \"$3\""
-  else
-    cmd //c "cd /d \"$win_path\" && vagrant ssh $*"
-  fi
-}
 
 if [[ "$1" == "help" || "$1" == "-h" || "$1" == "/help" ]]; then
 cat <<EOF
@@ -97,15 +52,15 @@ fi
 PROVISION=''
 if [[ "$1" == "halt" ]]; then
   echo "vagrant halt"
-  run_vagrant halt
+  vagrant halt
   exit 0
 elif [[ "$1" == "status" ]]; then
   echo "vagrant status"
-  run_vagrant status
+  vagrant status
   exit 0
 elif [[ "$1" == "ssh" ]]; then
   echo "vagrant ssh kube-master"
-  run_vagrant_ssh kube-master
+  vagrant ssh kube-master
   exit 0
 elif [[ "$1" == "provision" ]]; then
   PROVISION='y'
@@ -167,7 +122,7 @@ elif [[ "$1" == "remove" ]]; then
   done
   
   # Try vagrant destroy
-  VAGRANT_DESTROY_OUTPUT=$(run_vagrant destroy -f 2>&1)
+  VAGRANT_DESTROY_OUTPUT=$(vagrant destroy -f 2>&1)
   VAGRANT_DESTROY_EXIT=$?
   
   # Check for lock errors
@@ -189,7 +144,7 @@ elif [[ "$1" == "remove" ]]; then
     
     # Try destroy again
     echo "Retrying vagrant destroy..."
-    run_vagrant destroy -f
+    vagrant destroy -f
   elif [ $VAGRANT_DESTROY_EXIT -ne 0 ]; then
     echo "WARNING: vagrant destroy returned non-zero exit code: $VAGRANT_DESTROY_EXIT"
     echo "Output: $VAGRANT_DESTROY_OUTPUT"
@@ -258,7 +213,7 @@ cp -Rf Vagrantfile Vagrantfile.bak
 if [[ "${1}" == "save" || "${1}" == "restore" || "${1}" == "delete" || "${1}" == "list" ]]; then
   EVENT=${1}
 else
-  EVENT=$(run_vagrant status | grep -E 'kube-master|kube-slave-1|kube-slave-4' | grep 'not created' || true)
+  EVENT=`vagrant status | grep -E 'kube-master|kube-slave-1|kube-slave-4' | grep 'not created'`
   if [[ "${EVENT}" != "" ]]; then
     EVENT='up'
   else
@@ -284,12 +239,9 @@ if [[ "${EVENT}" == "up" ]]; then
   echo 'vagrant ${EVENT} --provider=virtualbox'
   echo "##################################################################################"
   sleep 5
-  # Run vagrant up; tee to file so progress shows (Windows has no /dev/tty)
-  VAGRANT_UP_LOG="${WORKING_DIR}/.vagrant_up.log"
-  run_vagrant ${EVENT} --provider=virtualbox 2>&1 | tee "$VAGRANT_UP_LOG"
+  # Run vagrant up with real-time output, also capture to variable for analysis
+  VAGRANT_UP_OUTPUT=$(vagrant ${EVENT} --provider=virtualbox 2>&1 | tee /dev/tty)
   VAGRANT_UP_EXIT_CODE=${PIPESTATUS[0]}
-  VAGRANT_UP_OUTPUT=$(cat "$VAGRANT_UP_LOG" 2>/dev/null)
-  rm -f "$VAGRANT_UP_LOG"
   
   # Check if vagrant up failed or if any VMs were not created
   if [ $VAGRANT_UP_EXIT_CODE -ne 0 ]; then
@@ -340,7 +292,7 @@ if [[ "${EVENT}" == "up" ]]; then
   fi
 
   for item in "${PROJECTS[@]}"; do
-    STATUS=$(run_vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
+    STATUS=$(vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
     if echo "$STATUS" | grep -q "not created"; then
       # Check if VirtualBox VM actually exists (more reliable than directory check)
       if [ -n "$VBOXMANAGE_CMD" ]; then
@@ -356,7 +308,7 @@ if [[ "${EVENT}" == "up" ]]; then
         # VM exists but vagrant doesn't recognize it - wait a bit for it to be ready
         sleep 10
         # Re-check status after wait
-        STATUS_AFTER_WAIT=$(run_vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
+        STATUS_AFTER_WAIT=$(vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
         if echo "$STATUS_AFTER_WAIT" | grep -q "not created"; then
           echo "WARNING: ${item} still shows 'not created' after wait. Will retry creation..."
           MISSING_VMS+=("${item}")
@@ -380,7 +332,7 @@ if [[ "${EVENT}" == "up" ]]; then
         echo "  Cleaning up stale VirtualBox VM for ${item}..."
         $VBOXMANAGE_CMD unregistervm "$($VBOXMANAGE_CMD list vms | grep "${item}" | awk -F'[{}]' '{print $2}')" --delete 2>/dev/null || true
       fi
-      run_vagrant up ${item} --provider=virtualbox
+      vagrant up ${item} --provider=virtualbox
       VAGRANT_UP_EXIT=$?
       
       # Check if VM was actually created despite exit code
@@ -390,7 +342,7 @@ if [[ "${EVENT}" == "up" ]]; then
       else
         VBOX_VM_EXISTS="no"
       fi
-      VAGRANT_STATUS=$(run_vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
+      VAGRANT_STATUS=$(vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
       
       if [ "$VBOX_VM_EXISTS" = "yes" ] || echo "$VAGRANT_STATUS" | grep -qE "running|poweroff"; then
         echo "✓ ${item} was created successfully (VM exists and is accessible)"
@@ -413,7 +365,7 @@ if [[ "${EVENT}" == "up" ]]; then
   while [ $WAIT_COUNT -lt $MAX_WAIT ]; do
     ALL_RUNNING=true
     for item in "${PROJECTS[@]}"; do
-      STATUS=$(run_vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
+      STATUS=$(vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|not created|poweroff")
       if echo "$STATUS" | grep -q "not created"; then
         ALL_RUNNING=false
         break
@@ -430,7 +382,7 @@ if [[ "${EVENT}" == "up" ]]; then
   
   if [ "$ALL_RUNNING" != true ]; then
     echo "ERROR: Not all VMs are running after ${MAX_WAIT} seconds!"
-    run_vagrant status
+    vagrant status
     exit 1
   fi
   
@@ -482,7 +434,7 @@ if [[ "${EVENT}" == "up" ]]; then
     sleep 10  # Give VMs time to fully boot
     ALL_ACCESSIBLE=true
     for item in "${PROJECTS[@]}"; do
-      if ! run_vagrant_ssh ${item} -c "echo 'SSH test successful'" > /dev/null 2>&1; then
+      if ! vagrant ssh ${item} -c "echo 'SSH test successful'" > /dev/null 2>&1; then
         echo "WARNING: ${item} is not accessible via SSH yet"
         ALL_ACCESSIBLE=false
       fi
@@ -499,9 +451,9 @@ if [[ "${EVENT}" == "up" ]]; then
     echo "##################################################################################"
     for item in "${PROJECTS[@]}"; do
       echo "Fixing routing on ${item}..."
-      run_vagrant_ssh ${item} -c "sudo ip route del default via 192.168.0.1 dev eth1 2>/dev/null || true; sudo ip route del default via 10.0.2.2 dev eth0 2>/dev/null || true; sudo ip route add default via 10.0.2.2 dev eth0 2>/dev/null || true" > /dev/null 2>&1 || true
+      vagrant ssh ${item} -c "sudo ip route del default via 192.168.0.1 dev eth1 2>/dev/null || true; sudo ip route del default via 10.0.2.2 dev eth0 2>/dev/null || true; sudo ip route add default via 10.0.2.2 dev eth0 2>/dev/null || true" > /dev/null 2>&1 || true
       # Verify internet connectivity
-      if run_vagrant_ssh ${item} -c "ping -c 2 8.8.8.8 > /dev/null 2>&1" 2>/dev/null; then
+      if vagrant ssh ${item} -c "ping -c 2 8.8.8.8 > /dev/null 2>&1" 2>/dev/null; then
         echo "✓ ${item}: Internet access verified"
       else
         echo "⚠ ${item}: Internet access check failed (may still work)"
@@ -512,7 +464,7 @@ if [[ "${EVENT}" == "up" ]]; then
     echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
     echo "##################################################################################"
     sleep 5
-    if ! run_vagrant_ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"; then
+    if ! vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"; then
       echo "ERROR: kubespray.sh failed!"
       exit 1
     fi
@@ -520,7 +472,7 @@ if [[ "${EVENT}" == "up" ]]; then
     echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"'
     echo "##################################################################################"
     sleep 5
-    if ! run_vagrant_ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"; then
+    if ! vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"; then
       echo "ERROR: master_01.sh failed!"
       exit 1
     fi
@@ -588,14 +540,14 @@ elif [[ "${EVENT}" == "save" || "${EVENT}" == "restore" || "${EVENT}" == "delete
   if [[ "${EVENT}" == "save" ]]; then
     item=$(date +"%Y%m%d-%H%M%S")
     echo vagrant snapshot ${EVENT} ${item}
-    run_vagrant snapshot ${EVENT} ${item}
+    vagrant snapshot ${EVENT} ${item}
   elif [[ "${EVENT}" == "restore" || "${EVENT}" == "delete" ]]; then
     echo vagrant snapshot ${EVENT} ${2}
-    run_vagrant snapshot ${EVENT} ${2}
+    vagrant snapshot ${EVENT} ${2}
   fi
   if [[ "${EVENT}" != "delete" ]]; then
     echo vagrant snapshot list
-    run_vagrant snapshot list
+    vagrant snapshot list
   fi
   exit 0
 else
@@ -605,12 +557,12 @@ else
       echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"'
       echo "##################################################################################"
       sleep 5
-      run_vagrant_ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
+      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/kubespray.sh"
       echo "##################################################################################"
       echo 'vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"'
       echo "##################################################################################"
       sleep 5
-      run_vagrant_ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"
+      vagrant ssh kube-master -- -t "sudo bash /vagrant/scripts/local/master_01.sh"
       
       # Copy kubeconfig to host ~/.kube/config after successful installation
       echo "##################################################################################"
@@ -676,7 +628,7 @@ else
     echo "##################################################################################"
     echo "vagrant ${EVENT}"
     echo "##################################################################################"
-    run_vagrant ${EVENT}
+    vagrant ${EVENT}
   fi
   
   # Add VM IP information to info file (only after successful VM creation)
@@ -701,10 +653,10 @@ else
     fi
     
     # Check if VM is running before trying to SSH
-    VM_STATUS=$(run_vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|poweroff" || echo "")
+    VM_STATUS=$(vagrant status ${item} 2>/dev/null | grep "${item}" | grep -E "running|poweroff" || echo "")
     if [ -n "$VM_STATUS" ]; then
       echo "Getting IP for ${item}..."
-      IP=$(run_vagrant_ssh ${item} -c "ifconfig" 2>/dev/null | grep eth1 -A 1 | tail -n 1 | awk '{print $2}' || echo "")
+      IP=$(vagrant ssh ${item} -c "ifconfig" 2>/dev/null | grep eth1 -A 1 | tail -n 1 | awk '{print $2}' || echo "")
       if [ -n "$IP" ] && [ "$IP" != "" ]; then
         echo ${item} ansible_host=${IP} ip=${IP} ansible_user=root ansible_ssh_private_key_file=/root/.ssh/tz_rsa ansible_ssh_extra_args='-o StrictHostKeyChecking=no' ansible_port=22 >> info
         echo ${IP}   ${item} >> info
