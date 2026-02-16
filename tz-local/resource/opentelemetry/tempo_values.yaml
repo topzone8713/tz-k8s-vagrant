@@ -1,0 +1,36 @@
+ingester:
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: nfs-client
+traces:
+  otlp:
+    http:
+      enabled: true
+      receiverConfig: {}
+    grpc:
+      enabled: true
+      receiverConfig: {}
+
+storage:
+  trace:
+    block:
+      version: vParquet
+    backend: s3
+    s3:
+      bucket: tempo-k8s-vagrant
+      endpoint: minio.devops.svc.cluster.local:9000
+#      region: ap-northeast-2
+      access_key: minio_access_key_id
+      secret_key: minio_secret_access_key
+      insecure: true
+  admin:
+    backend: filesystem
+
+compactor:
+  replicas: 1
+
+#  storageClass: gp2
+#  storage: 50Gi
+#  accessModes: [ "ReadWriteOnce" ]
+#  storageClassName: "gp2"
