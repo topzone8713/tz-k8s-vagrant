@@ -4,11 +4,16 @@ metadata:
   name: opentelemetry-instrumentation
 spec:
   exporter:
-    endpoint: http://opentelemetry-collector.opentelemetry-operator:4317
+    # gRPC(4317) - Node.js/Python auto-instrumentation 공통
+    endpoint: http://opentelemetry-collector.opentelemetry-operator.svc.cluster.local:4317
+  nodejs:
+    env:
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: http://opentelemetry-collector.opentelemetry-operator.svc.cluster.local:4317
   python:
     env:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
-        value: http://opentelemetry-collector.opentelemetry-operator:4318
+        value: http://opentelemetry-collector.opentelemetry-operator.svc.cluster.local:4318
       - name: OTEL_LOGS_EXPORTER
         value: otlp
       - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED

@@ -30,6 +30,19 @@ storage:
 compactor:
   replicas: 1
 
+# gRPC 메시지 크기 제한 상향 (default 4MB → 200MB)
+# trace 조회 시 "grpc: received message after decompression larger than max 4194304" 오류 방지
+server:
+  grpc_server_max_recv_msg_size: 209715200  # 200MB
+  grpc_server_max_send_msg_size: 209715200  # 200MB
+
+querier:
+  config:
+    frontend_worker:
+      grpc_client_config:
+        max_recv_msg_size: 209715200
+        max_send_msg_size: 209715200
+
 #  storageClass: gp2
 #  storage: 50Gi
 #  accessModes: [ "ReadWriteOnce" ]

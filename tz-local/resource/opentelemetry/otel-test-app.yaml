@@ -13,7 +13,8 @@ spec:
       labels:
         app: otel-test-app
       annotations:
-        instrumentation.opentelemetry.io/inject-nodejs: "true"
+        # Instrumentation CR 이름 명시 (operator가 선택 실패 시)
+        instrumentation.opentelemetry.io/inject-nodejs: "opentelemetry-instrumentation"
     spec:
       containers:
         - name: otel-test-app
