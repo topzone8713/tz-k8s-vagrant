@@ -15,7 +15,7 @@ traces:
 storage:
   trace:
     block:
-      version: vParquet
+      version: vParquet4
     backend: s3
     s3:
       bucket: tempo-k8s-vagrant

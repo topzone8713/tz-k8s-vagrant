@@ -77,7 +77,7 @@ data:
         type: tempo
         typeName: Tempo
         access: proxy
-        url: http://tempo-query-frontend-discovery.tempo:3100
+        url: http://tempo-query-frontend-discovery.tempo:3200
         password: ''
         user: ''
         database: ''

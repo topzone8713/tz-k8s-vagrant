@@ -35,15 +35,16 @@ helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm
 helm repo update
 #helm show values open-telemetry/opentelemetry-operator > opentelemetry-operator_values.yaml
 #helm uninstall opentelemetry-operator -n ${NS}
+# kubectl delete crd instrumentations.opentelemetry.io
 #--reuse-values
 helm upgrade --debug --install --reuse-values \
   opentelemetry-operator open-telemetry/opentelemetry-operator \
   --namespace ${NS} \
   --create-namespace \
   --values "opentelemetry-operator_values_bak.yaml" \
-  --version 0.29.2 \
+  --version 0.95.3 \
   --set admissionWebhooks.certManager.enabled=false \
-  --set admissionWebhooks.certManager.autoGenerateCert=true
+  --set admissionWebhooks.autoGenerateCert.enabled=true
 
 #3. Grafana Tempo 설치
 #kubectl delete ns tempo
@@ -62,7 +63,7 @@ helm upgrade --debug --install --reuse-values \
   --create-namespace \
   --namespace tempo \
   --values "tempo_values.yaml_bak" \
-  --version 1.4.2
+  --version 1.56.2
 
 # add Data Sources / Tempo in grafana datasource
 #kubectl get svc tempo-distributor-discovery -n tempo
