@@ -19,6 +19,8 @@ k8s_project=$(prop 'project' 'project')
 k8s_domain=$(prop 'project' 'domain')
 minio_access_key_id=$(prop 'project' 'minio_access_key_id')
 minio_secret_access_key=$(prop 'project' 'minio_secret_access_key')
+dockerhub_id=$(prop 'project' 'dockerhub_id')
+dockerhub_password=$(prop 'project' 'dockerhub_password')
 
 NS=opentelemetry-operator
 alias k='kubectl --kubeconfig ~/.kube/config -n '${NS}
@@ -50,8 +52,8 @@ kubectl create ns tempo
 #helm delete tempo -n tempo
 
 cp tempo_values.yaml tempo_values.yaml_bak
-sed -i "s|minio_access_key_id|${minio_access_key_id}|g" tempo_values.yaml_bak
-sed -i "s|minio_secret_access_key|${minio_secret_access_key}|g" tempo_values.yaml_bak
+sed -ie "s|minio_access_key_id|${minio_access_key_id}|g" tempo_values.yaml_bak
+sed -ie "s|minio_secret_access_key|${minio_secret_access_key}|g" tempo_values.yaml_bak
 
 #helm uninstall tempo -n tempo
 #--reuse-values
@@ -97,15 +99,17 @@ kubectl get instrumentations.opentelemetry.io -n nlp
 # or change the existing rule that allows access to
 # port 80/tcp, 443/tcp and 10254/tcp to also allow access to port 9443/tcp.
 
-kubectl delete -f test2.yaml -n nlp
-kubectl apply -f test2.yaml -n nlp
+# Build and deploy otel-test-app (Node.js app for OpenTelemetry testing)
+docker build --platform linux/amd64 -t otel-test-app:latest ./otel-test-app
+docker tag otel-test-app:latest ${dockerhub_id}/otel-test-app:latest
+echo "${dockerhub_password}" | docker login -u ${dockerhub_id} --password-stdin docker.io
+docker push ${dockerhub_id}/otel-test-app:latest
+sed -i.bak "s|image: .*otel-test-app.*|image: ${dockerhub_id}/otel-test-app:latest|g" otel-test-app.yaml
+kubectl delete -f otel-test-app.yaml -n nlp 2>/dev/null || true
+kubectl apply -f otel-test-app.yaml -n nlp
 kubectl describe otelinst -n nlp
 kubectl logs -l app.kubernetes.io/name=opentelemetry-operator \
   --container manager -n opentelemetry-operator --follow
-
-kubectl apply -f opentelemetry-instrumentation.yaml -n devops-dev
-kubectl delete -f test3.yaml -n devops-dev
-kubectl apply -f test3.yaml -n devops-dev
 
 PROJECTS=(devops devops-dev)
 for item in "${PROJECTS[@]}"; do

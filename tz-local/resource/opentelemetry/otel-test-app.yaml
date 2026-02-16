@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-test-app
+  namespace: nlp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-test-app
+  template:
+    metadata:
+      labels:
+        app: otel-test-app
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
+    spec:
+      containers:
+        - name: otel-test-app
+          image: doohee323/otel-test-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-test-app
+  namespace: nlp
+spec:
+  type: ClusterIP
+  selector:
+    app: otel-test-app
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http

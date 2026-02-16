@@ -1,0 +1,40 @@
+# Loki CPU/메모리 튜닝 및 레플리카 2 (노드 자원 기준)
+# k8s 확인: loki-0 실제 사용 ~1035m CPU, ~2407Mi memory
+# 노드: kube-node-1/2 각 1900m CPU, ~5.6Gi allocatable → 2 pod 시 서로 다른 노드에 스케줄
+# 참고: /ready 503으로 재시작 시 프로브 주석 처리하면 2레플리카 정상 기동. 차트는 프로브 비활성 미지원이라
+#       Helm으로 올릴 땐 아래 완화값 사용. 프로브 없이 쓰려면 적용 후 kubectl edit로 probe 블록 삭제.
+loki:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1536Mi
+    limits:
+      cpu: 1500m
+      memory: 3Gi
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 120
+    periodSeconds: 15
+    failureThreshold: 12
+    timeoutSeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 120
+    periodSeconds: 15
+    failureThreshold: 20
+    timeoutSeconds: 5
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - loki
+          topologyKey: kubernetes.io/hostname

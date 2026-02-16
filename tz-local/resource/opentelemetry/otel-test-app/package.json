@@ -1,0 +1,12 @@
+{
+  "name": "otel-test-app",
+  "version": "1.0.0",
+  "description": "Simple Node.js app for OpenTelemetry testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
