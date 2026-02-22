@@ -22,7 +22,8 @@ PLATFORM=$(detect_platform)
 
 if [[ "$1" == "help" || "$1" == "-h" || "$1" == "/help" ]]; then
 cat <<EOF
-  - bash bootstrap.sh
+  - bash bootstrap.sh [S|M]
+      S=Slave(1 master + 3 nodes), M=Master(1 master + 2 nodes). Default: M.
       If it's from scratch, it means "vagrant up" else "vagrant reload"
   - bash bootstrap.sh halt
       "vagrant halt"
@@ -116,12 +117,18 @@ elif [[ "$1" == "docker" ]]; then
 #  docker exec -it ${DOCKER_NAME} bash /vagrant/tz-local/docker/init2.sh
 fi
 
-# 환경변수에서 A_ENV 확인, 없으면 기본값 "M" 사용
-if [ -z "${A_ENV}" ]; then
+# A_ENV: 환경변수 > 인자(S/M) > 기본값 "M"
+if [ -n "${A_ENV}" ]; then
+  echo "Using A_ENV from environment: ${A_ENV}"
+elif [[ "$1" == "S" || "$1" == "s" ]]; then
+  A_ENV="S"
+  echo "Using A_ENV=S (Slave) from argument"
+elif [[ "$1" == "M" || "$1" == "m" ]]; then
+  A_ENV="M"
+  echo "Using A_ENV=M (Master) from argument"
+else
   A_ENV="M"
   echo "Using default A_ENV=M (Master)"
-else
-  echo "Using A_ENV from environment: ${A_ENV}"
 fi
 
 # info 파일이 있고, 환경변수가 없으면 Vagrantfile에서 확인
